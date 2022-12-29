@@ -6,6 +6,7 @@ plugins {
 }
 
 val minecraftVersion: String by project
+val parchmentVersion: String by project
 val mavenGroup: String by project
 
 val modId: String by project
@@ -47,13 +48,22 @@ architectury {
 subprojects {
     apply(plugin = "dev.architectury.loom")
     
+    repositories {
+        maven("https://maven.parchmentmc.org") {
+            name = "ParchmentMC"
+        }
+    }
+    
     extensions.configure<LoomGradleExtensionAPI> {
         silentMojangMappingsLicense()
         
         dependencies {
             "minecraft"("com.mojang:minecraft:${minecraftVersion}")
             
-            "mappings"(officialMojangMappings())
+            "mappings"(layered {
+                officialMojangMappings()
+                parchment("org.parchmentmc.data:parchment-${minecraftVersion}:${parchmentVersion}@zip")
+            })
         }
     }
 }
