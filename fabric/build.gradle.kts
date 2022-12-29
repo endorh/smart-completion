@@ -2,14 +2,16 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
+val prop = rootProject.extra
+
 val modId: String by rootProject
 val modVersion: String by rootProject
-val minecraftVersion: String by rootProject
-val fabricLoaderVersion: String by rootProject
-val fabricApiVersion: String by rootProject
-val architecturyVersion: String by rootProject
+val minecraftVersion: String by prop
+val fabricLoaderVersion: String by prop
+val fabricApiVersion: String by prop
+val architecturyVersion: String by prop
 
-val modProperties: Map<String, String> by rootProject.extra
+val modProperties: Map<String, String> by prop
 
 architectury {
     platformSetupLoomIde()

@@ -1,10 +1,12 @@
+val prop = rootProject.extra
+
 val modId: String by rootProject
 val enabledPlatforms: String by rootProject
-val minecraftVersion: String by rootProject
-val fabricLoaderVersion: String by rootProject
+val minecraftVersion: String by prop
+val fabricLoaderVersion: String by prop
 
 architectury {
-    common(enabledPlatforms.split(","))
+    common(enabledPlatforms.split(Regex("""\s*+,\s*+""")))
 }
 
 loom {
