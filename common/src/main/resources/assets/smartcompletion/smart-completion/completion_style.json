@@ -1,0 +1,19 @@
+{
+  "suggestion": {
+  },
+  "match": {
+    "color": "blue"
+  },
+  "dumb_match": {
+    "color": "dark_aqua"
+  },
+  "prefix": {
+    "color": "dark_gray"
+  },
+  "repeat": {
+    "color": "dark_aqua"
+  },
+  "unexpected": {
+    "color": "dark_aqua"
+  }
+}
