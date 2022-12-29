@@ -1,17 +1,15 @@
 modLoader = "javafml"
 loaderVersion = "[43,)"
-#issueTrackerURL = ""
-license = "Insert License Here"
+issueTrackerURL = "${modIssueTracker}"
+license = "${modLicense}"
 
 [[mods]]
     modId = "smartcompletion"
     version = "${version}"
-    displayName = "Example Mod"
-    authors = "Me!"
-    description = '''
-This is an example description! Tell everyone what your mod is about!
-'''
-#logoFile = ""
+    displayName = "${modName}"
+    authors = "${modAuthor}"
+    description = "${modDescription}"
+    logoFile = "icon.png"
 
 [[dependencies.smartcompletion]]
     modId = "forge"
@@ -25,9 +23,3 @@ This is an example description! Tell everyone what your mod is about!
     versionRange = "[1.19.2,)"
     ordering = "NONE"
     side = "BOTH"
-#[[dependencies.smartcompletion]]
-#    modId = "architectury"
-#    mandatory = true
-#    versionRange = "[6.2.43,)"
-#    ordering = "AFTER"
-#    side = "BOTH"

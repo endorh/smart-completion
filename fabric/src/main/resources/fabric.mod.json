@@ -1,18 +1,21 @@
 {
   "schemaVersion": 1,
-  "id": "smartcompletion",
+  "id": "${modId}",
   "version": "${version}",
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "${modName}",
+  "description": "${modDescription}",
   "authors": [
-    "Me!"
+    "${modAuthor}"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "${modPage}",
+    "sources": "https://github.com/${githubRepo}",
+    "issues": "${modIssueTracker}"
   },
-  "license": "Insert License Here",
-  "icon": "assets/smartcompletion/icon.png",
+  "license": "${modLicense}",
+  "icon": "icon.png",
+
+
   "environment": "client",
   "entrypoints": {
     "client": [
