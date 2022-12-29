@@ -8,8 +8,13 @@ import endorh.smartcompletion.SmartCompletionResourceReloadListener.CommandCompl
 import endorh.smartcompletion.SmartCompletionResourceReloadListener.CommandSplittingSettings;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.network.chat.Component;
+#if POST_MC_1_19_2
+	import net.minecraft.network.chat.Component;
+#endif
 import net.minecraft.network.chat.MutableComponent;
+#if PRE_MC_1_19_2
+	import net.minecraft.network.chat.TextComponent;
+#endif
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -155,10 +160,10 @@ public class SmartCommandCompletion {
 
 	public static MutableComponent highlightSuggestion(String suggestion, MultiMatch matches, String query) {
 		if (query.isEmpty() || matches.isEmpty())
-			return Component.literal(suggestion).withStyle(STYLE.suggestion());
+			return literal(suggestion).withStyle(STYLE.suggestion());
 		if (matches.totalLength() > query.length())
-			return Component.literal(suggestion).withStyle(STYLE.unexpected());
-		MutableComponent t = Component.empty();
+			return literal(suggestion).withStyle(STYLE.unexpected());
+		MutableComponent t = empty();
 		int prefixIndex = suggestion.indexOf(":") + 1;
 		int prev = 0;
 		int @Nullable[] repeats = null;
@@ -167,7 +172,7 @@ public class SmartCommandCompletion {
 			String m = matches.parts()[i];
 			int idx = matches.indices()[i];
 			highlightGap(t, suggestion, prev, idx, prefixIndex, repeats, repeatLength);
-			t.append(Component.literal(m).withStyle(matches.isDumb()? STYLE.dumbMatch() : STYLE.match()));
+			t.append(literal(m).withStyle(matches.isDumb()? STYLE.dumbMatch() : STYLE.match()));
 			repeats = matches.repeats()[i];
 			repeatLength = m.length();
 			prev = idx + repeatLength;
@@ -186,12 +191,28 @@ public class SmartCommandCompletion {
 			for (int r: repeats) {
 				highlightGap(t, suggestion, p, r, prefixIdx, null, 0);
 				p = r + repeatLength;
-				t.append(Component.literal(suggestion.substring(r, p)).withStyle(STYLE.repeat()));
+				t.append(literal(suggestion.substring(r, p)).withStyle(STYLE.repeat()));
 			}
 			highlightGap(t, suggestion, p, idx, prefixIdx, null, 0);
 		} else if (prefixIdx > prev && prefixIdx < idx) {
-			t.append(Component.literal(suggestion.substring(prev, prefixIdx)).withStyle(STYLE.prefix()));
-			t.append(Component.literal(suggestion.substring(prefixIdx, idx)).withStyle(STYLE.suggestion()));
-		} else t.append(Component.literal(suggestion.substring(prev, idx)).withStyle(prefixIdx > prev? STYLE.prefix() : STYLE.suggestion()));
+			t.append(literal(suggestion.substring(prev, prefixIdx)).withStyle(STYLE.prefix()));
+			t.append(literal(suggestion.substring(prefixIdx, idx)).withStyle(STYLE.suggestion()));
+		} else t.append(literal(suggestion.substring(prev, idx)).withStyle(prefixIdx > prev? STYLE.prefix() : STYLE.suggestion()));
+	}
+	
+	private static MutableComponent literal(String s) {
+		#if POST_MC_1_19_2
+			return Component.literal(s);
+		#else
+			return new TextComponent(s);
+		#endif
+	}
+	
+	private static MutableComponent empty() {
+		#if POST_MC_1_19_2
+			return Component.empty();
+		#else
+			return TextComponent.EMPTY.copy();
+		#endif
 	}
 }

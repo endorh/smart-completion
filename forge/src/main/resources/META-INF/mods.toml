@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[43,)"
+loaderVersion = "[36,)"
 issueTrackerURL = "${modIssueTracker}"
 license = "${modLicense}"
 
@@ -14,12 +14,12 @@ license = "${modLicense}"
 [[dependencies.smartcompletion]]
     modId = "forge"
     mandatory = true
-    versionRange = "[43,)"
+    versionRange = "${forgeVersionRange}"
     ordering = "NONE"
     side = "BOTH"
 [[dependencies.smartcompletion]]
     modId = "minecraft"
     mandatory = true
-    versionRange = "[1.19.2,)"
+    versionRange = "${forgeMinecraftVersion}"
     ordering = "NONE"
     side = "BOTH"

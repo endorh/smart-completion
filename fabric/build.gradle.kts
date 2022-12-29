@@ -52,7 +52,6 @@ tasks.processResources {
     exclude("**/.dev/**")
     
     filesMatching("fabric.mod.json") {
-        println(modProperties)
         expand(modProperties)
     }
 }

@@ -74,6 +74,7 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 		String blindCommand = command.substring(0, startPos);
 		StringReader reader = new StringReader(blindCommand);
 		boolean skipSlash = reader.canRead() && reader.peek() == '/';
+		if (!commandsOnly && !skipSlash) return;
 		if (skipSlash) reader.skip();
 		ParseResults<SharedSuggestionProvider> blindParse = dispatcher.parse(reader, minecraft.player.connection.getSuggestionsProvider());
 		SuggestionContext<SharedSuggestionProvider> blindSuggestionContext;
@@ -83,21 +84,16 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 			return;
 		}
 		if (blindSuggestionContext.startPos != startPos) return;
-		if (commandsOnly || skipSlash) {
-			pendingBlindSuggestions = dispatcher.getCompletionSuggestions(blindParse, startPos);
-			pendingSuggestions.thenAcceptBoth(pendingBlindSuggestions, (informed, blind) -> {
-				// Force trigger showSuggestions, since we can't create the inner class ourselves
-				if (allowSuggestions && minecraft.options.autoSuggestions().get() || suggestions != null) {
-					dummyPendingSuggestions = pendingSuggestions;
-					if (pendingSuggestions == null || !pendingSuggestions.isDone() || pendingSuggestions.join().isEmpty())
-						pendingSuggestions = pendingBlindSuggestions;
-					showSuggestions(false);
-				}
-			});
-		} else {
-			Collection<String> suggestions = minecraft.player.connection.getSuggestionsProvider().getCustomTabSugggestions();
-			pendingSuggestions = SharedSuggestionProvider.suggest(suggestions, new SuggestionsBuilder(lastArgumentQuery, command, startPos));
-		}
+		pendingBlindSuggestions = dispatcher.getCompletionSuggestions(blindParse, startPos);
+		pendingSuggestions.thenAcceptBoth(pendingBlindSuggestions, (informed, blind) -> {
+			// Force trigger showSuggestions, since we can't create the inner class ourselves
+			if (allowSuggestions && isAutoSuggestions(minecraft) || suggestions != null) {
+				dummyPendingSuggestions = pendingSuggestions;
+				if (pendingSuggestions == null || !pendingSuggestions.isDone() || pendingSuggestions.join().isEmpty())
+					pendingSuggestions = pendingBlindSuggestions;
+				showSuggestions(false);
+			}
+		});
 	}
 	
 	@Inject(
@@ -160,5 +156,13 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 	
 	@Override public boolean hasUnparsedInput() {
 		return currentParse != null && currentParse.getReader().canRead();
+	}
+	
+	private static boolean isAutoSuggestions(Minecraft minecraft) {
+		#if POST_MC_1_19_2
+			return minecraft.options.autoSuggestions().get();
+		#else
+			return minecraft.options.autoSuggestions;
+		#endif
 	}
 }

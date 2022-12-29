@@ -5,7 +5,11 @@ import endorh.smartcompletion.SmartCompletionResourceReloadListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+#if POST_MC_1_19_2
+    import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+#else
+    import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+#endif
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -19,8 +23,13 @@ public class SmartCompletionModForge {
     }
     
     @SubscribeEvent
-    public static void registerReloadListener(RegisterParticleProvidersEvent event) {
-        ReloadableResourceManager manager = (ReloadableResourceManager) Minecraft.getInstance().getResourceManager();
+    #if POST_MC_1_19_2
+        public static void registerReloadListener(RegisterParticleProvidersEvent event) {
+    #else
+        public static void registerReloadListener(ParticleFactoryRegisterEvent event) {
+    #endif
+        ReloadableResourceManager manager =
+          (ReloadableResourceManager) Minecraft.getInstance().getResourceManager();
         manager.registerReloadListener(new SmartCompletionResourceReloadListener());
     }
 }

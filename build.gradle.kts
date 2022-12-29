@@ -53,6 +53,8 @@ fun writeBuildProperties(versions: List<String>, idx: Int) {
     file("build.properties").writeText(sb.toString())
 }
 
+val versionProperties = mutableMapOf<String, String>()
+
 /**
  * Load properties for the current Minecraft version
  */
@@ -82,11 +84,11 @@ fun loadProperties() {
     
     println("Loading properties from $mcVersion.properties:")
     val props = Properties()
-    props.load(file("$mcVersion.properties").inputStream())
+    props.load(file("versionProperties/$mcVersion.properties").inputStream())
     
     props.forEach {
         rootProject.extra.set(it.key as String, it.value)
-        println("  ${it.key} = ${it.value}")
+        versionProperties[it.key as String] = it.value as String
     }
     
     writeBuildProperties(versions, mcIndex)
@@ -99,18 +101,20 @@ val minecraftVersion: String by extra
 val parchmentVersion: String by extra
 
 val modProperties by extra {
-    mapOf(
-        "modId"           to modId,
-        "modName"         to modName,
-        "version"         to modVersion,
-        "modDescription"  to modDescription.replace("\n", "\\n"),
-        "modAuthor"       to modAuthor,
-        "modLicense"      to modLicense,
-        "modPage"         to modPage,
-        "modSource"       to modSource,
+    val map = mutableMapOf(
+        "modId" to modId,
+        "modName" to modName,
+        "version" to modVersion,
+        "modDescription" to modDescription.replace("\n", "\\n"),
+        "modAuthor" to modAuthor,
+        "modLicense" to modLicense,
+        "modPage" to modPage,
+        "modSource" to modSource,
         "modIssueTracker" to modIssueTracker,
-        "githubRepo"      to githubRepo,
+        "githubRepo" to githubRepo,
     )
+    map += versionProperties
+    map.toMap()
 }
 
 // Log build properties
