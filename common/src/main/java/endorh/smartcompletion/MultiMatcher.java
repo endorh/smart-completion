@@ -209,7 +209,7 @@ public class MultiMatcher {
 		indices.clear();
 		subIndices.clear();
 		repeats.clear();
-		repeat = IntList.of();
+		repeat = new IntArrayList();
 	}
 	
 	/**
