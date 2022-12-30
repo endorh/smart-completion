@@ -54,6 +54,7 @@ dependencies {
 tasks.processResources {
     inputs.properties(modProperties)
     
+    // Exclude .dev folders from the mod resources
     exclude("**/.dev/**")
     
     filesMatching("META-INF/mods.toml") {

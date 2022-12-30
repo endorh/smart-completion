@@ -19,6 +19,11 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
 }
 
+tasks.processResources {
+    // Exclude .dev folders from the mod resources
+    exclude("**/.dev/**")
+}
+
 publishing {
     publications {
         // register<MavenPublication>("common") {
