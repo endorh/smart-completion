@@ -11,7 +11,7 @@ that. You may override it with a resource pack if you're so inclined.
 
 Any other type of contribution is also welcome. If you wish to change the
 matching algorithm, either verify that it passes all the tests under
-[`SmartcommandCompletionTest`](https://github.com/endorh/smart-completion/blob/main/common/src/test/java/endorh/smartcompletion/SmartCommandCompletionTest.java)
+[`SmartCommandCompletionTest`](https://github.com/endorh/smart-completion/blob/main/common/src/test/java/endorh/smartcompletion/SmartCommandCompletionTest.java)
 or create an issue proposing a change in behavior.
 
 I'm willing to accept alternative matching algorithms too, although the mod
