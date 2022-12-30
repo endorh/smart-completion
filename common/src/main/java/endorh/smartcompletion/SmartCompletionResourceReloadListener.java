@@ -37,10 +37,10 @@ public class SmartCompletionResourceReloadListener extends SimpleJsonResourceRel
 	) {
 		List<JsonElement> commandSplittingJsonList = map.entrySet().stream()
 		  .filter(e -> e.getKey().getPath().equals("command_splitting"))
-		  .map(Entry::getValue).toList();
+		  .map(Entry::getValue).collect(Collectors.toList());
 		List<JsonElement> completionStyleJSONList = map.entrySet().stream()
 		  .filter(e -> e.getKey().getPath().equals("completion_style"))
-		  .map(Entry::getValue).toList();
+		  .map(Entry::getValue).collect(Collectors.toList());
 		try {
 			CommandSplittingSettings settings = new CommandSplittingSettings();
 			for (JsonElement obj: commandSplittingJsonList) {
@@ -67,15 +67,15 @@ public class SmartCompletionResourceReloadListener extends SimpleJsonResourceRel
 		}
 	}
 	
-	public record CommandSplittingSettings(
-		List<String> suffixes,
-		List<String> words
-	) {
+	public static class CommandSplittingSettings {
+		private final List<String> suffixes;
+		private final List<String> words;
+		
 		public static final Pattern WORD_PATTERN = Pattern.compile("^\\p{Lower}++$", Pattern.UNICODE_CHARACTER_CLASS);
 		
 		public static CommandSplittingSettings of(List<String> suffixes, List<String> words) {
 			Optional<String> opt = Stream.concat(suffixes.stream(), words.stream())
-			  .filter(WORD_PATTERN.asMatchPredicate().negate())
+			  .filter(w -> !WORD_PATTERN.matcher(w).matches())
 			  .findFirst();
 			if (opt.isPresent()) throw new IllegalArgumentException(
 			  "Words must only contain lowercase letter characters: \"" + opt.get() + "\"");
@@ -89,14 +89,19 @@ public class SmartCompletionResourceReloadListener extends SimpleJsonResourceRel
 			return new CommandSplittingSettings(suffixes, words);
 		}
 		
+		public CommandSplittingSettings(List<String> suffixes, List<String> words) {
+			this.suffixes = suffixes;
+			this.words = words;
+		}
+		
 		public CommandSplittingSettings() {
 			this(Collections.emptyList(), Collections.emptyList());
 		}
 		
 		public CommandSplittingSettings merge(CommandSplittingSettings other) {
 			return CommandSplittingSettings.of(
-			  Stream.concat(suffixes.stream(), other.suffixes.stream()).toList(),
-			  Stream.concat(words.stream(), other.words.stream()).toList()
+			  Stream.concat(suffixes.stream(), other.suffixes.stream()).collect(Collectors.toList()),
+			  Stream.concat(words.stream(), other.words.stream()).collect(Collectors.toList())
 			);
 		}
 		
@@ -108,18 +113,42 @@ public class SmartCompletionResourceReloadListener extends SimpleJsonResourceRel
 				JsonArray wordsArray = GsonHelper.getAsJsonArray(obj, "words", new JsonArray());
 				List<String> suffixes = StreamSupport.stream(suffixesArray.spliterator(), false)
 					.map(JsonElement::getAsString)
-					.toList();
+					.collect(Collectors.toList());
 				List<String> words = StreamSupport.stream(wordsArray.spliterator(), false)
 					.map(JsonElement::getAsString)
-					.toList();
+					.collect(Collectors.toList());
 				return CommandSplittingSettings.of(suffixes, words);
 			}
 		}
+		
+		public List<String> suffixes() {
+			return suffixes;
+		}
+		
+		public List<String> words() {
+			return words;
+		}
 	}
 	
-	public record CommandCompletionStyle(
-	  Style suggestion, Style match, Style dumbMatch, Style prefix, Style repeat, Style unexpected
-	) {
+	public static class CommandCompletionStyle {
+		private final Style suggestion;
+		private final Style match;
+		private final Style dumbMatch;
+		private final Style prefix;
+		private final Style repeat;
+		private final Style unexpected;
+		
+		public CommandCompletionStyle(
+		  Style suggestion, Style match, Style dumbMatch, Style prefix, Style repeat, Style unexpected
+		) {
+			this.suggestion = suggestion;
+			this.match = match;
+			this.dumbMatch = dumbMatch;
+			this.prefix = prefix;
+			this.repeat = repeat;
+			this.unexpected = unexpected;
+		}
+		
 		public CommandCompletionStyle() {
 			this(Style.EMPTY, Style.EMPTY, Style.EMPTY, Style.EMPTY, Style.EMPTY, Style.EMPTY);
 		}
@@ -152,6 +181,30 @@ public class SmartCompletionResourceReloadListener extends SimpleJsonResourceRel
 				Style unexpected = GSON.fromJson(o, Style.class);
 				return new CommandCompletionStyle(suggestion, match, dumbMatch, prefix, repeat, unexpected);
 			}
+		}
+		
+		public Style suggestion() {
+			return suggestion;
+		}
+		
+		public Style match() {
+			return match;
+		}
+		
+		public Style dumbMatch() {
+			return dumbMatch;
+		}
+		
+		public Style prefix() {
+			return prefix;
+		}
+		
+		public Style repeat() {
+			return repeat;
+		}
+		
+		public Style unexpected() {
+			return unexpected;
 		}
 	}
 }

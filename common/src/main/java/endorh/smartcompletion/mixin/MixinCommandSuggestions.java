@@ -5,17 +5,13 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.context.SuggestionContext;
-import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import endorh.smartcompletion.SmartCommandCompletion;
 import endorh.smartcompletion.duck.SmartCommandSuggestions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.SharedSuggestionProvider;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
@@ -23,18 +19,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static endorh.smartcompletion.SmartCommandCompletion.*;
+import static endorh.smartcompletion.SmartCommandCompletion.enableCompletionKeys;
 
 @Mixin(CommandSuggestions.class)
 public abstract class MixinCommandSuggestions implements SmartCommandSuggestions {
@@ -88,10 +79,11 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 		pendingSuggestions.thenAcceptBoth(pendingBlindSuggestions, (informed, blind) -> {
 			// Force trigger showSuggestions, since we can't create the inner class ourselves
 			if (allowSuggestions && isAutoSuggestions(minecraft) || suggestions != null) {
-				dummyPendingSuggestions = pendingSuggestions;
-				if (pendingSuggestions == null || !pendingSuggestions.isDone() || pendingSuggestions.join().isEmpty())
+				if (informed.isEmpty() && !blind.isEmpty()) {
+					dummyPendingSuggestions = pendingSuggestions;
 					pendingSuggestions = pendingBlindSuggestions;
-				showSuggestions(false);
+					showSuggestions(false);
+				}
 			}
 		});
 	}

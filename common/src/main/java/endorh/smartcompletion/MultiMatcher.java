@@ -243,5 +243,17 @@ public class MultiMatcher {
 		dumbMatchLengthThreshold = threshold;
 	}
 	
-	private record MatchState(int i, int qi, String qq, String m) {}
+	private static class MatchState {
+		private final int i;
+		private final int qi;
+		private final String qq;
+		private final String m;
+		
+		private MatchState(int i, int qi, String qq, String m) {
+			this.i = i;
+			this.qi = qi;
+			this.qq = qq;
+			this.m = m;
+		}
+	}
 }

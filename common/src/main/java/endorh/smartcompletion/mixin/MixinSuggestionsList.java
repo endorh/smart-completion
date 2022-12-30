@@ -48,13 +48,14 @@ public abstract class MixinSuggestionsList {
 	@Shadow public abstract void select(int index);
 	@Shadow public abstract void useSuggestion();
 	
-	@Inject(method = "<init>", at = @At("RETURN"))
+	@Inject(method="<init>*", at = @At("RETURN"))
 	private void onInit(
 	  CommandSuggestions commandSuggestions, int left, int anchor, int width,
 	  List<Suggestion> list, boolean bl, CallbackInfo ci
 	) {
-		if (!enableSmartCompletion || !(commandSuggestions instanceof SmartCommandSuggestions scs))
+		if (!enableSmartCompletion || !(commandSuggestions instanceof SmartCommandSuggestions))
 			return;
+		SmartCommandSuggestions scs = (SmartCommandSuggestions) commandSuggestions;
 		lastArgumentQuery = scs.getLastArgumentQuery();
 		Suggestions blindSuggestions = scs.getLastBlindSuggestions();
 		Suggestions lastSuggestions = scs.getLastSuggestions();
@@ -75,9 +76,15 @@ public abstract class MixinSuggestionsList {
 		int h = Math.min(suggestionList.size(), scs.getSuggestionLineLimit()) * 12;
 		int w = highlightedSuggestions.stream().mapToInt(font::width).max().orElse(0) + 1;
 		int y = scs.isAnchorToBottom()? anchor - 3 - h : anchor;
-		rect.setY(y);
-		rect.setWidth(w);
-		rect.setHeight(h);
+		#if POST_MC_1_17_1
+			rect.setY(y);
+			rect.setWidth(w);
+			rect.setHeight(h);
+		#else
+			rect.yPos = y;
+			rect.width = w;
+			rect.height = h;
+		#endif
 	}
 	
 	@Inject(method="render", at=@At("HEAD"), cancellable=true)

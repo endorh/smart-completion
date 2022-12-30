@@ -8,13 +8,8 @@ import endorh.smartcompletion.SmartCompletionResourceReloadListener.CommandCompl
 import endorh.smartcompletion.SmartCompletionResourceReloadListener.CommandSplittingSettings;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-#if POST_MC_1_19_2
-	import net.minecraft.network.chat.Component;
-#endif
 import net.minecraft.network.chat.MutableComponent;
-#if PRE_MC_1_19_2
-	import net.minecraft.network.chat.TextComponent;
-#endif
+import net.minecraft.network.chat.TextComponent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -105,7 +100,7 @@ public class SmartCommandCompletion {
 			int i = remaining.indexOf(w);
 			if (i != -1) {
 				map.put(i, w);
-				remaining = new StringBuilder(remaining).replace(i, i + w.length(), " ".repeat(w.length())).toString();
+				remaining = new StringBuilder(remaining).replace(i, i + w.length(), repeat(" ", w.length())).toString();
 			}
 		}
 		if (map.isEmpty() || map.size() == 1 && map.keySet().iterator().next() == 0 && map.values().iterator().next().length() == word.length()) {
@@ -156,6 +151,13 @@ public class SmartCommandCompletion {
 		WordSplit split = WordSplit.of(word, parts, indices);
 		SPLIT_CACHE.put(word, split);
 		return split;
+	}
+	
+	private static String repeat(String str, int n) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < n; i++)
+			sb.append(str);
+		return sb.toString();
 	}
 
 	public static MutableComponent highlightSuggestion(String suggestion, MultiMatch matches, String query) {

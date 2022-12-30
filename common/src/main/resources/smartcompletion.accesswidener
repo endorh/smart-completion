@@ -1,1 +1,5 @@
 accessWidener   v2  named
+accessible field net/minecraft/client/renderer/Rect2i xPos I
+accessible field net/minecraft/client/renderer/Rect2i yPos I
+accessible field net/minecraft/client/renderer/Rect2i width I
+accessible field net/minecraft/client/renderer/Rect2i height I

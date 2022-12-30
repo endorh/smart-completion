@@ -12,20 +12,38 @@ import java.util.List;
 /**
  * Note: this class has a natural ordering that is inconsistent with equals.
  */
-public record MultiMatch(
-  WordSplit split, String[] parts, int[] indices, int[] subIndices, int[][] repeats, boolean isDumb)
-  implements Comparable<MultiMatch> {
-	private static final MultiMatch
-	  EMPTY =
-	  new MultiMatch(WordSplit.whole(""), new String[0], new int[0], new int[0], new int[0][0],
-	                 true);
+public class MultiMatch implements Comparable<MultiMatch> {
+	private final WordSplit split;
+	private final String[] parts;
+	private final int[] indices;
+	private final int[] subIndices;
+	private final int[][] repeats;
+	private final boolean isDumb;
+	
+	public MultiMatch(WordSplit split, String[] parts, int[] indices, int[] subIndices, int[][] repeats, boolean isDumb) {
+		this.split = split;
+		this.parts = parts;
+		this.indices = indices;
+		this.subIndices = subIndices;
+		this.repeats = repeats;
+		this.isDumb = isDumb;
+		
+		if (parts.length != indices.length)
+			throw new IllegalArgumentException("parts.length != indices.length");
+		if (parts.length != subIndices.length)
+			throw new IllegalArgumentException("parts.length != subIndices.length");
+		if (parts.length != repeats.length)
+			throw new IllegalArgumentException("parts.length != repeats.length");
+	}
+	
+	private static final MultiMatch EMPTY = new MultiMatch(WordSplit.whole(""), new String[0], new int[0], new int[0], new int[0][0], true);
 	
 	public static MultiMatch of(
 	  WordSplit split, Collection<String> matches, IntList indices,
 	  IntList subIndices, List<IntList> repeats, boolean isDumb
 	) {
 		return new MultiMatch(
-		  split, matches.toArray(String[]::new), indices.toIntArray(), subIndices.toIntArray(),
+		  split, matches.toArray(new String[0]), indices.toIntArray(), subIndices.toIntArray(),
 		  repeats.stream().map(IntCollection::toIntArray).toArray(int[][]::new), isDumb);
 	}
 	
@@ -37,15 +55,6 @@ public record MultiMatch(
 	
 	public static MultiMatch empty() {
 		return EMPTY;
-	}
-	
-	public MultiMatch {
-		if (parts.length != indices.length)
-			throw new IllegalArgumentException("parts.length != indices.length");
-		if (parts.length != subIndices.length)
-			throw new IllegalArgumentException("parts.length != subIndices.length");
-		if (parts.length != repeats.length)
-			throw new IllegalArgumentException("parts.length != repeats.length");
 	}
 	
 	public String word() {
@@ -99,5 +108,29 @@ public record MultiMatch(
 			  + word.substring(indices[i], indices[i] + parts[i].length())
 			  + pos + word.substring(indices[i] + parts[i].length());
 		return word;
+	}
+	
+	public WordSplit split() {
+		return split;
+	}
+	
+	public String[] parts() {
+		return parts;
+	}
+	
+	public int[] indices() {
+		return indices;
+	}
+	
+	public int[] subIndices() {
+		return subIndices;
+	}
+	
+	public int[][] repeats() {
+		return repeats;
+	}
+	
+	public boolean isDumb() {
+		return isDumb;
 	}
 }
