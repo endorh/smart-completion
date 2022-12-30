@@ -74,8 +74,9 @@ the mod will assume it's written in `flatcase` (like most Minecraft commands,
 e.g., `gamerule`). In this case, the mod will use a list of known words
 to attempt to split the flat case into fragments.
 
-This list of words is defined by the `command_splitting.json` file, and
-can be overridden by resource packs. By default, it contains all words
+This list of words is defined by the
+[`command_splitting.json`](https://github.com/endorh/smart-completion/blob/main/common/src/main/resources/assets/smartcompletion/smart-completion/command_splitting.json)
+file, and can be overridden by resource packs. By default, it contains words
 used by Minecraft, Forge, Fabric and WorldEdit commands, as well as
 a few more.
 
@@ -96,7 +97,7 @@ Suggestions are sorted by the following criteria, in descending order of priorit
 
 ### Suggestion Style
 Suggestions are highlighted according to the styles defined in the
-`completion_style.json` file, which can be overridden by resource packs.
+[`completion_style.json`](https://github.com/endorh/smart-completion/blob/main/common/src/main/resources/assets/smartcompletion/smart-completion/completion_style.json) file, which can be overridden by resource packs.
 
 By default, matches inside a suggestion are highlighted in blue, and
 alternative matches for a query part (`[d]o(D)aylight[C]ycle`),
