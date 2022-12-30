@@ -48,7 +48,8 @@ to develop multi-loader and multi-version mods more efficiently.
 Currently, running the Forge version from the IDE fails for some Minecraft versions.
 Running with the Gradle task `runClient` sometimes is more reliable, but it can
 still fail. This issue was introduced when the build logic was migrated to
-Gradle's Kotlin DSL (73d229e25b63a858595c4e198a7b229ab459634b).
+Gradle's Kotlin DSL
+([73d229e](https://github.com/endorh/smart-completion/commit/73d229e25b63a858595c4e198a7b229ab459634b)).
 
 In addition, switching Minecraft versions sometimes fails due to a file
 being locked by the IDE.
