@@ -9,7 +9,7 @@
   ],
   "contact": {
     "homepage": "${modPage}",
-    "sources": "https://github.com/${githubRepo}",
+    "sources": "${modSource}",
     "issues": "${modIssueTracker}"
   },
   "license": "${modLicense}",

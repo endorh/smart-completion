@@ -9,6 +9,9 @@ license = "${modLicense}"
     displayName = "${modName}"
     authors = "${modAuthor}"
     description = "${modDescription}"
+    displayURL = "${modPage}"
+    displayTest = "${modDisplayTest}"
+    updateJSONURL = "${modUpdatesJSON}"
     logoFile = "icon.png"
 
 [[dependencies.smartcompletion]]

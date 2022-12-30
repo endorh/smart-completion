@@ -21,7 +21,9 @@ val modLicense: String by project
 val modPage: String by project
 val modSource: String by project
 val modIssueTracker: String by project
+val modUpdatesJSON: String by project
 val githubRepo: String by project
+val modDisplayTest: String by project
 
 /**
  * Create the `build.properties` file with Manifold preprocessor symbols.
@@ -111,7 +113,9 @@ val modProperties by extra {
         "modPage" to modPage,
         "modSource" to modSource,
         "modIssueTracker" to modIssueTracker,
+        "modUpdatesJSON" to modUpdatesJSON,
         "githubRepo" to githubRepo,
+        "modDisplayTest" to modDisplayTest,
     )
     map += versionProperties
     map.toMap()
