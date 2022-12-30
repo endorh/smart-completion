@@ -42,11 +42,17 @@ Properties for each Minecraft version can be found within the
 
 ***
 
-This project is an experiment to find a project setup that can be used to
-develop multi-loader and multi-version mods more efficiently.
+This project is basically my experiment to find a project setup that I can use
+to develop multi-loader and multi-version mods more efficiently.
 
-Currently, running with Forge fails for some Minecraft versions. This issue was
-introduced when the build logic was migrated to Gradle's Kotlin DSL.
+Currently, running the Forge version from the IDE fails for some Minecraft versions.
+Running with the Gradle task `runClient` sometimes is more reliable, but it can
+still fail. This issue was introduced when the build logic was migrated to
+Gradle's Kotlin DSL (73d229e25b63a858595c4e198a7b229ab459634b).
 
 In addition, switching Minecraft versions sometimes fails due to a file
 being locked by the IDE.
+
+If you have any suggestions to improve the project structure, by all means,
+please share them with me, either on [Discord](https://discord.gg/gqYVjBq65U) or
+by creating an issue/PR.
