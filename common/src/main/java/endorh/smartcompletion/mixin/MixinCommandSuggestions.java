@@ -54,11 +54,8 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 		CommandDispatcher<SharedSuggestionProvider> dispatcher = minecraft.player.connection.getCommands();
 		int cursorPosition = input.getCursorPosition();
 		SuggestionContext<SharedSuggestionProvider> suggestionContext;
-		try {
-			suggestionContext = currentParse.getContext().findSuggestionContext(cursorPosition);
-		} catch (IllegalStateException e) {
-			return;
-		}
+		if (cursorPosition < currentParse.getContext().getRange().getStart()) return;
+		suggestionContext = currentParse.getContext().findSuggestionContext(cursorPosition);
 		int startPos = suggestionContext.startPos;
 		lastArgumentQuery = command.substring(startPos, cursorPosition);
 		lastSuggestionsRange = StringRange.between(startPos, command.length());
@@ -69,11 +66,8 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 		if (skipSlash) reader.skip();
 		ParseResults<SharedSuggestionProvider> blindParse = dispatcher.parse(reader, minecraft.player.connection.getSuggestionsProvider());
 		SuggestionContext<SharedSuggestionProvider> blindSuggestionContext;
-		try {
-			blindSuggestionContext = blindParse.getContext().findSuggestionContext(cursorPosition);
-		} catch (IllegalStateException e) {
-			return;
-		}
+		if (cursorPosition < blindParse.getContext().getRange().getStart()) return;
+		blindSuggestionContext = blindParse.getContext().findSuggestionContext(cursorPosition);
 		if (blindSuggestionContext.startPos != startPos) return;
 		pendingBlindSuggestions = dispatcher.getCompletionSuggestions(blindParse, startPos);
 		pendingSuggestions.thenAcceptBoth(pendingBlindSuggestions, (informed, blind) -> {
