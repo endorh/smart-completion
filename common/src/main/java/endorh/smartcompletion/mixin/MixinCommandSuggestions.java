@@ -79,9 +79,11 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 		pendingSuggestions.thenAcceptBoth(pendingBlindSuggestions, (informed, blind) -> {
 			// Force trigger showSuggestions, since we can't create the inner class ourselves
 			if (allowSuggestions && isAutoSuggestions(minecraft) || suggestions != null) {
-				if (informed.isEmpty() && !blind.isEmpty()) {
-					dummyPendingSuggestions = pendingSuggestions;
-					pendingSuggestions = pendingBlindSuggestions;
+				if (!informed.isEmpty() || !blind.isEmpty()) {
+					if (informed.isEmpty()) {
+						dummyPendingSuggestions = pendingSuggestions;
+						pendingSuggestions = pendingBlindSuggestions;
+					}
 					showSuggestions(false);
 				}
 			}

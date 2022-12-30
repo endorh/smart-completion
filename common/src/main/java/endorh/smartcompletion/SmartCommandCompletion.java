@@ -8,8 +8,13 @@ import endorh.smartcompletion.SmartCompletionResourceReloadListener.CommandCompl
 import endorh.smartcompletion.SmartCompletionResourceReloadListener.CommandSplittingSettings;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+#if POST_MC_1_19_2
+	import net.minecraft.network.chat.Component;
+#endif
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TextComponent;
+#if PRE_MC_1_19_2
+	import net.minecraft.network.chat.TextComponent;
+#endif
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -154,10 +159,14 @@ public class SmartCommandCompletion {
 	}
 	
 	private static String repeat(String str, int n) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < n; i++)
-			sb.append(str);
-		return sb.toString();
+		#if JAVA_16_OR_LATER
+			return str.repeat(n);
+		#else
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < n; i++)
+				sb.append(str);
+			return sb.toString();
+		#endif
 	}
 
 	public static MutableComponent highlightSuggestion(String suggestion, MultiMatch matches, String query) {
