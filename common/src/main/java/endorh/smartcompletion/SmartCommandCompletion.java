@@ -35,6 +35,7 @@ public class SmartCommandCompletion {
 	private static final Map<String, WordSplit> SPLIT_CACHE = new HashMap<>();
 	
 	public static final Pattern FULL_NON_WORD = Pattern.compile("^[\\W\\d]++$");
+	private static final Pattern LOWER = Pattern.compile("^\\p{Lower}++$", Pattern.UNICODE_CHARACTER_CLASS);
 	public static Pattern WORD_SPLITTER = Pattern.compile(
 	  "[\\s_:./\\\\-]++|(?<=[a-z])(?=[A-Z])|" +
 	  "(?<=[a-zA-Z])(?=[^a-zA-Z\\s_:./\\\\-])|(?<=[^a-zA-Z\\s_:./\\\\-])(?=[a-zA-Z])");
@@ -176,6 +177,9 @@ public class SmartCommandCompletion {
 			return literal(suggestion).withStyle(STYLE.unexpected());
 		MutableComponent t = empty();
 		int prefixIndex = suggestion.indexOf(":") + 1;
+		// Match prefixes if they only consist of letters
+		if (prefixIndex > 1 && !LOWER.matcher(suggestion.substring(0, prefixIndex - 1)).matches())
+			prefixIndex = 0;
 		int prev = 0;
 		int @Nullable[] repeats = null;
 		int repeatLength = 0;
@@ -183,7 +187,9 @@ public class SmartCommandCompletion {
 			String m = matches.parts()[i];
 			int idx = matches.indices()[i];
 			highlightGap(t, suggestion, prev, idx, prefixIndex, repeats, repeatLength);
-			t.append(literal(m).withStyle(matches.isDumb()? STYLE.dumbMatch() : STYLE.match()));
+			t.append(literal(
+			  suggestion.substring(idx, idx + m.length())
+			).withStyle(matches.isDumb()? STYLE.dumbMatch() : STYLE.match()));
 			repeats = matches.repeats()[i];
 			repeatLength = m.length();
 			prev = idx + repeatLength;
