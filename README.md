@@ -28,12 +28,16 @@ were not matched by the matching algorithm on the blind list, they will
 also be suggested after any other matched suggestion, highlighted with
 a different color (dark aqua by default).
 
+This implementation should work well with any custom commands, added by
+other mods or datapacks.
+
 ### Matching
 Suggestions are matched to your partially typed arguments using two
 different approaches:
 - A (smart) match between *parts* of your query and the initials of the *parts*
-  of the suggestion.
+  of the suggestion (`[g]ame[r]ule`)
 - A (dumb) search of each *part* of your query in the suggestion, in order
+  (`ga(me)r(ul)e`)
 
 A suggestion will be shown if any of these approaches matches it, but
 smart matches will be shown first.
