@@ -148,7 +148,11 @@ subprojects {
     }
     
     dependencies {
-        "annotationProcessor"("systems.manifold:manifold-preprocessor:${manifoldVersion}")
+        "annotationProcessor"("systems.manifold:manifold-preprocessor:$manifoldVersion")
+        "testAnnotationProcessor"("systems.manifold:manifold-preprocessor:$manifoldVersion")
+        
+        "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.9.1")
+        "testImplementation"("org.junit.jupiter:junit-jupiter-engine:5.9.1")
     }
     
     extensions.configure<LoomGradleExtensionAPI> {

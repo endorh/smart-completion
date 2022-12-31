@@ -15,8 +15,6 @@ loom {
 
 dependencies {
     modImplementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
-    
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
 }
 
 tasks.processResources {

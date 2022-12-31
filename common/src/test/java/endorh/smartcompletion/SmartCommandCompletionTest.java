@@ -1,11 +1,11 @@
 package endorh.smartcompletion;
 
 import com.google.common.collect.Lists;
-import com.google.errorprone.annotations.FormatString;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -53,14 +53,14 @@ public class SmartCommandCompletionTest {
 	public void assertSorted(String query, String... target) {
 		List<MultiMatch> matches = Arrays.stream(target)
 		  .map(t -> SmartCommandCompletion.multiMatch(t, query))
-		  .toList();
+		  .collect(Collectors.toList());
 		List<String> sortedStrings = Lists.reverse(matches).stream()
 		  .sorted()
 		  .map(MultiMatch::toString)
-		  .toList();
+		  .collect(Collectors.toList());
 		List<String> strings = matches.stream()
 		  .map(MultiMatch::toString)
-		  .toList();
+		  .collect(Collectors.toList());
 		info("Sorted: " + sortedStrings);
 		assertEquals(strings, sortedStrings);
 	}
@@ -75,7 +75,7 @@ public class SmartCommandCompletionTest {
 		return match;
 	}
 	
-	public void info(@FormatString String s, Object... args) {
+	public void info(String s, Object... args) {
 		System.out.printf(s + "%n", args);
 	}
 }
