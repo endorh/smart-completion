@@ -59,12 +59,13 @@ public abstract class MixinSuggestionsList {
 		lastArgumentQuery = scs.getLastArgumentQuery();
 		Suggestions blindSuggestions = scs.getLastBlindSuggestions();
 		Suggestions lastSuggestions = scs.getLastSuggestions();
-		StringRange range = scs.getLastArgumentRange();
 		hasUnparsedInput = scs.hasUnparsedInput();
+		List<Pair<Suggestion, MultiMatch>> sorted = scs.getLastSuggestionMatches();
 		if (lastArgumentQuery == null || blindSuggestions == null
-		    || lastSuggestions == null || range == null) return;
-		List<Pair<Suggestion, MultiMatch>> sorted = sort(
-		  blindSuggestions, lastSuggestions, range, lastArgumentQuery);
+		    || lastSuggestions == null || sorted == null || sorted.isEmpty()) {
+			lastArgumentQuery = null;
+			return;
+		}
 		suggestionList.clear();
 		sorted.stream().map(Pair::getLeft).forEachOrdered(suggestionList::add);
 		highlightedSuggestions = sorted.stream()

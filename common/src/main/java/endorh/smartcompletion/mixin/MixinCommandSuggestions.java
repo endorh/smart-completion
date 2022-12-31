@@ -5,13 +5,16 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.context.SuggestionContext;
+import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
+import endorh.smartcompletion.MultiMatch;
 import endorh.smartcompletion.duck.SmartCommandSuggestions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.SharedSuggestionProvider;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
@@ -23,9 +26,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static endorh.smartcompletion.SmartCommandCompletion.enableCompletionKeys;
+import static endorh.smartcompletion.SmartCommandCompletion.sort;
 
 @Mixin(CommandSuggestions.class)
 public abstract class MixinCommandSuggestions implements SmartCommandSuggestions {
@@ -33,6 +38,7 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 	@Unique private @Nullable CompletableFuture<Suggestions> dummyPendingSuggestions;
 	@Unique private @Nullable String lastArgumentQuery;
 	@Unique private @Nullable StringRange lastSuggestionsRange;
+	@Unique private @Nullable List<Pair<Suggestion, MultiMatch>> lastSuggestionMatches;
 	
 	@Shadow @Final Minecraft minecraft;
 	@Shadow @Final EditBox input;
@@ -74,11 +80,15 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 			// Force trigger showSuggestions, since we can't create the inner class ourselves
 			if (allowSuggestions && isAutoSuggestions(minecraft) || suggestions != null) {
 				if (!informed.isEmpty() || !blind.isEmpty()) {
-					if (informed.isEmpty()) {
-						dummyPendingSuggestions = pendingSuggestions;
-						pendingSuggestions = pendingBlindSuggestions;
+					List<Pair<Suggestion, MultiMatch>> sorted = sort(
+					  blind, informed, lastSuggestionsRange, lastArgumentQuery);
+					if (!sorted.isEmpty()) {
+						if (informed.isEmpty()) {
+							dummyPendingSuggestions = pendingSuggestions;
+							pendingSuggestions = pendingBlindSuggestions;
+						}
+						showSuggestions(false);
 					}
-					showSuggestions(false);
 				}
 			}
 		});
@@ -126,10 +136,6 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 	
 	@Override public boolean isAnchorToBottom() {
 		return anchorToBottom;
-	}
-	
-	@Override public @Nullable StringRange getLastArgumentRange() {
-		return lastSuggestionsRange;
 	}
 	
 	@Override public @Nullable Suggestions getLastBlindSuggestions() {
