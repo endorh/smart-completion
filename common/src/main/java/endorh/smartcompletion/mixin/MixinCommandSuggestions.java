@@ -80,9 +80,9 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 			// Force trigger showSuggestions, since we can't create the inner class ourselves
 			if (allowSuggestions && isAutoSuggestions(minecraft) || suggestions != null) {
 				if (!informed.isEmpty() || !blind.isEmpty()) {
-					List<Pair<Suggestion, MultiMatch>> sorted = sort(
+					lastSuggestionMatches = sort(
 					  blind, informed, lastSuggestionsRange, lastArgumentQuery);
-					if (!sorted.isEmpty()) {
+					if (!lastSuggestionMatches.isEmpty()) {
 						if (informed.isEmpty()) {
 							dummyPendingSuggestions = pendingSuggestions;
 							pendingSuggestions = pendingBlindSuggestions;
@@ -148,12 +148,16 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 		       ? pendingSuggestions.join() : null;
 	}
 	
+	@Override public @Nullable List<Pair<Suggestion, MultiMatch>> getLastSuggestionMatches() {
+		return lastSuggestionMatches;
+	}
+	
 	@Override public boolean hasUnparsedInput() {
 		return currentParse != null && currentParse.getReader().canRead();
 	}
 	
 	private static boolean isAutoSuggestions(Minecraft minecraft) {
-		#if POST_MC_1_19_2
+		#if POST_MC_1_19
 			return minecraft.options.autoSuggestions().get();
 		#else
 			return minecraft.options.autoSuggestions;

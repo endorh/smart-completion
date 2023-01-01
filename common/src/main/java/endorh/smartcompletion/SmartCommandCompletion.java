@@ -8,11 +8,11 @@ import endorh.smartcompletion.SmartCompletionResourceReloadListener.CommandCompl
 import endorh.smartcompletion.SmartCompletionResourceReloadListener.CommandSplittingSettings;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-#if POST_MC_1_19_2
+#if POST_MC_1_19
 	import net.minecraft.network.chat.Component;
 #endif
 import net.minecraft.network.chat.MutableComponent;
-#if PRE_MC_1_19_2
+#if PRE_MC_1_19
 	import net.minecraft.network.chat.TextComponent;
 #endif
 import org.apache.commons.lang3.tuple.Pair;
@@ -218,7 +218,7 @@ public class SmartCommandCompletion {
 	}
 	
 	private static MutableComponent literal(String s) {
-		#if POST_MC_1_19_2
+		#if POST_MC_1_19
 			return Component.literal(s);
 		#else
 			return new TextComponent(s);
@@ -226,7 +226,7 @@ public class SmartCommandCompletion {
 	}
 	
 	private static MutableComponent empty() {
-		#if POST_MC_1_19_2
+		#if POST_MC_1_19
 			return Component.empty();
 		#else
 			return TextComponent.EMPTY.copy();

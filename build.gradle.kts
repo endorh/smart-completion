@@ -6,6 +6,7 @@ plugins {
     id("dev.architectury.loom") version "1.0.+" apply false
 }
 
+val maxMcVersions: String by project
 val mcVersions: String by project
 val mcVersion: String by project
 
@@ -28,13 +29,35 @@ val modDisplayTest: String by project
 /**
  * Create the `build.properties` file with Manifold preprocessor symbols.
  */
-fun writeBuildProperties(versions: List<String>, idx: Int) {
+fun writeBuildProperties(maxVersions: List<String>, version: String) {
+    fun String.toVersion() = split(".").map { it.toInt() }
+    operator fun List<Int>.compareTo(other: List<Int>): Int {
+        for (i in indices) {
+            if (i >= other.size) return 1
+            (this[i] - other[i]).let { if (it != 0) return it }
+        }
+        return if (size == other.size) 0 else -1
+    }
+    
+    val ver = version.toVersion()
+    val maxLists = maxVersions.map { it.toVersion() }
+    
     val redefineList = mutableListOf<String>()
-    for (i in versions.indices) {
-        val mcStr = versions[i].replace(".", "_")
-        if (idx < i) redefineList.add("PRE_MC_$mcStr")
-        if (idx == i) redefineList.add("MC_$mcStr")
-        if (idx >= i) redefineList.add("POST_MC_$mcStr")
+    fun addVersion(v: List<Int>) {
+        val str = v.joinToString("_")
+        if (ver < v) redefineList.add("PRE_MC_$str")
+        if (ver == v) redefineList.add("MC_$str")
+        if (ver >= v) redefineList.add("POST_MC_$str")
+    }
+    maxLists.forEach { maxVer ->
+        if (maxVer.size >= 3) {
+            val major = maxVer.subList(0, maxVer.size - 1)
+            val maxMinor = maxVer[maxVer.size - 1]
+            addVersion(major)
+            for (minor in 1 until maxMinor)
+                addVersion(major + listOf(minor))
+            addVersion(maxVer)
+        }
     }
     
     val sb = StringBuilder()
@@ -55,36 +78,29 @@ fun writeBuildProperties(versions: List<String>, idx: Int) {
     file("build.properties").writeText(sb.toString())
 }
 
+
 val versionProperties = mutableMapOf<String, String>()
 
 /**
  * Load properties for the current Minecraft version
  */
 fun loadProperties() {
-    val defaultMcVersion = "1.19.2"
+    val defaultMcVersion = "1.19.3"
     var mcVersion = ""
     val versions = mcVersions.split(Regex("""\s*+,\s*+"""))
-    var mcIndex = -1
+    val maxMcVersions = maxMcVersions.split(Regex("""\s*+,\s*+"""))
     println("Available MC versions: $mcVersions")
     
     if (project.hasProperty("mcVersion")) {
         mcVersion = project.property("mcVersion") as String
-        mcIndex = versions.indexOf(mcVersion)
-    }
-    
-    if (mcIndex == -1) {
-        if (mcVersion.isNotEmpty()) {
-            println("Invalid `mcVersion`: $mcVersion! Defaulting to $defaultMcVersion.")
-        } else println("No `mcVersion` specified! Defaulting to $defaultMcVersion.")
+        if (mcVersion !in versions)
+            println("Warning: `mcVersion=$mcVersion` is not listed as one of the supported versions in `gradle.properties`")
+    } else {
+        println("No `mcVersion` specified! Defaulting to $defaultMcVersion.")
         println("Tip: Use `-PmcVersion='$defaultMcVersion'` in cmd arg to set `mcVersion`.")
-        
-        mcVersion = defaultMcVersion
-        mcIndex = versions.indexOf(defaultMcVersion)
-        
-        assert(mcIndex != -1)
     }
     
-    println("Loading properties from $mcVersion.properties:")
+    println("Loading properties from `versionProperties/$mcVersion.properties`")
     val props = Properties()
     props.load(file("versionProperties/$mcVersion.properties").inputStream())
     
@@ -93,7 +109,7 @@ fun loadProperties() {
         versionProperties[it.key as String] = it.value as String
     }
     
-    writeBuildProperties(versions, mcIndex)
+    writeBuildProperties(maxMcVersions, mcVersion)
 }
 
 loadProperties()
