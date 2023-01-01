@@ -1,28 +1,3 @@
 #!/bin/bash
 
-getProperty()
-{
-  grep -m1 -Po "^$1\s*=\s*\K[^\r\n]*" "gradle.properties"
-}
-
-buildVersion()
-{
-  ./gradlew clean build -PmcVersion=$1 --no-daemon
-}
-
-mcVersions=$(getProperty "mcVersions")
-modId=$(getProperty "modId")
-modName=$(getProperty "modName")
-modVersion=$(getProperty "modVersion")
-
-echo "Building $modName ($modId) $modVersion for Minecraft versions:"
-echo "  $mcVersions"
-echo
-
-versionArray=(${mcVersions//\s*,\s*/})
-for mcVersion in "${versionArray[@]}"
-do
-  echo "Building for Minecraft $mcVersion"
-  buildVersion $mcVersion
-  echo
-done
+./forEachVersion clean build --no-daemon
