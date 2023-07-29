@@ -10,6 +10,11 @@
 
 Better autocompletion for Minecraft commands (client-side).
 
+### Usage
+Instead of typing the start of the next command/argument you want to
+autocomplete, focus on typing only the initials of each word you want
+to type, without need for spaces.
+
 ### Implementation
 This mod is purely client-side. In order to provide better completions for a
 command argument it sends two requests for completions to the server, one
