@@ -1,14 +1,13 @@
 package endorh.smartcompletion.mixin;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.brigadier.Message;
-import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import endorh.smartcompletion.MultiMatch;
 import endorh.smartcompletion.duck.SmartCommandSuggestions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.gui.components.CommandSuggestions.SuggestionsList;
 import net.minecraft.client.gui.screens.Screen;
@@ -31,7 +30,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static endorh.smartcompletion.SmartCommandCompletion.*;
-import static net.minecraft.client.gui.GuiComponent.fill;
 
 @Mixin(SuggestionsList.class)
 public abstract class MixinSuggestionsList {
@@ -77,20 +75,14 @@ public abstract class MixinSuggestionsList {
 		int h = Math.min(suggestionList.size(), scs.getSuggestionLineLimit()) * 12;
 		int w = highlightedSuggestions.stream().mapToInt(font::width).max().orElse(0) + 1;
 		int y = scs.isAnchorToBottom()? anchor - 3 - h : anchor;
-		#if POST_MC_1_17_1
-			rect.setY(y);
-			rect.setWidth(w);
-			rect.setHeight(h);
-		#else
-			rect.yPos = y;
-			rect.width = w;
-			rect.height = h;
-		#endif
+		rect.setY(y);
+		rect.setWidth(w);
+		rect.setHeight(h);
 	}
 	
 	@Inject(method="render", at=@At("HEAD"), cancellable=true)
 	public void onRender(
-	  PoseStack mStack, int mouseX, int mouseY, CallbackInfo ci
+		GuiGraphics gg, int mouseX, int mouseY, CallbackInfo ci
 	) {
 		if (!enableSmartCompletion || lastArgumentQuery == null) return;
 		Font font = Minecraft.getInstance().font;
@@ -110,48 +102,48 @@ public abstract class MixinSuggestionsList {
 		if (updatedMouse) lastMouse = new Vec2((float) mouseX, (float) mouseY);
 		
 		if (hasMore) {
-			fill(
-			  mStack, rect.getX(), rect.getY() - 1,
-			  rect.getX() + rect.getWidth(), rect.getY(), backgroundColor);
-			fill(
-			  mStack, rect.getX(), rect.getY() + rect.getHeight(),
-			  rect.getX() + rect.getWidth(), rect.getY() + rect.getHeight() + 1, backgroundColor);
+			gg.fill(
+				rect.getX(), rect.getY() - 1,
+				rect.getX() + rect.getWidth(), rect.getY(), backgroundColor);
+			gg.fill(
+				rect.getX(), rect.getY() + rect.getHeight(),
+				rect.getX() + rect.getWidth(), rect.getY() + rect.getHeight() + 1, backgroundColor);
 			int k;
 			if (hasBefore) for (k = 0; k < rect.getWidth(); ++k) {
-				if (k % 2 == 0) fill(
-				  mStack, rect.getX() + k, rect.getY() - 1,
-				  rect.getX() + k + 1, rect.getY(), 0xFFFFFFFF);
+				if (k % 2 == 0) gg.fill(
+					rect.getX() + k, rect.getY() - 1,
+					rect.getX() + k + 1, rect.getY(), 0xFFFFFFFF);
 			}
 			
 			if (hasAfter) for (k = 0; k < rect.getWidth(); ++k) {
-				if (k % 2 == 0) fill(
-				  mStack, rect.getX() + k, rect.getY() + rect.getHeight(),
-				  rect.getX() + k + 1, rect.getY() + rect.getHeight() + 1, 0xFFFFFFFF);
+				if (k % 2 == 0) gg.fill(
+					rect.getX() + k, rect.getY() + rect.getHeight(),
+					rect.getX() + k + 1, rect.getY() + rect.getHeight() + 1, 0xFFFFFFFF);
 			}
 		}
 		
 		boolean hovered = false;
 		for (int i = 0; i < size; ++i) {
 			boolean selected = i + offset == current;
-			fill(
-			  mStack, rect.getX(), rect.getY() + 12 * i,
-			  rect.getX() + rect.getWidth(), rect.getY() + 12 * i + 12,
-			  selected? selectedBackgroundColor : backgroundColor);
+			gg.fill(
+				rect.getX(), rect.getY() + 12 * i,
+				rect.getX() + rect.getWidth(), rect.getY() + 12 * i + 12,
+				selected? selectedBackgroundColor : backgroundColor);
 			if (mouseX > rect.getX() && mouseX < rect.getX() + rect.getWidth() &&
 			    mouseY > rect.getY() + 12 * i && mouseY < rect.getY() + 12 * i + 12) {
 				if (updatedMouse) select(i + offset);
 				hovered = true;
 			}
-			font.drawShadow(
-			  mStack, highlightedSuggestions.get(i + offset),
-			  (float) (rect.getX() + 1), (float) (rect.getY() + 2 + 12 * i),
-			  selected? 0xFFFFFF00 : 0xFFAAAAAA);
+			gg.drawString(font,
+				highlightedSuggestions.get(i + offset),
+				rect.getX() + 1, rect.getY() + 2 + 12 * i,
+				selected ? 0xFFFFFF00 : 0xFFAAAAAA);
 		}
 		
 		if (hovered) {
 			Message message = suggestionList.get(current).getTooltip();
 			if (message != null)
-				screen.renderTooltip(mStack, ComponentUtils.fromMessage(message), mouseX, mouseY);
+				gg.renderTooltip(font, ComponentUtils.fromMessage(message), mouseX, mouseY);
 		}
 	}
 	

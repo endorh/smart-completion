@@ -157,10 +157,6 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 	}
 	
 	private static boolean isAutoSuggestions(Minecraft minecraft) {
-		#if POST_MC_1_19
-			return minecraft.options.autoSuggestions().get();
-		#else
-			return minecraft.options.autoSuggestions;
-		#endif
+		return minecraft.options.autoSuggestions().get();
 	}
 }

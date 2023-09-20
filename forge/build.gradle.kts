@@ -1,4 +1,5 @@
 plugins {
+
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -39,8 +40,12 @@ configurations {
     developmentForge.extendsFrom(common)
 }
 
+repositories {
+    maven("https://maven.neoforged.net/releases/")
+}
+
 dependencies {
-    forge("net.minecraftforge:forge:${minecraftVersion}-${forgeVersion}")
+    forge("net.neoforged:forge:${minecraftVersion}-${forgeVersion}")
     // modApi("dev.architectury:architectury-forge:${architecturyVersion}")
     
     common(project(":common", configuration = "namedElements")) {

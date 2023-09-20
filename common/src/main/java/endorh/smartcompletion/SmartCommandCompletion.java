@@ -8,13 +8,8 @@ import endorh.smartcompletion.SmartCompletionResourceReloadListener.CommandCompl
 import endorh.smartcompletion.SmartCompletionResourceReloadListener.CommandSplittingSettings;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-#if POST_MC_1_19
-	import net.minecraft.network.chat.Component;
-#endif
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-#if PRE_MC_1_19
-	import net.minecraft.network.chat.TextComponent;
-#endif
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +18,8 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static net.minecraft.network.chat.Component.literal;
 
 public class SmartCommandCompletion {
 	public static boolean enableSmartCompletion = true;
@@ -175,7 +172,7 @@ public class SmartCommandCompletion {
 			return literal(suggestion).withStyle(STYLE.suggestion());
 		if (matches.totalLength() > query.length())
 			return literal(suggestion).withStyle(STYLE.unexpected());
-		MutableComponent t = empty();
+		MutableComponent t = Component.empty();
 		int prefixIndex = suggestion.indexOf(":") + 1;
 		// Match prefixes if they only consist of letters
 		if (prefixIndex > 1 && !LOWER.matcher(suggestion.substring(0, prefixIndex - 1)).matches())
@@ -187,9 +184,7 @@ public class SmartCommandCompletion {
 			String m = matches.parts()[i];
 			int idx = matches.indices()[i];
 			highlightGap(t, suggestion, prev, idx, prefixIndex, repeats, repeatLength);
-			t.append(literal(
-			  suggestion.substring(idx, idx + m.length())
-			).withStyle(matches.isDumb()? STYLE.dumbMatch() : STYLE.match()));
+			t.append(literal(suggestion.substring(idx, idx + m.length())).withStyle(matches.isDumb()? STYLE.dumbMatch() : STYLE.match()));
 			repeats = matches.repeats()[i];
 			repeatLength = m.length();
 			prev = idx + repeatLength;
@@ -215,21 +210,5 @@ public class SmartCommandCompletion {
 			t.append(literal(suggestion.substring(prev, prefixIdx)).withStyle(STYLE.prefix()));
 			t.append(literal(suggestion.substring(prefixIdx, idx)).withStyle(STYLE.suggestion()));
 		} else t.append(literal(suggestion.substring(prev, idx)).withStyle(prefixIdx > prev? STYLE.prefix() : STYLE.suggestion()));
-	}
-	
-	private static MutableComponent literal(String s) {
-		#if POST_MC_1_19
-			return Component.literal(s);
-		#else
-			return new TextComponent(s);
-		#endif
-	}
-	
-	private static MutableComponent empty() {
-		#if POST_MC_1_19
-			return Component.empty();
-		#else
-			return TextComponent.EMPTY.copy();
-		#endif
 	}
 }

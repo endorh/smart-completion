@@ -2,8 +2,8 @@ import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import java.util.*
 
 plugins {
-    id("architectury-plugin") version "3.4-SNAPSHOT"
-    id("dev.architectury.loom") version "1.0.+" apply false
+    id("architectury-plugin") version "3.4.+"
+    id("dev.architectury.loom") version "1.2.+" apply false
 }
 
 val maxMcVersions: String by project
@@ -63,7 +63,7 @@ fun writeBuildProperties(maxVersions: List<String>, version: String) {
     val sb = StringBuilder()
     
     // Check if this is a development build
-    if (modVersion.toLowerCase().contains("dev")) {
+    if (modVersion.lowercase().contains("dev")) {
         // Use this only for logging to avoid parity issues with releases
         sb.append("DEV_BUILD")
         sb.append("=\n")
