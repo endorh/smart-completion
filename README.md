@@ -29,7 +29,9 @@ type:
 Using `Ctrl+Space` instead of `Tab` also adds an additional space after
 the completed word.
 Pressing `Enter` only accepts a suggestion when the current command is
-known to be invalid, so pressing `Enter` 
+known to be invalid (if your text is red), so pressing `Enter` to execute
+a valid command will always do so, even if there is a selected suggestion
+in the list.
 
 If you need to disambiguate between suggestions, you may type more than
 one letter per word.
