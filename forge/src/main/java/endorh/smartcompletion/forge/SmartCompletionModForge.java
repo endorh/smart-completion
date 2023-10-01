@@ -1,7 +1,7 @@
 package endorh.smartcompletion.forge;
 
 import endorh.smartcompletion.SmartCompletionMod;
-import endorh.smartcompletion.SmartCompletionResourceReloadListener;
+import endorh.smartcompletion.customization.SmartCompletionResourceReloadListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraftforge.api.distmarker.Dist;

@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
-import endorh.smartcompletion.SmartCompletionResourceReloadListener.CommandCompletionStyle;
-import endorh.smartcompletion.SmartCompletionResourceReloadListener.CommandSplittingSettings;
+import endorh.smartcompletion.customization.CommandCompletionStyle;
+import endorh.smartcompletion.customization.CommandSplittingSettings;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.chat.Component;
@@ -103,7 +103,7 @@ public class SmartCommandCompletion {
 			int i = remaining.indexOf(w);
 			if (i != -1) {
 				map.put(i, w);
-				remaining = new StringBuilder(remaining).replace(i, i + w.length(), repeat(" ", w.length())).toString();
+				remaining = new StringBuilder(remaining).replace(i, i + w.length(), " ".repeat(w.length())).toString();
 			}
 		}
 		if (map.isEmpty() || map.size() == 1 && map.keySet().iterator().next() == 0 && map.values().iterator().next().length() == word.length()) {
@@ -154,17 +154,6 @@ public class SmartCommandCompletion {
 		WordSplit split = WordSplit.of(word, parts, indices);
 		SPLIT_CACHE.put(word, split);
 		return split;
-	}
-	
-	private static String repeat(String str, int n) {
-		#if JAVA_16_OR_LATER
-			return str.repeat(n);
-		#else
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < n; i++)
-				sb.append(str);
-			return sb.toString();
-		#endif
 	}
 
 	public static MutableComponent highlightSuggestion(String suggestion, MultiMatch matches, String query) {

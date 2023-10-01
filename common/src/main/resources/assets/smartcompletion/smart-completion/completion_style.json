@@ -15,5 +15,11 @@
   },
   "unexpected": {
     "color": "dark_aqua"
-  }
+  },
+  "selected": {
+    "color": "#FFFF00"
+  },
+
+  "background": "#BD000000",
+  "background_selected": "#BD242424"
 }

@@ -4,6 +4,7 @@
   "package": "endorh.smartcompletion.mixin",
   "client": [
     "MixinChatScreen",
+    "MixinClientSuggestionProvider",
     "MixinCommandSuggestions",
     "MixinSuggestionsList"
   ],

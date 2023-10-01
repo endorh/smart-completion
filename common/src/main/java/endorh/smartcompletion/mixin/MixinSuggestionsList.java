@@ -33,12 +33,12 @@ import static endorh.smartcompletion.SmartCommandCompletion.*;
 
 @Mixin(SuggestionsList.class)
 public abstract class MixinSuggestionsList {
-	@Unique private String lastArgumentQuery;
-	@Unique private List<Component> highlightedSuggestions;
-	@Unique private boolean hasUnparsedInput;
+	@Unique private String smartcompletion$lastArgumentQuery;
+	@Unique private List<Component> smartcompletion$highlightedSuggestions;
+	@Unique private boolean smartcompletion$hasUnparsedInput;
 	
-	@Shadow private @Final Rect2i rect;
-	@Shadow private @Final List<Suggestion> suggestionList;
+	@Shadow @Final private Rect2i rect;
+	@Shadow @Final private List<Suggestion> suggestionList;
 	@Shadow private int offset;
 	@Shadow private int current;
 	@Shadow private Vec2 lastMouse;
@@ -51,40 +51,40 @@ public abstract class MixinSuggestionsList {
 	  CommandSuggestions commandSuggestions, int left, int anchor, int width,
 	  List<Suggestion> list, boolean bl, CallbackInfo ci
 	) {
-		if (!enableSmartCompletion || !(commandSuggestions instanceof SmartCommandSuggestions))
+		if (!enableSmartCompletion || !(commandSuggestions instanceof SmartCommandSuggestions scs))
 			return;
-		SmartCommandSuggestions scs = (SmartCommandSuggestions) commandSuggestions;
-		lastArgumentQuery = scs.getLastArgumentQuery();
-		Suggestions blindSuggestions = scs.getLastBlindSuggestions();
-		Suggestions lastSuggestions = scs.getLastSuggestions();
-		hasUnparsedInput = scs.hasUnparsedInput();
-		List<Pair<Suggestion, MultiMatch>> sorted = scs.getLastSuggestionMatches();
-		if (lastArgumentQuery == null || blindSuggestions == null
+		smartcompletion$lastArgumentQuery = scs.smartcompletion$getLastArgumentQuery();
+		Suggestions blindSuggestions = scs.smartcompletion$getLastBlindSuggestions();
+		Suggestions lastSuggestions = scs.smartcompletion$getLastSuggestions();
+		smartcompletion$hasUnparsedInput = scs.smartcompletion$hasUnparsedInput();
+		List<Pair<Suggestion, MultiMatch>> sorted = scs.smartcompletion$getLastSuggestionMatches();
+		if (smartcompletion$lastArgumentQuery == null || blindSuggestions == null
 		    || lastSuggestions == null || sorted == null || sorted.isEmpty()) {
-			lastArgumentQuery = null;
+			smartcompletion$lastArgumentQuery = null;
 			return;
 		}
 		suggestionList.clear();
 		sorted.stream().map(Pair::getLeft).forEachOrdered(suggestionList::add);
-		highlightedSuggestions = sorted.stream()
-		  .map(p -> highlightSuggestion(p.getLeft().getText(), p.getRight(), lastArgumentQuery))
+		smartcompletion$highlightedSuggestions = sorted.stream()
+		  .map(p -> highlightSuggestion(p.getLeft().getText(), p.getRight(), smartcompletion$lastArgumentQuery))
 		  .collect(Collectors.toList());
 		
 		// Patch positioning
 		Font font = Minecraft.getInstance().font;
-		int h = Math.min(suggestionList.size(), scs.getSuggestionLineLimit()) * 12;
-		int w = highlightedSuggestions.stream().mapToInt(font::width).max().orElse(0) + 1;
-		int y = scs.isAnchorToBottom()? anchor - 3 - h : anchor;
+		int h = Math.min(suggestionList.size(), scs.smartcompletion$getSuggestionLineLimit()) * 12;
+		int w = smartcompletion$highlightedSuggestions.stream().mapToInt(font::width).max().orElse(0) + 1;
+		int y = scs.smartcompletion$isAnchorToBottom()? anchor - 3 - h : anchor;
 		rect.setY(y);
 		rect.setWidth(w);
 		rect.setHeight(h);
+		select(0);
 	}
 	
 	@Inject(method="render", at=@At("HEAD"), cancellable=true)
 	public void onRender(
 		GuiGraphics gg, int mouseX, int mouseY, CallbackInfo ci
 	) {
-		if (!enableSmartCompletion || lastArgumentQuery == null) return;
+		if (!enableSmartCompletion || smartcompletion$lastArgumentQuery == null) return;
 		Font font = Minecraft.getInstance().font;
 		Screen screen = Minecraft.getInstance().screen;
 		if (screen == null) return;
@@ -92,22 +92,26 @@ public abstract class MixinSuggestionsList {
 		
 		int maxSuggestionSize = 10;
 		int size = Math.min(suggestionList.size(), maxSuggestionSize);
-		int backgroundColor = 0xBD000000;
-		int selectedBackgroundColor = 0xDB242424;
+		int backgroundColor = STYLE.backgroundColor();
+		int selectedBackgroundColor = STYLE.selectedBackgroundColor();
 		
 		boolean hasBefore = offset > 0;
 		boolean hasAfter = suggestionList.size() > offset + size;
 		boolean hasMore = hasBefore || hasAfter;
 		boolean updatedMouse = lastMouse.x != (float) mouseX || lastMouse.y != (float) mouseY;
 		if (updatedMouse) lastMouse = new Vec2((float) mouseX, (float) mouseY);
-		
+
+		// Draw ellipsis on top/below if there are suggestions not shown
 		if (hasMore) {
+			// Draw background
 			gg.fill(
 				rect.getX(), rect.getY() - 1,
 				rect.getX() + rect.getWidth(), rect.getY(), backgroundColor);
 			gg.fill(
 				rect.getX(), rect.getY() + rect.getHeight(),
 				rect.getX() + rect.getWidth(), rect.getY() + rect.getHeight() + 1, backgroundColor);
+
+			// Draw dots
 			int k;
 			if (hasBefore) for (k = 0; k < rect.getWidth(); ++k) {
 				if (k % 2 == 0) gg.fill(
@@ -121,23 +125,29 @@ public abstract class MixinSuggestionsList {
 					rect.getX() + k + 1, rect.getY() + rect.getHeight() + 1, 0xFFFFFFFF);
 			}
 		}
-		
+
+		// Draw suggestions
 		boolean hovered = false;
 		for (int i = 0; i < size; ++i) {
 			boolean selected = i + offset == current;
+
+			// Draw background
 			gg.fill(
 				rect.getX(), rect.getY() + 12 * i,
 				rect.getX() + rect.getWidth(), rect.getY() + 12 * i + 12,
 				selected? selectedBackgroundColor : backgroundColor);
+
+			// Check if hovered
 			if (mouseX > rect.getX() && mouseX < rect.getX() + rect.getWidth() &&
 			    mouseY > rect.getY() + 12 * i && mouseY < rect.getY() + 12 * i + 12) {
 				if (updatedMouse) select(i + offset);
 				hovered = true;
 			}
-			gg.drawString(font,
-				highlightedSuggestions.get(i + offset),
-				rect.getX() + 1, rect.getY() + 2 + 12 * i,
-				selected ? 0xFFFFFF00 : 0xFFAAAAAA);
+
+			// Draw suggestion text
+			Component text = smartcompletion$highlightedSuggestions.get(i + offset);
+			if (selected) text = text.copy().withStyle(STYLE.selected());
+			gg.drawString(font, text, rect.getX() + 1, rect.getY() + 2 + 12 * i, 0xFFAAAAAA);
 		}
 		
 		if (hovered) {
@@ -151,7 +161,7 @@ public abstract class MixinSuggestionsList {
 	public void onKeyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> ci) {
 		if (current < 0 || current >= suggestionList.size()) return;
 		if (keyCode == GLFW.GLFW_KEY_SPACE && Screen.hasControlDown()
-		    || completeWithEnter && hasUnparsedInput && keyCode == GLFW.GLFW_KEY_ENTER) {
+		    || completeWithEnter && smartcompletion$hasUnparsedInput && keyCode == GLFW.GLFW_KEY_ENTER) {
 			useSuggestion();
 			ci.cancel();
 			ci.setReturnValue(true);

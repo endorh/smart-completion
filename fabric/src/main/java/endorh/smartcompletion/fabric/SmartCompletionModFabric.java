@@ -1,7 +1,7 @@
 package endorh.smartcompletion.fabric;
 
 import endorh.smartcompletion.SmartCompletionMod;
-import endorh.smartcompletion.SmartCompletionResourceReloadListener;
+import endorh.smartcompletion.customization.SmartCompletionResourceReloadListener;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -37,7 +37,7 @@ public class SmartCompletionModFabric implements ClientModInitializer {
             return id;
         }
     
-        @Override public CompletableFuture<Void> reload(
+        @Override public @NotNull CompletableFuture<Void> reload(
           @NotNull PreparationBarrier preparationBarrier, @NotNull ResourceManager resourceManager,
           @NotNull ProfilerFiller preparationProfiler, @NotNull ProfilerFiller applicationProfiler,
           @NotNull Executor preparationExecutor, @NotNull Executor applicationExecutor
@@ -47,7 +47,7 @@ public class SmartCompletionModFabric implements ClientModInitializer {
                preparationExecutor, applicationExecutor);
         }
     
-        @Override public String getName() {
+        @Override public @NotNull String getName() {
             return id.toString();
         }
     }
