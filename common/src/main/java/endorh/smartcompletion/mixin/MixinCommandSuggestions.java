@@ -34,11 +34,11 @@ import static endorh.smartcompletion.SmartCommandCompletion.sort;
 
 @Mixin(CommandSuggestions.class)
 public abstract class MixinCommandSuggestions implements SmartCommandSuggestions {
-	@Unique private @Nullable CompletableFuture<Suggestions> pendingBlindSuggestions;
-	@Unique private @Nullable CompletableFuture<Suggestions> dummyPendingSuggestions;
-	@Unique private @Nullable String lastArgumentQuery;
-	@Unique private @Nullable StringRange lastSuggestionsRange;
-	@Unique private @Nullable List<Pair<Suggestion, MultiMatch>> lastSuggestionMatches;
+	@Unique private @Nullable CompletableFuture<Suggestions> smartcompletion$pendingBlindSuggestions;
+	@Unique private @Nullable CompletableFuture<Suggestions> smartcompletion$dummyPendingSuggestions;
+	@Unique private @Nullable String smartcompletion$lastArgumentQuery;
+	@Unique private @Nullable StringRange smartcompletion$lastSuggestionsRange;
+	@Unique private @Nullable List<Pair<Suggestion, MultiMatch>> smartcompletion$lastSuggestionMatches;
 	
 	@Shadow @Final Minecraft minecraft;
 	@Shadow @Final EditBox input;
@@ -63,29 +63,32 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 		if (cursorPosition < currentParse.getContext().getRange().getStart()) return;
 		suggestionContext = currentParse.getContext().findSuggestionContext(cursorPosition);
 		int startPos = suggestionContext.startPos;
-		lastArgumentQuery = command.substring(startPos, cursorPosition);
-		lastSuggestionsRange = StringRange.between(startPos, command.length());
+		smartcompletion$lastArgumentQuery = command.substring(startPos, cursorPosition);
+		smartcompletion$lastSuggestionsRange = StringRange.between(startPos, command.length());
 		String blindCommand = command.substring(0, startPos);
 		StringReader reader = new StringReader(blindCommand);
 		boolean skipSlash = reader.canRead() && reader.peek() == '/';
 		if (!commandsOnly && !skipSlash) return;
 		if (skipSlash) reader.skip();
-		ParseResults<SharedSuggestionProvider> blindParse = dispatcher.parse(reader, minecraft.player.connection.getSuggestionsProvider());
+		ParseResults<SharedSuggestionProvider> blindParse = dispatcher.parse(
+			reader, minecraft.player.connection.getSuggestionsProvider());
 		SuggestionContext<SharedSuggestionProvider> blindSuggestionContext;
 		if (cursorPosition < blindParse.getContext().getRange().getStart()) return;
 		blindSuggestionContext = blindParse.getContext().findSuggestionContext(cursorPosition);
 		if (blindSuggestionContext.startPos != startPos) return;
-		pendingBlindSuggestions = dispatcher.getCompletionSuggestions(blindParse, startPos);
-		pendingSuggestions.thenAcceptBoth(pendingBlindSuggestions, (informed, blind) -> {
+		smartcompletion$pendingBlindSuggestions = dispatcher.getCompletionSuggestions(blindParse, startPos);
+		pendingSuggestions.thenAcceptBoth(smartcompletion$pendingBlindSuggestions, (informed, blind) -> {
 			// Force trigger showSuggestions, since we can't create the inner class ourselves
-			if (allowSuggestions && isAutoSuggestions(minecraft) || suggestions != null) {
+			if (allowSuggestions && smartcompletion$isAutoSuggestions(minecraft) || suggestions != null) {
 				if (!informed.isEmpty() || !blind.isEmpty()) {
-					lastSuggestionMatches = sort(
-					  blind, informed, lastSuggestionsRange, lastArgumentQuery);
-					if (!lastSuggestionMatches.isEmpty()) {
+					smartcompletion$lastSuggestionMatches = sort(
+					  blind, informed,
+						smartcompletion$lastSuggestionsRange,
+						smartcompletion$lastArgumentQuery);
+					if (!smartcompletion$lastSuggestionMatches.isEmpty()) {
 						if (informed.isEmpty()) {
-							dummyPendingSuggestions = pendingSuggestions;
-							pendingSuggestions = pendingBlindSuggestions;
+							smartcompletion$dummyPendingSuggestions = pendingSuggestions;
+							pendingSuggestions = smartcompletion$pendingBlindSuggestions;
 						}
 						showSuggestions(false);
 					}
@@ -101,9 +104,9 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 		 target = "Lnet/minecraft/client/gui/components/CommandSuggestions;sortSuggestions(Lcom/mojang/brigadier/suggestion/Suggestions;)Ljava/util/List;")
 	) public void adjustSuggestions(CallbackInfo ci) {
 		// Restore the original pendingSuggestions, since the empty check has already passed
-		if (dummyPendingSuggestions != null) {
-			pendingSuggestions = dummyPendingSuggestions;
-			dummyPendingSuggestions = null;
+		if (smartcompletion$dummyPendingSuggestions != null) {
+			pendingSuggestions = smartcompletion$dummyPendingSuggestions;
+			smartcompletion$dummyPendingSuggestions = null;
 		}
 	}
 	
@@ -126,37 +129,37 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 		}
 	}
 	
-	@Override public @Nullable String getLastArgumentQuery() {
-		return lastArgumentQuery;
+	@Override public @Nullable String smartcompletion$getLastArgumentQuery() {
+		return smartcompletion$lastArgumentQuery;
 	}
 	
-	@Override public int getSuggestionLineLimit() {
+	@Override public int smartcompletion$getSuggestionLineLimit() {
 		return suggestionLineLimit;
 	}
 	
-	@Override public boolean isAnchorToBottom() {
+	@Override public boolean smartcompletion$isAnchorToBottom() {
 		return anchorToBottom;
 	}
 	
-	@Override public @Nullable Suggestions getLastBlindSuggestions() {
-		return pendingBlindSuggestions != null && pendingBlindSuggestions.isDone()
-		       ? pendingBlindSuggestions.join() : null;
+	@Override public @Nullable Suggestions smartcompletion$getLastBlindSuggestions() {
+		return smartcompletion$pendingBlindSuggestions != null && smartcompletion$pendingBlindSuggestions.isDone()
+		       ? smartcompletion$pendingBlindSuggestions.join() : null;
 	}
 	
-	@Override public @Nullable Suggestions getLastSuggestions() {
+	@Override public @Nullable Suggestions smartcompletion$getLastSuggestions() {
 		return pendingSuggestions != null && pendingSuggestions.isDone()
 		       ? pendingSuggestions.join() : null;
 	}
 	
-	@Override public @Nullable List<Pair<Suggestion, MultiMatch>> getLastSuggestionMatches() {
-		return lastSuggestionMatches;
+	@Override public @Nullable List<Pair<Suggestion, MultiMatch>> smartcompletion$getLastSuggestionMatches() {
+		return smartcompletion$lastSuggestionMatches;
 	}
 	
-	@Override public boolean hasUnparsedInput() {
+	@Override public boolean smartcompletion$hasUnparsedInput() {
 		return currentParse != null && currentParse.getReader().canRead();
 	}
 	
-	private static boolean isAutoSuggestions(Minecraft minecraft) {
+	@Unique private static boolean smartcompletion$isAutoSuggestions(Minecraft minecraft) {
 		#if POST_MC_1_19
 			return minecraft.options.autoSuggestions().get();
 		#else

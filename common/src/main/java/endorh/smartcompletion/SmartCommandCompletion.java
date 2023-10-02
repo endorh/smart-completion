@@ -4,17 +4,12 @@ import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
-import endorh.smartcompletion.SmartCompletionResourceReloadListener.CommandCompletionStyle;
-import endorh.smartcompletion.SmartCompletionResourceReloadListener.CommandSplittingSettings;
+import endorh.smartcompletion.customization.CommandCompletionStyle;
+import endorh.smartcompletion.customization.CommandSplittingSettings;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-#if POST_MC_1_19
-	import net.minecraft.network.chat.Component;
-#endif
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-#if PRE_MC_1_19
-	import net.minecraft.network.chat.TextComponent;
-#endif
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
