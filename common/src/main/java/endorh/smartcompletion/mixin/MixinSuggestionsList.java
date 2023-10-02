@@ -53,11 +53,11 @@ public abstract class MixinSuggestionsList {
 	) {
 		if (!enableSmartCompletion || !(commandSuggestions instanceof SmartCommandSuggestions scs))
 			return;
-		smartcompletion$lastArgumentQuery = scs.smartcompletion$getLastArgumentQuery();
-		Suggestions blindSuggestions = scs.smartcompletion$getLastBlindSuggestions();
-		Suggestions lastSuggestions = scs.smartcompletion$getLastSuggestions();
-		smartcompletion$hasUnparsedInput = scs.smartcompletion$hasUnparsedInput();
-		List<Pair<Suggestion, MultiMatch>> sorted = scs.smartcompletion$getLastSuggestionMatches();
+		smartcompletion$lastArgumentQuery = scs.getLastArgumentQuery();
+		Suggestions blindSuggestions = scs.getLastBlindSuggestions();
+		Suggestions lastSuggestions = scs.getLastSuggestions();
+		smartcompletion$hasUnparsedInput = scs.hasUnparsedInput();
+		List<Pair<Suggestion, MultiMatch>> sorted = scs.getLastSuggestionMatches();
 		if (smartcompletion$lastArgumentQuery == null || blindSuggestions == null
 		    || lastSuggestions == null || sorted == null || sorted.isEmpty()) {
 			smartcompletion$lastArgumentQuery = null;
@@ -71,9 +71,9 @@ public abstract class MixinSuggestionsList {
 		
 		// Patch positioning
 		Font font = Minecraft.getInstance().font;
-		int h = Math.min(suggestionList.size(), scs.smartcompletion$getSuggestionLineLimit()) * 12;
+		int h = Math.min(suggestionList.size(), scs.getSuggestionLineLimit()) * 12;
 		int w = smartcompletion$highlightedSuggestions.stream().mapToInt(font::width).max().orElse(0) + 1;
-		int y = scs.smartcompletion$isAnchorToBottom()? anchor - 3 - h : anchor;
+		int y = scs.isAnchorToBottom()? anchor - 3 - h : anchor;
 		rect.setY(y);
 		rect.setWidth(w);
 		rect.setHeight(h);
@@ -92,8 +92,8 @@ public abstract class MixinSuggestionsList {
 		
 		int maxSuggestionSize = 10;
 		int size = Math.min(suggestionList.size(), maxSuggestionSize);
-		int backgroundColor = STYLE.backgroundColor();
-		int selectedBackgroundColor = STYLE.selectedBackgroundColor();
+		int backgroundColor = STYLE.getBackgroundColor();
+		int selectedBackgroundColor = STYLE.getSelectedBackgroundColor();
 		
 		boolean hasBefore = offset > 0;
 		boolean hasAfter = suggestionList.size() > offset + size;
