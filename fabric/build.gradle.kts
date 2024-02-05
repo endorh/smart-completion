@@ -34,8 +34,8 @@ configurations {
 }
 
 dependencies {
-    modImplementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
-    modApi("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
+    modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
+    modApi("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
     // modApi("dev.architectury:architectury-fabric:${architecturyVersion}")
     
     common(project(":common", configuration = "namedElements")) {
@@ -44,6 +44,8 @@ dependencies {
     shadowCommon(project(":common", configuration = "transformProductionFabric")) {
         isTransitive = false
     }
+
+    modImplementation("curse.maven:worldedit-225608:4773938")
 }
 
 tasks.processResources {

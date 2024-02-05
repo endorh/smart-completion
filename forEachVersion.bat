@@ -1,4 +1,5 @@
 @echo off
+setlocal EnableExtensions EnableDelayedExpansion
 
 set gradleCommand=%*
 
@@ -13,7 +14,12 @@ echo   %mcVersions:,=, %
 echo.
 
 for %%a in ("%mcVersions:,=" "%") do (
-   call :RunForVersion %%~a "%gradleCommand%"
+   call :RunForVersion %%~a "%gradleCommand%" || (
+       echo.
+       echo Build failed for Minecraft %%~a!
+       echo   Aborted remaining builds.
+       exit /b %ERRORLEVEL%
+   )
 )
 exit /b %ERRORLEVEL%
 
@@ -30,5 +36,4 @@ echo Building for Minecraft %~1
 call ./gradlew.bat %~2 -PmcVersion="%~1"
 @echo off
 echo.
-exit /b 0
-
+exit /b %ERRORLEVEL%

@@ -1,3 +1,5 @@
+import java.util.*
+
 pluginManagement {
     repositories {
         maven("https://maven.fabricmc.net/")

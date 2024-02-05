@@ -1,1 +1,1 @@
-call ./forEachVersion.bat clean build --no-daemon
+call ./forEachVersion.bat build --no-daemon

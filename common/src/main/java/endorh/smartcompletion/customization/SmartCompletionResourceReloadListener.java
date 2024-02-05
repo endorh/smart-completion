@@ -3,6 +3,7 @@ package endorh.smartcompletion.customization;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
 import endorh.smartcompletion.SmartCommandCompletion;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -23,7 +24,9 @@ public class SmartCompletionResourceReloadListener extends SimpleJsonResourceRel
 	public static final Gson GSON = new GsonBuilder()
 	  .registerTypeAdapter(CommandSplittingSettings.class, CommandSplittingSettings.SERIALIZER)
 	  .registerTypeAdapter(CommandCompletionStyle.class, CommandCompletionStyle.SERIALIZER)
+	  #if PRE_MC_1_20_3
 	  .registerTypeAdapter(Style.class, new Style.Serializer())
+	  #endif
 	  .create();
 	
 	public SmartCompletionResourceReloadListener() {

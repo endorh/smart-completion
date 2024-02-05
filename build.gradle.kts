@@ -3,7 +3,7 @@ import java.util.*
 
 plugins {
     id("architectury-plugin") version "3.4.+"
-    id("dev.architectury.loom") version "1.2.+" apply false
+    id("dev.architectury.loom") version "1.4.+" apply false
 }
 
 val maxMcVersions: String by project
@@ -85,7 +85,7 @@ val versionProperties = mutableMapOf<String, String>()
  * Load properties for the current Minecraft version
  */
 fun loadProperties() {
-    val defaultMcVersion = "1.19.3"
+    val defaultMcVersion = "1.20.2"
     var mcVersion = ""
     val versions = mcVersions.split(Regex("""\s*+,\s*+"""))
     val maxMcVersions = maxMcVersions.split(Regex("""\s*+,\s*+"""))
@@ -175,11 +175,11 @@ subprojects {
         silentMojangMappingsLicense()
         
         dependencies {
-            "minecraft"("com.mojang:minecraft:${minecraftVersion}")
+            "minecraft"("com.mojang:minecraft:$minecraftVersion")
             
             "mappings"(layered {
                 officialMojangMappings()
-                parchment("org.parchmentmc.data:parchment-${minecraftVersion}:${parchmentVersion}@zip")
+                // parchment("org.parchmentmc.data:parchment-$minecraftVersion:$parchmentVersion@zip")
             })
         }
     }
@@ -197,6 +197,13 @@ allprojects {
         // Manifold Preprocessor
         maven("https://oss.sonatype.org/content/repositories/snapshots/") {
             name = "Sonatype Snapshots"
+        }
+
+        maven("https://cursemaven.com") {
+            name = "Curse Maven"
+            content {
+                includeGroup("curse.maven")
+            }
         }
     }
     

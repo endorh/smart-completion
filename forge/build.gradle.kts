@@ -9,35 +9,33 @@ val modId: String by rootProject
 val modVersion: String by rootProject
 val architecturyVersion: String by prop
 val minecraftVersion: String by prop
-val forgeVersion: String by prop
+val neoForgeVersion: String by prop
+val modsTomlMinecraftVersion: String by prop
 
 val modProperties: Map<String, String> by prop
 
 architectury {
     platformSetupLoomIde()
-    forge()
+    neoForge()
 }
 
 loom {
     accessWidenerPath.set(project(":common").loom.accessWidenerPath)
-    
-    forge {
-        convertAccessWideners.set(true)
-        extraAccessWideners.add(loom.accessWidenerPath.get().asFile.name)
-        
-        mixinConfig("$modId.mixins.json")
+
+    neoForge {
+        // mixinConfig("$modId.mixins.json")
     }
 }
 
 val common by configurations.creating
 // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
 val shadowCommon by configurations.creating
-val developmentForge by configurations
+val developmentNeoForge by configurations
 
 configurations {
     compileClasspath.get().extendsFrom(common)
     runtimeClasspath.get().extendsFrom(common)
-    developmentForge.extendsFrom(common)
+    developmentNeoForge.extendsFrom(common)
 }
 
 repositories {
@@ -45,25 +43,31 @@ repositories {
 }
 
 dependencies {
-    forge("net.neoforged:forge:${minecraftVersion}-${forgeVersion}")
-    // modApi("dev.architectury:architectury-forge:${architecturyVersion}")
+    neoForge("net.neoforged:neoforge:$neoForgeVersion")
+    // modApi("dev.architectury:architectury-neoforge:$architecturyVersion")
     
     common(project(":common", configuration = "namedElements")) {
         isTransitive = false
     }
-    shadowCommon(project(":common", configuration = "transformProductionForge")) {
+    shadowCommon(project(":common", configuration = "transformProductionNeoForge")) {
         isTransitive = false
     }
 }
 
+val modsTomlPattern = Regex("""^META-INF/mods\..*\.toml$""", RegexOption.IGNORE_CASE)
 tasks.processResources {
     inputs.properties(modProperties)
     
     // Exclude .dev folders from the mod resources
     exclude("**/.dev/**")
-    
-    filesMatching("META-INF/mods.toml") {
+    exclude {
+        it.relativePath.pathString.matches(modsTomlPattern)
+          && it.name.lowercase() != "mods.$modsTomlMinecraftVersion.toml".lowercase()
+    }
+
+    filesMatching(listOf("META-INF/mods.toml", "META-INF/mods.$modsTomlMinecraftVersion.toml")) {
         expand(modProperties)
+        name = "mods.toml"
     }
 }
 

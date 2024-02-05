@@ -1,9 +1,13 @@
 package endorh.smartcompletion.customization;
 
 import com.google.gson.*;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.GsonHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
@@ -15,6 +19,7 @@ public record CommandCompletionStyle(
    Style repeat, Style unexpected, Style selected,
    @Nullable Integer backgroundColor, @Nullable Integer selectedBackgroundColor
 ) {
+   private static final Logger LOGGER = LogManager.getLogger();
    public static final int DEFAULT_BACKGROUND_COLOR = 0xBD000000;
    public static final int DEFAULT_SELECTED_BACKGROUND_COLOR = 0xBD242424;
 
@@ -50,16 +55,21 @@ public record CommandCompletionStyle(
             getStyle(obj, "repeat"),
             getStyle(obj, "unexpected"),
             getStyle(obj, "selected"),
-            getColor(obj, "background"),
-            getColor(obj, "background_selected"));
+            getARGBColor(obj, "background"),
+            getARGBColor(obj, "background_selected"));
       }
 
       private Style getStyle(JsonObject object, String name) {
          JsonObject o = GsonHelper.getAsJsonObject(object, name, new JsonObject());
-         return GSON.fromJson(o, Style.class);
+         #if POST_MC_1_20_3
+            DataResult<Style> style = Style.Serializer.CODEC.parse(JsonOps.INSTANCE, o);
+            return style.resultOrPartial(LOGGER::warn).orElse(Style.EMPTY);
+         #else
+            return GSON.fromJson(o, Style.class);
+         #endif
       }
 
-      private Integer getColor(JsonObject object, String name) {
+      private Integer getARGBColor(JsonObject object, String name) {
          String s = GsonHelper.getAsString(object, name, "");
          if (!s.isEmpty()) {
             if (s.startsWith("#")) { // TextColor uses `parseInt`, which fails for ARGB colors
@@ -69,8 +79,7 @@ public record CommandCompletionStyle(
                   return null;
                }
             }
-            TextColor c = TextColor.parseColor(s);
-            if (c != null) return c.getValue();
+            return parseColor(s);
          }
          return null;
       }
@@ -82,5 +91,14 @@ public record CommandCompletionStyle(
 
    public int getSelectedBackgroundColor() {
       return selectedBackgroundColor != null? selectedBackgroundColor : DEFAULT_SELECTED_BACKGROUND_COLOR;
+   }
+
+   public static Integer parseColor(String s) {
+      #if POST_MC_1_20_3
+         return TextColor.parseColor(s).resultOrPartial(LOGGER::warn).map(TextColor::getValue).orElse(null);
+      #else
+         TextColor c = TextColor.parseColor(s);
+         return c != null? c.getValue() : null;
+      #endif
    }
 }

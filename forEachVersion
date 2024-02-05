@@ -10,6 +10,7 @@ getProperty()
 runForVersion()
 {
   ./gradlew $2 -PmcVersion=$1
+  return $?
 }
 
 mcVersions=$(getProperty "mcVersions")
@@ -26,5 +27,11 @@ for mcVersion in "${versionArray[@]}"
 do
   echo "Building for Minecraft $mcVersion"
   runForVersion $mcVersion "$gradleCommand"
+  if [ $? -ne 0 ]; then
+    echo
+    echo "Build failed for Minecraft $mcVersion"
+    echo "  Aborted remaining builds."
+    exit 1
+  fi
   echo
 done

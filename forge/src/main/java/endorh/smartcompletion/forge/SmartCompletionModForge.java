@@ -4,13 +4,12 @@ import endorh.smartcompletion.SmartCompletionMod;
 import endorh.smartcompletion.customization.SmartCompletionResourceReloadListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
-
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
 @Mod(SmartCompletionMod.MOD_ID)
 @EventBusSubscriber(value = Dist.CLIENT, bus=Bus.MOD, modid = SmartCompletionMod.MOD_ID)

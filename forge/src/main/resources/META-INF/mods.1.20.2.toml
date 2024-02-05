@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[36,)"
+loaderVersion = "${neoForgeLoaderVersion}"
 issueTrackerURL = "${modIssueTracker}"
 license = "${modLicense}"
 
@@ -15,14 +15,17 @@ license = "${modLicense}"
     logoFile = "icon.png"
 
 [[dependencies.smartcompletion]]
-    modId = "forge"
+    modId = "neoforge"
     mandatory = true
-    versionRange = "${forgeVersionRange}"
+    versionRange = "${neoForgeVersionRange}"
     ordering = "NONE"
     side = "BOTH"
 [[dependencies.smartcompletion]]
     modId = "minecraft"
     mandatory = true
-    versionRange = "${forgeMinecraftVersion}"
+    versionRange = "${neoForgeMinecraftVersion}"
     ordering = "NONE"
     side = "BOTH"
+
+[[mixins]]
+    config = "${modId}.mixins.json"
