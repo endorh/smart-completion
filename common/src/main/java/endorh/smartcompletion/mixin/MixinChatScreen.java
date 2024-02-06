@@ -20,21 +20,21 @@ import static endorh.smartcompletion.SmartCommandCompletion.showSuggestionsOnSla
  */
 @Mixin(ChatScreen.class)
 public abstract class MixinChatScreen extends Screen {
-	// Shadow accessors
-	@Shadow CommandSuggestions commandSuggestions;
-	
-	// Dummy mixin constructor
-	protected MixinChatScreen(Component component) {
-		super(component);
-	}
-	
-	@Inject(method="onEdited", at=@At("RETURN"))
-	public void onOnEdited(CallbackInfo ci) {
-		if (showSuggestionsOnSlash) commandSuggestions.setAllowSuggestions(true);
-	}
-	
-	@Inject(method="init", at=@At("RETURN"))
-	public void onInit(CallbackInfo ci) {
-		if (showSuggestionsOnSlash) commandSuggestions.setAllowSuggestions(true);
-	}
+   // Shadow accessors
+   @Shadow CommandSuggestions commandSuggestions;
+
+   // Dummy mixin constructor
+   protected MixinChatScreen(Component component) {
+      super(component);
+   }
+
+   @Inject(method = "onEdited", at = @At("RETURN"))
+   public void onOnEdited(CallbackInfo ci) {
+      if (showSuggestionsOnSlash) commandSuggestions.setAllowSuggestions(true);
+   }
+
+   @Inject(method = "init", at = @At("RETURN"))
+   public void onInit(CallbackInfo ci) {
+      if (showSuggestionsOnSlash) commandSuggestions.setAllowSuggestions(true);
+   }
 }
