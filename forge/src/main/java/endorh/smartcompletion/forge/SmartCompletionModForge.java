@@ -13,16 +13,16 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
 @Mod(SmartCompletionMod.MOD_ID)
-@EventBusSubscriber(value = Dist.CLIENT, bus=Bus.MOD, modid = SmartCompletionMod.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, bus = Bus.MOD, modid = SmartCompletionMod.MOD_ID)
 public class SmartCompletionModForge {
-    public SmartCompletionModForge() {
-        SmartCompletionMod.init();
-    }
-    
-    @SubscribeEvent
-    public static void registerReloadListener(RegisterParticleProvidersEvent event) {
-        ReloadableResourceManager manager =
-          (ReloadableResourceManager) Minecraft.getInstance().getResourceManager();
-        manager.registerReloadListener(new SmartCompletionResourceReloadListener());
-    }
+   public SmartCompletionModForge() {
+      SmartCompletionMod.init();
+   }
+
+   @SubscribeEvent
+   public static void registerReloadListener(RegisterParticleProvidersEvent event) {
+      ReloadableResourceManager manager =
+         (ReloadableResourceManager) Minecraft.getInstance().getResourceManager();
+      manager.registerReloadListener(new SmartCompletionResourceReloadListener());
+   }
 }
