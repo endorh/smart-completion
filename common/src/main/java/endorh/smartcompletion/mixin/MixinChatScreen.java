@@ -1,5 +1,6 @@
 package endorh.smartcompletion.mixin;
 
+import endorh.smartcompletion.SmartCommandCompletion;
 import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -12,8 +13,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static endorh.smartcompletion.SmartCommandCompletion.showSuggestionsOnSlash;
 
+/**
+ * Force suggestions to show when typing the start of any command, including
+ * the initial slash ({@code /}), if
+ * {@link SmartCommandCompletion#showSuggestionsOnSlash} is {@code true}.
+ */
 @Mixin(ChatScreen.class)
 public abstract class MixinChatScreen extends Screen {
+	// Shadow accessors
 	@Shadow CommandSuggestions commandSuggestions;
 	
 	// Dummy mixin constructor

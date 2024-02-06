@@ -179,7 +179,8 @@ subprojects {
             
             "mappings"(layered {
                 officialMojangMappings()
-                // parchment("org.parchmentmc.data:parchment-$minecraftVersion:$parchmentVersion@zip")
+                if (parchmentVersion.isNotBlank())
+                    parchment("org.parchmentmc.data:parchment-$minecraftVersion:$parchmentVersion@zip")
             })
         }
     }

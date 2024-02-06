@@ -21,22 +21,28 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Adds support for multiple pending completion requests (up to 20) in {@link ClientSuggestionProvider}.
+ * Adds support for multiple pending completion requests (up to {@code 20})
+ * in {@link ClientSuggestionProvider}.
  */
 @Mixin(ClientSuggestionProvider.class)
 public class MixinClientSuggestionProvider {
+   // Injected fields
    @Unique private static final Logger smartcompletion$LOGGER = LogManager.getLogger();
 
-   // The choice of 20 is arbitrary, we technically only need 2
+   /**
+    * Local cache of pending suggestions, which can hold up to {@code 20} pending futures.<br>
+    * <br>
+    * The choice of {@code 20} is arbitrary, we technically only need {@code 3}.
+    */
    @Unique private final Map<Integer, CompletableFuture<Suggestions>>
       smartcompletion$pendingSuggestionFutures = new EvictingLinkedHashMap<>(
       20, (i, v) -> v.cancel(true));
 
-   // Adding an int field is free, debugging why suggestions get reported for the wrong
-   // request if Mojang decides to use `ClientSuggestionProvider#pendingSuggestionsId` in
-   // the future is not
+   /**
+    * Private request counter, to ensure future changes by Mojang to the existing counter
+    * {@code #pendingSuggestionsId} do not break the mixin.
+    */
    @Unique private int smartcompletion$pendingSuggestionsId = -1;
-
    @Final @Shadow private ClientPacketListener connection;
 
 

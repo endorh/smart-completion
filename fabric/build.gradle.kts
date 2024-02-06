@@ -44,8 +44,6 @@ dependencies {
     shadowCommon(project(":common", configuration = "transformProductionFabric")) {
         isTransitive = false
     }
-
-    modImplementation("curse.maven:worldedit-225608:4773938")
 }
 
 tasks.processResources {
