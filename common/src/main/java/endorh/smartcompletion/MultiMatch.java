@@ -18,15 +18,15 @@ public class MultiMatch implements Comparable<MultiMatch> {
 	private final int[] indices;
 	private final int[] subIndices;
 	private final int[][] repeats;
-	private final boolean isDumb;
+	private final int priority;
 	
-	public MultiMatch(WordSplit split, String[] parts, int[] indices, int[] subIndices, int[][] repeats, boolean isDumb) {
+	public MultiMatch(WordSplit split, String[] parts, int[] indices, int[] subIndices, int[][] repeats, int priority) {
 		this.split = split;
 		this.parts = parts;
 		this.indices = indices;
 		this.subIndices = subIndices;
 		this.repeats = repeats;
-		this.isDumb = isDumb;
+		this.priority = priority;
 		
 		if (parts.length != indices.length)
 			throw new IllegalArgumentException("parts.length != indices.length");
@@ -36,21 +36,25 @@ public class MultiMatch implements Comparable<MultiMatch> {
 			throw new IllegalArgumentException("parts.length != repeats.length");
 	}
 	
-	private static final MultiMatch EMPTY = new MultiMatch(WordSplit.whole(""), new String[0], new int[0], new int[0], new int[0][0], true);
+	private static final MultiMatch EMPTY = new MultiMatch(WordSplit.whole(""), new String[0], new int[0], new int[0], new int[0][0], Integer.MAX_VALUE);
 	
 	public static MultiMatch of(
 	  WordSplit split, Collection<String> matches, IntList indices,
-	  IntList subIndices, List<IntList> repeats, boolean isDumb
+	  IntList subIndices, List<IntList> repeats, int priority
 	) {
 		return new MultiMatch(
 		  split, matches.toArray(new String[0]), indices.toIntArray(), subIndices.toIntArray(),
-		  repeats.stream().map(IntCollection::toIntArray).toArray(int[][]::new), isDumb);
+		  repeats.stream().map(IntCollection::toIntArray).toArray(int[][]::new), priority);
 	}
-	
-	public static MultiMatch whole(String string) {
+
+   public static MultiMatch whole(String string) {
+      return whole(string, 1);
+   }
+
+   public static MultiMatch whole(String string, int priority) {
 		return new MultiMatch(
 		  WordSplit.whole(string), new String[]{string}, new int[]{0}, new int[]{0},
-		  new int[][]{new int[0]}, true);
+		  new int[][]{new int[0]}, priority);
 	}
 	
 	public static MultiMatch empty() {
@@ -63,6 +67,15 @@ public class MultiMatch implements Comparable<MultiMatch> {
 	
 	public boolean isEmpty() {
 		return parts.length == 0;
+	}
+
+	public boolean isMatched() {
+		WordSplit split = split();
+		if (split.size() != parts.length) return false;
+		for (int i = 0; i < parts.length; i++)
+			if (!split.words()[i].equals(parts[i]))
+				return false;
+		return true;
 	}
 	
 	public int size() {
@@ -79,8 +92,8 @@ public class MultiMatch implements Comparable<MultiMatch> {
 		int totalRepeats = Arrays.stream(repeats).mapToInt(r -> r.length).sum();
 		int otherTotalRepeats = Arrays.stream(other.repeats).mapToInt(r -> r.length).sum();
 		return new CompareToBuilder()
-		  // Give priority to non-dumb matches
-		  .append(isDumb, other.isDumb)
+		  // Sort according to priority first (non-dumb matches have priority 0 (highest))
+		  .append(priority, other.priority)
 		  // Give priority to matches with many small submatches, rather than a few large matches
 		  .append(prod, otherProd)
 		  .append(size(), other.size())
@@ -100,8 +113,8 @@ public class MultiMatch implements Comparable<MultiMatch> {
 		if (isEmpty())
 			return "!empty!";
 		String word = word();
-		String pre = isDumb? "~" : "[";
-		String pos = isDumb? "~" : "]";
+		String pre = isDumb()? "~" : "[";
+		String pos = isDumb()? "~" : "]";
 		for (int i = size() - 1; i >= 0; i--)
 			word =
 			  word.substring(0, indices[i]) + pre
@@ -129,8 +142,16 @@ public class MultiMatch implements Comparable<MultiMatch> {
 	public int[][] repeats() {
 		return repeats;
 	}
+
+	public int priority() {
+		return priority;
+	}
 	
 	public boolean isDumb() {
-		return isDumb;
+		return priority > 0;
+	}
+
+	public MultiMatch withPriority(int priority) {
+		return new MultiMatch(split, parts, indices, subIndices, repeats, priority);
 	}
 }

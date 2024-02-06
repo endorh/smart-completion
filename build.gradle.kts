@@ -85,7 +85,7 @@ val versionProperties = mutableMapOf<String, String>()
  * Load properties for the current Minecraft version
  */
 fun loadProperties() {
-    val defaultMcVersion = "1.19.3"
+    val defaultMcVersion = "1.20.1"
     var mcVersion = ""
     val versions = mcVersions.split(Regex("""\s*+,\s*+"""))
     val maxMcVersions = maxMcVersions.split(Regex("""\s*+,\s*+"""))
