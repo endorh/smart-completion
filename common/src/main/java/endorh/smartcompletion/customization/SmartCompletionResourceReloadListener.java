@@ -20,51 +20,50 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 public class SmartCompletionResourceReloadListener extends SimpleJsonResourceReloadListener {
-	private static final Logger LOGGER = LogManager.getLogger();
-	public static final Gson GSON = new GsonBuilder()
-	  .registerTypeAdapter(CommandSplittingSettings.class, CommandSplittingSettings.SERIALIZER)
-	  .registerTypeAdapter(CommandCompletionStyle.class, CommandCompletionStyle.SERIALIZER)
-	  .registerTypeAdapter(Style.class, new Style.Serializer())
-	  .create();
-	
-	public SmartCompletionResourceReloadListener() {
-		super(GSON, "smart-completion");
-	}
-	
-	@Override protected void apply(
-	  @NotNull Map<ResourceLocation, JsonElement> map, @NotNull ResourceManager manager,
-	  @NotNull ProfilerFiller profiler
-	) {
-		List<JsonElement> commandSplittingJsonList = map.entrySet().stream()
-		  .filter(e -> e.getKey().getPath().equals("command_splitting"))
-		  .map(Entry::getValue).collect(Collectors.toList());
-		List<JsonElement> completionStyleJSONList = map.entrySet().stream()
-		  .filter(e -> e.getKey().getPath().equals("completion_style"))
-		  .map(Entry::getValue).collect(Collectors.toList());
-		try {
-			CommandSplittingSettings settings = new CommandSplittingSettings();
-			for (JsonElement obj: commandSplittingJsonList) {
-				CommandSplittingSettings next = GSON.fromJson(obj, CommandSplittingSettings.class);
-				if (GsonHelper.getAsBoolean(obj.getAsJsonObject(), "replace", false)) {
-					settings = next;
-				} else settings = settings.merge(next);
-			}
-			SmartCommandCompletion.setSplittingSettings(settings);
-		} catch (RuntimeException e) {
-			LOGGER.error("Failed to load command splitting settings", e);
-		}
-		try {
-			CommandCompletionStyle style = new CommandCompletionStyle();
-			for (JsonElement obj: completionStyleJSONList) {
-				CommandCompletionStyle next = GSON.fromJson(obj, CommandCompletionStyle.class);
-				if (GsonHelper.getAsBoolean(obj.getAsJsonObject(), "replace", false)) {
-					style = next;
-				} else style = next.applyTo(style);
-			}
-			SmartCommandCompletion.setCompletionStyle(style);
-		} catch (RuntimeException e) {
-			LOGGER.error("Failed to load completion style settings", e);
-		}
-	}
+   private static final Logger LOGGER = LogManager.getLogger();
+   public static final Gson GSON = new GsonBuilder()
+      .registerTypeAdapter(CommandSplittingSettings.class, CommandSplittingSettings.SERIALIZER)
+      .registerTypeAdapter(CommandCompletionStyle.class, CommandCompletionStyle.SERIALIZER)
+      .registerTypeAdapter(Style.class, new Style.Serializer())
+      .create();
 
+   public SmartCompletionResourceReloadListener() {
+      super(GSON, "smart-completion");
+   }
+
+   @Override protected void apply(
+      @NotNull Map<ResourceLocation, JsonElement> map, @NotNull ResourceManager manager,
+      @NotNull ProfilerFiller profiler
+   ) {
+      List<JsonElement> commandSplittingJsonList = map.entrySet().stream()
+         .filter(e -> e.getKey().getPath().equals("command_splitting"))
+         .map(Entry::getValue).collect(Collectors.toList());
+      List<JsonElement> completionStyleJSONList = map.entrySet().stream()
+         .filter(e -> e.getKey().getPath().equals("completion_style"))
+         .map(Entry::getValue).collect(Collectors.toList());
+      try {
+         CommandSplittingSettings settings = new CommandSplittingSettings();
+         for (JsonElement obj : commandSplittingJsonList) {
+            CommandSplittingSettings next = GSON.fromJson(obj, CommandSplittingSettings.class);
+            if (GsonHelper.getAsBoolean(obj.getAsJsonObject(), "replace", false)) {
+               settings = next;
+            } else settings = settings.merge(next);
+         }
+         SmartCommandCompletion.setSplittingSettings(settings);
+      } catch (RuntimeException e) {
+         LOGGER.error("Failed to load command splitting settings", e);
+      }
+      try {
+         CommandCompletionStyle style = new CommandCompletionStyle();
+         for (JsonElement obj : completionStyleJSONList) {
+            CommandCompletionStyle next = GSON.fromJson(obj, CommandCompletionStyle.class);
+            if (GsonHelper.getAsBoolean(obj.getAsJsonObject(), "replace", false)) {
+               style = next;
+            } else style = next.applyTo(style);
+         }
+         SmartCommandCompletion.setCompletionStyle(style);
+      } catch (RuntimeException e) {
+         LOGGER.error("Failed to load completion style settings", e);
+      }
+   }
 }
