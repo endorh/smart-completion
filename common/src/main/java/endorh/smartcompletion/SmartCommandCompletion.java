@@ -6,11 +6,13 @@ import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import endorh.smartcompletion.customization.CommandCompletionStyle;
 import endorh.smartcompletion.customization.CommandSplittingSettings;
+import endorh.smartcompletion.util.EvictingLinkedHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -20,14 +22,28 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class SmartCommandCompletion {
+	// Preferences
+	/**
+	 * Enable smart completion logic (feature toggle for the mod).
+	 */
 	public static boolean enableSmartCompletion = true;
+	/**
+	 * Enable completion keys ({@code <Ctrl>+<Space>} and {@code <Enter>}
+	 * (if {@link #completeWithEnter} is true and current command is known to be incomplete))
+	 */
 	public static boolean enableCompletionKeys = true;
+	/**
+	 * Enable completion with {@code <Enter>} if current command is known to be incomplete.
+	 */
 	public static boolean completeWithEnter = true;
+	/**
+	 * Force suggestions to show when typing a slash ({@code /}).
+	 */
 	public static boolean showSuggestionsOnSlash = true;
 	
 	public static CommandCompletionStyle STYLE = new CommandCompletionStyle();
 	private static CommandSplittingSettings SPLITTING_SETTINGS = new CommandSplittingSettings();
-	private static final Map<String, WordSplit> SPLIT_CACHE = new HashMap<>();
+	private static final Map<String, WordSplit> SPLIT_CACHE = new EvictingLinkedHashMap<>(2048);
 	
 	public static final Pattern FULL_NON_WORD = Pattern.compile("^[\\W\\d]++$");
 	private static final Pattern LOWER = Pattern.compile("^\\p{Lower}++$", Pattern.UNICODE_CHARACTER_CLASS);
@@ -65,27 +81,64 @@ public class SmartCommandCompletion {
 			return splitWord(string);
 		return WordSplit.of(string, parts, indices);
 	}
-	
-	public static List<Pair<Suggestion, MultiMatch>> sort(
-	  Suggestions blindSuggestions, Suggestions suggestions,
-	  StringRange range, String query
+
+	public static SortedMatchedSuggestions sort(
+		Suggestions blindSuggestions, Suggestions suggestions,
+		StringRange range, String query
 	) {
-		if (query.isEmpty()) return suggestions.getList().stream()
-		  .map(s -> Pair.of(s, MultiMatch.whole(s.getText())))
-		  .collect(Collectors.toList());
+		return sort(blindSuggestions, null, suggestions, range, query, null, null);
+	}
+
+   public static SortedMatchedSuggestions sort(
+	  Suggestions blindSuggestions, @Nullable Suggestions wordBlindSuggestions, Suggestions suggestions,
+	  StringRange range, String query, @Nullable StringRange wordRange, @Nullable String wordQuery
+	) {
+		if (wordQuery == null || wordRange == null) {
+			wordBlindSuggestions = null;
+		}
+		// If query is empty, return all blind suggestions
+		if (query.isEmpty()) return new SortedMatchedSuggestions(suggestions.getList().stream()
+			.map(s -> Pair.of(s, MultiMatch.whole(s.getText())))
+			.collect(Collectors.toList()), false, false, true);
+		// Perform smart matching on blind suggestions
 		LinkedHashMap<String, Pair<Suggestion, MultiMatch>> smartSuggestions = blindSuggestions.getList().stream()
-		  .map(s -> Pair.of(
-		    new Suggestion(range, s.getText(), s.getTooltip()),
-		    multiMatch(s.getText(), query))
-		  ).filter(t -> !t.getRight().isEmpty())
-		  .sorted(Comparator.comparing(Pair::getRight))
-		  .collect(Collectors.toMap(p -> p.getLeft().getText(), p -> p, (a, b) -> a, LinkedHashMap::new));
-		List<Pair<Suggestion, MultiMatch>> list = Lists.newArrayList(smartSuggestions.values());
+			.map(s -> Pair.of(
+				new Suggestion(range, s.getText(), s.getTooltip()),
+				multiMatch(s.getText(), query))
+			).filter(t -> !t.getRight().isEmpty() && !t.getRight().isMatched())
+			.collect(Collectors.toMap(p -> p.getLeft().getText(), p -> p, (a, b) -> a, LinkedHashMap::new));
+		LinkedHashMap<String, Pair<Suggestion, MultiMatch>> smartWordSuggestions = new LinkedHashMap<>();
+		// Perform smart matching on word blind suggestions
+		if (wordBlindSuggestions != null) wordBlindSuggestions.getList().stream()
+			.map(s -> Pair.of(
+				new Suggestion(wordRange, s.getText(), s.getTooltip()),
+				multiMatch(s.getText(), wordQuery))
+			).filter(t -> !t.getRight().isEmpty() && !t.getRight().isMatched())
+			.forEach(t -> smartWordSuggestions.putIfAbsent(t.getLeft().getText(), t));
+		List<Pair<Suggestion, MultiMatch>> dumbSuggestions = Lists.newArrayList();
+		// Also perform smart matching on any potential unexpected suggestions to the informed query
 		suggestions.getList().stream()
-		  .filter(s -> !smartSuggestions.containsKey(s.getText()))
-		  .map(s -> Pair.of(s, MultiMatch.whole(s.getText())))
-		  .forEachOrdered(list::add);
-		return list;
+			.filter(s -> !smartSuggestions.containsKey(s.getText()) && !smartWordSuggestions.containsKey(s.getText()))
+			.map(s -> Triple.of(
+				new Suggestion(s.getRange(), s.getText(), s.getTooltip()),
+				multiMatch(s.getText(), query),
+				multiMatch(s.getText(), wordQuery))
+			).forEach(t -> {
+				MultiMatch m = t.getRight();
+				if (m.isEmpty()) m = t.getMiddle();
+				if (!m.isEmpty()) {
+					if (!m.isMatched())
+						smartSuggestions.put(t.getLeft().getText(), Pair.of(t.getLeft(), m));
+				} else dumbSuggestions.add(Pair.of(t.getLeft(), MultiMatch.whole(t.getLeft().getText())));
+			});
+		List<Pair<Suggestion, MultiMatch>> sorted = Lists.newArrayList(smartSuggestions.values());
+		sorted.addAll(smartWordSuggestions.values());
+		// Sort first by start index, then by match fitness
+		sorted.sort(Comparator.comparingInt((Pair<Suggestion, MultiMatch> p) ->
+				-p.getLeft().getRange().getStart()
+			).thenComparing(Pair::getRight));
+		sorted.addAll(dumbSuggestions);
+		return new SortedMatchedSuggestions(sorted, !smartSuggestions.isEmpty(), !smartWordSuggestions.isEmpty(), !dumbSuggestions.isEmpty());
 	}
 
 	public static WordSplit splitWord(String word) {

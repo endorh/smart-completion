@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./forEachVersion clean build --no-daemon
+./forEachVersion build --no-daemon

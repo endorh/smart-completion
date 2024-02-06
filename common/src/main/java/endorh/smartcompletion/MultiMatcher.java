@@ -78,7 +78,7 @@ public class MultiMatcher {
 			qq = q.words()[qi].toLowerCase();
 		} else {
 			done = true;
-			result = MultiMatch.of(t, matches, indices, subIndices, repeats, false);
+			result = MultiMatch.of(t, matches, indices, subIndices, repeats, 0);
 		}
 	}
 	
@@ -231,7 +231,7 @@ public class MultiMatcher {
 			significant |= qq.length() >= dumbMatchLengthThreshold;
 		}
 		return significant? MultiMatch.of(
-		  t, matches, indices, subIndices, repeats, true
+		  t, matches, indices, subIndices, repeats, 1
 		) : MultiMatch.empty();
 	}
 	
