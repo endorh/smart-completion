@@ -59,6 +59,9 @@ public abstract class MixinSuggestionsList {
 
    @Shadow public abstract void select(int index);
    @Shadow public abstract void useSuggestion();
+   #if PRE_MC_1_19
+      @Shadow public abstract void hide();
+   #endif
 
    /**
     * Capture outer instance in the constructor, and recover smart suggestions
@@ -205,7 +208,7 @@ public abstract class MixinSuggestionsList {
    public void smartcompletion$keyPressed(
       int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> ci
    ) {
-      if (!enableCompletionKeys || !(smartcompletion$CommandSuggestions$this instanceof CommandSuggestions scs)) return;
+      if (!enableCompletionKeys || !(smartcompletion$CommandSuggestions$this instanceof CommandSuggestions)) return;
       if (current < 0 || current >= suggestionList.size()) return;
       if (keyCode == GLFW.GLFW_KEY_SPACE && Screen.hasControlDown()
          || completeWithEnter && smartcompletion$hasUnparsedInput && keyCode == GLFW.GLFW_KEY_ENTER) {
@@ -214,7 +217,11 @@ public abstract class MixinSuggestionsList {
          if (keyCode == GLFW.GLFW_KEY_ENTER) {
             // Hide suggestions (replicate what happens in onUpdateCommandInfo if keepSuggestions is false)
             smartcompletion$CommandSuggestions$this.getInput().setSuggestion(null);
-            scs.hide();
+            #if POST_MC_1_19
+               ((CommandSuggestions) smartcompletion$CommandSuggestions$this).hide();
+            #else
+               hide();
+            #endif
          }
          // Mark the input event as handled, and cancel the original method
          ci.cancel();

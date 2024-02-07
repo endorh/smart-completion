@@ -2,6 +2,9 @@ package endorh.smartcompletion.mixin;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
+#if PRE_MC_1_18
+   import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+#endif
 import endorh.smartcompletion.util.EvictingLinkedHashMap;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;

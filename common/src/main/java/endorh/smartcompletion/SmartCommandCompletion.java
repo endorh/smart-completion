@@ -9,8 +9,11 @@ import endorh.smartcompletion.customization.CommandSplittingSettings;
 import endorh.smartcompletion.util.EvictingLinkedHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
+#if PRE_MC_1_19
+   import net.minecraft.network.chat.TextComponent;
+#endif
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.Nullable;
