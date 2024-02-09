@@ -81,7 +81,7 @@ tasks.shadowJar {
 }
 
 tasks.remapJar {
-    archiveBaseName.set("$modId-$minecraftVersion-${project.name}")
+    archiveBaseName.set("$modId-$minecraftVersion-neoforge")
     archiveVersion.set(modVersion)
     archiveClassifier.set("")
     
