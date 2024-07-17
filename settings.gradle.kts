@@ -1,5 +1,3 @@
-import java.util.*
-
 pluginManagement {
     repositories {
         maven("https://maven.fabricmc.net/")
@@ -11,6 +9,6 @@ pluginManagement {
 
 include("common")
 include("fabric")
-include("forge")
+include("neoforge")
 
 rootProject.name = "smartcompletion"

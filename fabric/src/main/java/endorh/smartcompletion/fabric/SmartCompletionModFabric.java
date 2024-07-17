@@ -10,6 +10,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
@@ -20,7 +21,7 @@ public class SmartCompletionModFabric implements ClientModInitializer {
       SmartCompletionMod.init();
       ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(
          new FabricResourceReloadListener(
-            new ResourceLocation(SmartCompletionMod.MOD_ID, "smart-completion"),
+            location("smart-completion"),
             new SmartCompletionResourceReloadListener()));
    }
 
@@ -50,5 +51,13 @@ public class SmartCompletionModFabric implements ClientModInitializer {
       @Override public @NotNull String getName() {
          return id.toString();
       }
+   }
+
+   private static ResourceLocation location(@NotNull @NonNls String path) {
+      #if POST_MC_1_21
+         return ResourceLocation.fromNamespaceAndPath(SmartCompletionMod.MOD_ID, path);
+      #else
+         return new ResourceLocation(SmartCompletionMod.MOD_ID, path);
+      #endif
    }
 }

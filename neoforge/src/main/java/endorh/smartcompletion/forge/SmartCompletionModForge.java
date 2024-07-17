@@ -6,9 +6,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+#if PRE_MC_1_20_6
+   import net.neoforged.fml.common.Mod.EventBusSubscriber;
+   import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
+#else
+   import net.neoforged.fml.common.EventBusSubscriber;
+   import net.neoforged.fml.common.EventBusSubscriber.Bus;
+#endif
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
 @Mod(SmartCompletionMod.MOD_ID)

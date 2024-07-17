@@ -2,8 +2,9 @@ import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import java.util.*
 
 plugins {
-    id("architectury-plugin") version "3.4.+"
-    id("dev.architectury.loom") version "1.4.+" apply false
+    id("architectury-plugin") version "3.4-SNAPSHOT"
+    id("dev.architectury.loom") version "1.6-SNAPSHOT" apply false
+    id("com.github.johnrengelman.shadow") version "8.1.1" apply false
 }
 
 val maxMcVersions: String by project
@@ -27,10 +28,13 @@ val githubRepo: String by project
 val modDisplayTest: String by project
 
 /**
- * Create the `build.properties` file with Manifold preprocessor symbols.
+ * Create the `build.properties` file with Manifold preprocessor symbols
+ * for known Minecraft versions.
  */
 fun writeBuildProperties(maxVersions: List<String>, version: String) {
+    /** Simple dotted versions split as lists of integers */
     fun String.toVersion() = split(".").map { it.toInt() }
+    /** Semantic (lexicographic) ordering */
     operator fun List<Int>.compareTo(other: List<Int>): Int {
         for (i in indices) {
             if (i >= other.size) return 1
@@ -43,6 +47,8 @@ fun writeBuildProperties(maxVersions: List<String>, version: String) {
     val maxLists = maxVersions.map { it.toVersion() }
     
     val redefineList = mutableListOf<String>()
+    /** We add `PRE_MC_<v>` or `POST_MC_<v>` symbols for all versions,
+     *  and `MC_<v>` for the current version. */
     fun addVersion(v: List<Int>) {
         val str = v.joinToString("_")
         if (ver < v) redefineList.add("PRE_MC_$str")
@@ -51,30 +57,30 @@ fun writeBuildProperties(maxVersions: List<String>, version: String) {
     }
     maxLists.forEach { maxVer ->
         if (maxVer.size >= 3) {
+            // Add symbols for all known minor versions
             val major = maxVer.subList(0, maxVer.size - 1)
             val maxMinor = maxVer[maxVer.size - 1]
             addVersion(major)
             for (minor in 1 until maxMinor)
                 addVersion(major + listOf(minor))
             addVersion(maxVer)
-        }
+        } else addVersion(maxVer)
     }
     
     val sb = StringBuilder()
     
-    // Check if this is a development build
+    // If this is a development build we add a DEV_BUILD symbol
     if (modVersion.lowercase().contains("dev")) {
-        // Use this only for logging to avoid parity issues with releases
         sb.append("DEV_BUILD")
         sb.append("=\n")
     }
     
-    // Minecraft version symbols
+    // Add the Minecraft version symbols
     for (redefinedVersion in redefineList) {
         sb.append(redefinedVersion)
         sb.append("=\n")
     }
-    
+
     file("build.properties").writeText(sb.toString())
 }
 
@@ -82,7 +88,8 @@ fun writeBuildProperties(maxVersions: List<String>, version: String) {
 val versionProperties = mutableMapOf<String, String>()
 
 /**
- * Load properties for the current Minecraft version
+ * Load properties for the current Minecraft version from the relevant
+ * file within the `versionProperties` folder.
  */
 fun loadProperties() {
     val defaultMcVersion = "1.20.2"
@@ -101,10 +108,9 @@ fun loadProperties() {
     }
     
     println("Loading properties from `versionProperties/$mcVersion.properties`")
-    val props = Properties()
-    props.load(file("versionProperties/$mcVersion.properties").inputStream())
-    
-    props.forEach {
+    Properties().apply {
+        load(file("versionProperties/$mcVersion.properties").inputStream())
+    }.forEach {
         rootProject.extra.set(it.key as String, it.value)
         versionProperties[it.key as String] = it.value as String
     }
@@ -117,6 +123,9 @@ loadProperties()
 val javaVersion: String by extra
 val minecraftVersion: String by extra
 val parchmentVersion: String by extra
+
+// Alias within loom extension, as it also defines a `minecraftVersion` property
+val buildMinecraftVersion get() = minecraftVersion
 
 val modProperties by extra {
     val map = mutableMapOf(
@@ -145,56 +154,38 @@ println(
     "Java: ${sysProp("java.version")}, " +
     "JVM: ${sysProp("java.vm.version")}(${sysProp("java.vendor")}), " +
     "Arch: ${sysProp("os.arch")}")
-println("Mod properties:")
-modProperties.forEach { (k, v) ->
-    println("  $k = $v")
-}
+println("Mod properties:\n${modProperties.entries.joinToString("\n") {
+    "  ${it.key} = ${it.value}"
+}}")
 
 architectury {
     minecraft = minecraftVersion
 }
 
+allprojects {
+    version = modVersion
+}
+
 subprojects {
     apply(plugin = "dev.architectury.loom")
-    
+    apply(plugin = "architectury-plugin")
+    apply(plugin = "maven-publish")
+
+    group = mavenGroup
+
+    extensions.configure<BasePluginExtension> {
+        archivesName.set("$modId-${buildMinecraftVersion}-${project.name}")
+    }
+
     repositories {
+        maven("https://maven.fabricmc.net/")
+        maven("https://maven.architectury.dev/")
+        maven("https://maven.neoforged.net/releases/")
+
         maven("https://maven.parchmentmc.org") {
             name = "ParchmentMC"
         }
-    }
-    
-    dependencies {
-        "annotationProcessor"("systems.manifold:manifold-preprocessor:$manifoldVersion")
-        "testAnnotationProcessor"("systems.manifold:manifold-preprocessor:$manifoldVersion")
-        
-        "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.9.1")
-        "testImplementation"("org.junit.jupiter:junit-jupiter-engine:5.9.1")
-    }
-    
-    extensions.configure<LoomGradleExtensionAPI> {
-        silentMojangMappingsLicense()
-        
-        dependencies {
-            "minecraft"("com.mojang:minecraft:$minecraftVersion")
-            
-            "mappings"(layered {
-                officialMojangMappings()
-                if (parchmentVersion.isNotBlank())
-                    parchment("org.parchmentmc.data:parchment-$minecraftVersion:$parchmentVersion@zip")
-            })
-        }
-    }
-}
 
-allprojects {
-    apply(plugin = "java")
-    apply(plugin = "architectury-plugin")
-    apply(plugin = "maven-publish")
-    
-    version = modVersion
-    group = mavenGroup
-    
-    repositories {
         // Manifold Preprocessor
         maven("https://oss.sonatype.org/content/repositories/snapshots/") {
             name = "Sonatype Snapshots"
@@ -207,7 +198,27 @@ allprojects {
             }
         }
     }
-    
+
+    dependencies {
+        "annotationProcessor"("systems.manifold:manifold-preprocessor:$manifoldVersion")
+        "testAnnotationProcessor"("systems.manifold:manifold-preprocessor:$manifoldVersion")
+
+        "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.9.1")
+        "testImplementation"("org.junit.jupiter:junit-jupiter-engine:5.9.1")
+    }
+
+    extensions.configure<LoomGradleExtensionAPI> {
+        dependencies {
+            "minecraft"("net.minecraft:minecraft:$buildMinecraftVersion")
+
+            "mappings"(layered {
+                officialMojangMappings()
+                if (parchmentVersion.isNotBlank())
+                    parchment("org.parchmentmc.data:parchment-$minecraftVersion:$parchmentVersion@zip")
+            })
+        }
+    }
+
     tasks.withType<JavaCompile> {
         options.apply {
             encoding = "UTF-8"
@@ -215,15 +226,15 @@ allprojects {
             compilerArgs.add("-Xplugin:Manifold")
         }
     }
-    
+
     tasks.withType<Test>().all {
         useJUnitPlatform()
     }
-    
+
     extensions.configure<JavaPluginExtension> {
         withSourcesJar()
     }
-    
+
     extensions.configure<PublishingExtension> {
         repositories {
             maven("https://maven.pkg.github.com/$githubRepo") {
@@ -233,7 +244,7 @@ allprojects {
                     password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
                 }
             }
-            
+
             maven(rootProject.projectDir.parentFile.resolve("maven")) {
                 name = "LocalMods"
             }

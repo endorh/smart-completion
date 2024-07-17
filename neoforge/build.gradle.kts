@@ -1,6 +1,5 @@
 plugins {
-
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow")
 }
 
 val prop = rootProject.extra
@@ -10,7 +9,7 @@ val modVersion: String by rootProject
 val architecturyVersion: String by prop
 val minecraftVersion: String by prop
 val neoForgeVersion: String by prop
-val modsTomlMinecraftVersion: String by prop
+val modsTomlFile: String by prop
 
 val modProperties: Map<String, String> by prop
 
@@ -27,9 +26,15 @@ loom {
     }
 }
 
-val common by configurations.creating
+val common by configurations.creating {
+    isCanBeResolved = true
+    isCanBeConsumed = false
+}
 // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-val shadowCommon by configurations.creating
+val shadowBundle by configurations.creating {
+    isCanBeResolved = true
+    isCanBeConsumed = false
+}
 val developmentNeoForge by configurations
 
 configurations {
@@ -49,7 +54,7 @@ dependencies {
     common(project(":common", configuration = "namedElements")) {
         isTransitive = false
     }
-    shadowCommon(project(":common", configuration = "transformProductionNeoForge")) {
+    shadowBundle(project(":common", configuration = "transformProductionNeoForge")) {
         isTransitive = false
     }
 }
@@ -62,26 +67,25 @@ tasks.processResources {
     exclude("**/.dev/**")
     exclude {
         it.relativePath.pathString.matches(modsTomlPattern)
-          && it.name.lowercase() != "mods.$modsTomlMinecraftVersion.toml".lowercase()
+          && it.name.lowercase() != modsTomlFile.lowercase()
     }
 
-    filesMatching(listOf("META-INF/mods.toml", "META-INF/mods.$modsTomlMinecraftVersion.toml")) {
+    filesMatching(listOf("META-INF/mods.toml", "META-INF/$modsTomlFile")) {
         expand(modProperties)
-        name = "mods.toml"
+        // Remove version from name
+        name = modsTomlFile.replace(Regex("""mods\.(\d+\.)*toml"""), "mods.toml")
     }
 }
 
 tasks.shadowJar {
+    configurations = listOf(shadowBundle)
     archiveClassifier.set("dev-shadow")
-    
+
     exclude("fabric.mod.json")
     exclude("architectury.common.json")
-    
-    configurations = listOf(shadowCommon)
 }
 
 tasks.remapJar {
-    archiveBaseName.set("$modId-$minecraftVersion-neoforge")
     archiveVersion.set(modVersion)
     archiveClassifier.set("")
     
@@ -109,7 +113,7 @@ components.getByName<AdhocComponentWithVariants>("java") {
 
 publishing {
     publications {
-        register<MavenPublication>("forge") {
+        register<MavenPublication>("neoforge") {
             artifactId = "$modId-$minecraftVersion-${project.name}"
             version = modVersion
         

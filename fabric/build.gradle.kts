@@ -1,5 +1,5 @@
 plugins {
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow")
 }
 
 val prop = rootProject.extra
@@ -66,7 +66,6 @@ tasks.shadowJar {
 }
 
 tasks.remapJar {
-    archiveBaseName.set("$modId-$minecraftVersion-${project.name}")
     archiveVersion.set(modVersion)
     archiveClassifier.set("")
     

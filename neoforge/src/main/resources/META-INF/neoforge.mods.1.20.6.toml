@@ -1,0 +1,31 @@
+modLoader = "javafml"
+loaderVersion = "${neoForgeLoaderVersion}"
+issueTrackerURL = "${modIssueTracker}"
+license = "${modLicense}"
+
+[[mods]]
+    modId = "smartcompletion"
+    version = "${version}"
+    displayName = "${modName}"
+    authors = "${modAuthor}"
+    description = "${modDescription}"
+    displayURL = "${modPage}"
+    displayTest = "${modDisplayTest}"
+    updateJSONURL = "${modUpdatesJSON}"
+    logoFile = "icon.png"
+
+[[dependencies.smartcompletion]]
+    modId = "neoforge"
+    type = "required"
+    versionRange = "${neoForgeVersionRange}"
+    ordering = "NONE"
+    side = "BOTH"
+[[dependencies.smartcompletion]]
+    modId = "minecraft"
+    type = "required"
+    versionRange = "${neoForgeMinecraftVersion}"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[mixins]]
+    config = "${modId}.mixins.json"
