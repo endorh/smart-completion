@@ -1,0 +1,49 @@
+{
+  "replace description": "Whether to replace these settings from lower-priority packs, or combine them.",
+  "replace": false,
+
+
+  "suggestion description": "Base text style for all suggestions",
+  "suggestion": {
+  },
+
+  "match description": "Style used for matched text in smart suggestions",
+  "match": {
+    "color": "blue"
+  },
+
+  "weak_match description": "Style used for matched text in weak suggestions",
+  "weak_match": {
+    "color": "dark_aqua"
+  },
+
+  "prefix description": "Style used for prefixes (namespaces) in suggestions",
+  "prefix": {
+    "color": "dark_gray"
+  },
+
+  "repeat description": "Style used for alternative matches for a query part that could've matched more than one suggestion part",
+  "repeat": {
+    "color": "dark_aqua"
+  },
+
+  "unexpected description": "Style used for unexpected vanilla suggestions",
+  "unexpected": {
+    "color": "dark_aqua"
+  },
+
+  "selected description": "Base text style for the selected suggestion",
+  "selected": {
+    "color": "#FFFF00"
+  },
+
+
+  "background_color description": "#AARRGGBB color for the background of the suggestion list",
+  "background_color": "#BD000000",
+
+  "background_selected_color description": "#AARRGGBB color for the background of the selected suggestion",
+  "background_selected_color": "#BD242424",
+
+  "ellipsis_color description": "#AARRGGBB color for the ellipsis dots above/below the suggestions list when scrolling is possible",
+  "ellipsis_color": "#80FFFFFF"
+}

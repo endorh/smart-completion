@@ -1,5 +1,5 @@
 plugins {
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow")
 }
 
 val prop = rootProject.extra
@@ -28,9 +28,15 @@ loom {
     }
 }
 
-val common by configurations.creating
+val common by configurations.creating {
+    isCanBeResolved = true
+    isCanBeConsumed = false
+}
 // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-val shadowCommon by configurations.creating
+val shadowBundle by configurations.creating {
+    isCanBeResolved = true
+    isCanBeConsumed = false
+}
 val developmentForge by configurations
 
 configurations {
@@ -46,7 +52,7 @@ dependencies {
     common(project(":common", configuration = "namedElements")) {
         isTransitive = false
     }
-    shadowCommon(project(":common", configuration = "transformProductionForge")) {
+    shadowBundle(project(":common", configuration = "transformProductionForge")) {
         isTransitive = false
     }
 }
@@ -63,16 +69,14 @@ tasks.processResources {
 }
 
 tasks.shadowJar {
+    configurations = listOf(shadowBundle)
     archiveClassifier.set("dev-shadow")
     
     exclude("fabric.mod.json")
     exclude("architectury.common.json")
-    
-    configurations = listOf(shadowCommon)
 }
 
 tasks.remapJar {
-    archiveBaseName.set("$modId-$minecraftVersion-${project.name}")
     archiveVersion.set(modVersion)
     archiveClassifier.set("")
     

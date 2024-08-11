@@ -14,12 +14,14 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 @Mod(SmartCompletionMod.MOD_ID)
 @EventBusSubscriber(value = Dist.CLIENT, bus = Bus.MOD, modid = SmartCompletionMod.MOD_ID)
 public class SmartCompletionModForge {
    public SmartCompletionModForge() {
-      SmartCompletionMod.init();
+      if (FMLEnvironment.dist == Dist.CLIENT)
+         SmartCompletionMod.init();
    }
 
    @SubscribeEvent
@@ -30,6 +32,7 @@ public class SmartCompletionModForge {
    #endif
       ReloadableResourceManager manager =
          (ReloadableResourceManager) Minecraft.getInstance().getResourceManager();
-      manager.registerReloadListener(new SmartCompletionResourceReloadListener());
+      manager.registerReloadListener(new SmartCompletionResourceReloadListener(
+         SmartCompletionMod.getSmartCompletionSettings()));
    }
 }

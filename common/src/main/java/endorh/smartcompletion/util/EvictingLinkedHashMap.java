@@ -8,11 +8,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 /**
- * A {@link LinkedHashMap} that evicts the eldest entry when the size exceeds a maximum size,
- * since even in 2023 this isn't a standard feature of the JDK, and I couldn't find it in Guava either.<br>
+ * A {@link LinkedHashMap} that evicts the eldest entry when the size exceeds a maximum size.<br>
  * <br>
  * Accepts an optional {@link #onEvict} listener that can be used to perform some action on eviction
- * (e.g. cancel an evicted {@link CompletableFuture}).
+ * (e.g., cancel an evicted {@link CompletableFuture}).
  */
 public class EvictingLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
    private int maxSize;

@@ -21,7 +21,8 @@ public class SmartCompletionModFabric implements ClientModInitializer {
       ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(
          new FabricResourceReloadListener(
             new ResourceLocation(SmartCompletionMod.MOD_ID, "smart-completion"),
-            new SmartCompletionResourceReloadListener()));
+            new SmartCompletionResourceReloadListener(
+               SmartCompletionMod.getSmartCompletionSettings())));
    }
 
    public static class FabricResourceReloadListener implements IdentifiableResourceReloadListener {
@@ -37,7 +38,7 @@ public class SmartCompletionModFabric implements ClientModInitializer {
          return id;
       }
 
-      @Override public CompletableFuture<Void> reload(
+      @Override public @NotNull CompletableFuture<Void> reload(
          @NotNull PreparationBarrier preparationBarrier, @NotNull ResourceManager resourceManager,
          @NotNull ProfilerFiller preparationProfiler, @NotNull ProfilerFiller applicationProfiler,
          @NotNull Executor preparationExecutor, @NotNull Executor applicationExecutor
@@ -47,7 +48,7 @@ public class SmartCompletionModFabric implements ClientModInitializer {
             preparationExecutor, applicationExecutor);
       }
 
-      @Override public String getName() {
+      @Override public @NotNull String getName() {
          return id.toString();
       }
    }

@@ -1,146 +1,186 @@
-![Smart Completion Mod](https://github.com/endorh/smart-completion/blob/1.20+/images/%5Bg%5Dolden_%5Bap%5Dple.png?raw=true)
+![Smart Completion Mod](https://endorh.github.io/smart-completion/images/%5Bg%5Dolden_%5Bap%5Dple.png?raw=true)
 
-![Minecraft: 1.16 - 1.20.4](https://img.shields.io/static/v1?label=&message=1.16%20-%201.20.4&color=2d2d2d&labelColor=4e4e4e&style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMjCGJ1kDAAACoElEQVQ4T22SeU8aURTF/ULGtNRWWVQY9lXABWldIDPIMgVbNgEVtaa0damiqGBdipXaJcY2ofEf4ycbTt97pVAabzK5b27u+Z377kwXgK77QthRy7OfXbeJM+ttqKSXN8sdwbT/A0L7elmsYqrPHZmROLPh5YkV4oEBwaKuHj+yyJptLDoAhbq3O1V1XCVObY3FL24mfn5oRPrcwSCRfQOyNWcjVjZdCbtcdwcgXrXUspdOKbDN/XE9tiBJMhXHT60gUIT2dMhcDLMc3NVKQklz0QIkf5qlyEcO6Qs7yPhMJB4amDMFimQSmqNlE8SKAZFzDfxHfVILIIZ10sJ3OwIbcqSuiOjchkzNCboHev9o2YhgiUP8mxnLN24I6/3ghYdtQG5iUMpFBuCP9iKwLsfiLyeCp2rMnZgwX3NArGoxW1Ridl+BzLEVKa8KSxOqNmDdz0kFnxaLHhWEgAyZigWhHXL+pEDy2ozsDxv8vAzTnh7w5kcghqCaFmCT10of4iPIT2mRdPUh4HoCcVwBH/8Ac2kzUkEV5r3EfVSOvbAJa5NDyI0r2oDtWb1EClh+OoC3Pg7v/Bw7p939yI4rsRW2Y3lKh01eh7WpIRyKZqzyjjYgPdIvlaMWRqYuG7wWryYHsRM0sFolZiPvQ3jheIwSmSBPdkByG/B6Wi3RYiVmRX7GiAPiUCRisii8D+jZNKvPBrHCW1GY0bAz6WkDCtOaSyKQFsi4K5NqNiZtehN2Y5uAShETqolhBqJXpfdPuPsuWwAaRdHSkxdc11mPqkGnyY4pyKbpl1GyJ0Pel7yqBoFcF3zqno5f+d8ohYy9Sx7lzQpxo1eirluCDgt++00p6uxttrG4F/A39sJGZWZMfrcp6O6+5kaVzXJHAOj6DeSs8qw5o8oxAAAAAElFTkSuQmCC)
-[<img alt="Mod Loader: Forge / Fabric" src="https://img.shields.io/badge/loader-forge/fabric-1976d2?style=flat-square"/>](https://files.minecraftforge.net/)
-![GitHub](https://img.shields.io/github/license/endorh/simple-config?style=flat-square)
-[<img alt="Curse Forge" src="https://cf.way2muchnoise.eu/short_782653_downloads(4E4E4E-E04E14-E0E0E0-2D2D2D-E0E0E0).svg?badge_style=flat"/>](https://www.curseforge.com/minecraft/mc-mods/smart-completion)
-[<img alt="Join the Discord" src="https://img.shields.io/discord/1017484317636710520?color=%235865F2&label=&labelColor=4e4e4e&logo=discord&logoColor=white&style=flat-square"/>](https://discord.gg/gqYVjBq65U)
+[//]: # (<badges>)
+
+[<img alt="Minecraft: 1.16 - 1.21.1" src="https://img.shields.io/static/v1?label=&message=1.16%20-%201.21.1&color=2d2d2d&labelColor=4e4e4e&style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAALOSURBVDhPdZNLaNRQGIXPTTKZPOaRmU4fKnSlSzeKG3HVgopu7MqCW7tQceXKRRUtghsXghZxpQsV1IVSK7VIW3xUKggFcdVqsZQ+pvNMM3ne5Hon1hmleEhCkvufL/9/OSH4j4Zu9x0udBkjge/Dtvzh0QuTs9tL/2gH4Nzo0YOyJF4nhJyQEiKiiMH3AlAavdYV+cqtofEv26WxWoCb42f2VyvWtZBGp1RNJo7jw3MDaHoSQRDG91lDYw3TfeEEwdX7F99+bfqE5uXSw5OPzS17vlq2BjiSNCw3JjfNlIYQCOGdRGCMEZ/SAW6aP3un71ELIOTY6bpnCrlOHYFPQQQCx/XjL/NR4PIR9JSChuVBlAWIRiQ0/PpgC+BMBMjpOqprJSQLIohEkM5oiMIILh+F82A1bCTyBIXeFOqLJswps2n9DchWfbDpGuhygNr3CtQOCVWvBogMqayCSKVgoYfNHyUsTK0i/Oij4KhtgKFKSNky9hQVsAUPdMUHMSkasolQCyDyMnPOxMabMmrvKpAYgSpLbYDAe+zMGxDkJIxSAuWJEsTZCHTGxtLTCorP10E2IhQiBft6DMgigcX3qAUQRQFLK2sgIW8tq2OvkUJBEtFVVaCsNZAX0tykIKur2HI8GLoCWcu2AWvlLfR2G5AEATXLiTsS+bm7M4MkD5MqMb4dFJs1C2k1ifKWjUyCtgFZTlwtmejKpyDrGfDExe/KdRtqUkKJG3kGkDJysHnrzVzwI1YM4A/POjJatLxeg8B3u2zavBMXWq4rXjRSKnryaTCvAYdnwqdhtLhamWkBLj+YHkQicUDKdL/0AsoCnj6XB0p06zA5qMKBP4s1MID5YfSBgfWPzS30N707fqa7548f2ihbI6IkHNtVyGD223I8UtEhnzs0afje2KfJ7dJYOwB/xEFHVjbrI8W6Y/R0pIdvPHn/anvpLwG/ACJ4RmGZSp8VAAAAAElFTkSuQmCC"/>](https://endorh.github.io/smart-completion/updates/forge/update.json "Available for Minecraft 1.16 - 1.21.1")
+[<img alt="Mod Loader: [Neo]Forge" src="https://img.shields.io/badge/Neo-Forged-d7742f?labelColor=757580&style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFuSURBVDhPY8AB+qAYBtD5eEFfWrDvfxAGsbHwUQATlIYBkOJCdTlpKBcBQGIgOSATxRBmKA0CcM1RGdkMB/buZShUFbQMUpexfMjMzZBXXsnw/PYNBgVpScuz12/xA9XvBGlCcYHd71cMNx89ZXhw6hmYLS38F4xBbJAYSA7ERgboXmCI5HvO8GNfNYOx2g8GdW1mMAaxQWIgOXSAYgDINgnh32CMDmDiIDXIAGZA3/5Ek0KQAqWGowwCqUugwgwMH1/8ANMgMZAcSA1ILVAIHJgwA4oc55/pf/GWFcyxD0wA0zDNIAATA6kBqQUyi0B8uAuW+JmDXfDu6X2Gt68hfgUphhkKEgPJgdSA1AKFwC5gBBFQADYEFGD4wNlbHAwxm05iuAAOYLaC/Guz8DUYg9jIrsEHQK74D8I/v3z5//zmZTAGsWHiIDUQpRCA7AUYACsAeQfMgwKos0EA7HQYwGYADKDYBAQoGqkEGBgA772uLRHGneYAAAAASUVORK5CYII="/>](https://neoforged.net "Available for Forge/NeoForge (NeoForge has replaced Forge since Minecraft 1.20)")
+[<img alt="Mod Loader: Fabric" src="https://img.shields.io/static/v1?label=&message=Fabric&color=335BAB&labelColor=808085&style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAYUExURTg0KtvQtLyynMa8pYB6ba6mlJqSfgAAAIyBx68AAAAIdFJOU/////////8A3oO9WQAAAAlwSFlzAAAOwwAADsMBx2+oZAAAAFdJREFUKFNdzEsSwCAIA1CCBe9/40L4dKbZSJ6K3F8WZtgTPS1oyzhGmg9GSgGKRCMico7KU1D3UD4IEOM9NCvBU8yq80vK9Frq1u8jHMS5j6nh6w2be1+qpQUHD/8D5QAAAABJRU5ErkJggg=="/>](https://fabricmc.net "Available for Fabric")
+[<img alt="Side: Client" src="https://img.shields.io/badge/side-Client-369B4F?style=flat-square&labelColor=484848&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADiSURBVDhPpVHLEsIwCCR+ho+r/p5614O9t/6eXn38RswiG0majuO4MxQK7JKEIF8QY7RIJISJdt80heUlRpj9jpFEmsVE6kFEGWZCvZVLaFcFTvVk5jKobnEuspEkerSwpjg9thGGglkxgc1MwzM300zCYT7kJ06vHSqRAZ/VVTQHf1sLej4CXJHzWeS+CXtNJiGbrILs1Su8ozH8SXh/lxKVmBLAtTAFLA0SQM6TfwFELGyDm/BxzWmJ6COSiCMj5ka6564g4Bq1SN4CQEJN9KhFCoHj4hxolmrCROzvL4i8ABWe07oDmv2VAAAAAElFTkSuQmCC"/>](https://minecraft.wiki/w/Mods#Types_of_mods "(Not needed in servers)")
+[<img alt="License" src="https://img.shields.io/github/license/endorh/smart-completion?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0ZGRiIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0ibTMgNiAzIDFtMCAwLTMgOWE1IDUgMCAwIDAgNi4wMDEgME02IDdsMyA5TTYgN2w2LTJtNiAyIDMtMW0tMyAxLTMgOWE1IDUgMCAwIDAgNi4wMDEgME0xOCA3bDMgOW0tMy05LTYtMm0wLTJ2Mm0wIDE2VjVtMCAxNkg5bTMgMGgzIi8+PC9zdmc+"/>](https://github.com/endorh/smart-completion/blob/1.20%2B/LICENSE)
+[<img alt="Curse Forge" src="https://img.shields.io/curseforge/dt/782653?style=flat-square&labelColor=424242&logo=curseforge&color=e27450&logoColor=e27450"/>](https://www.curseforge.com/minecraft/mc-mods/smart-completion "Download from CurseForge")
+[<img alt="Join the Discord" src="https://img.shields.io/discord/1017484317636710520?color=%235865F2&label=&labelColor=4e4e4e&logo=discord&logoColor=white&style=flat-square"/>](https://discord.gg/gqYVjBq65U "Join the Discord")
+
+[//]: # (</badges>)
+
+## Smart Completion for Minecraft
+Client-side mod that provides better autocompletion suggestions
+for Minecraft commands.
 
 > [!NOTE]
-> This branch is for Minecraft versions before 1.20 and won't be maintained regularly.
+> You're on the `1.16+` branch of the mod, for Minecraft `1.16 - 1.19.3`
 
-## Smart Completion Mod
-
-Better autocompletion for Minecraft commands (client-side).
+### Download
+You can download the mod from [CurseForge](https://www.curseforge.com/minecraft/mc-mods/smart-completion).
 
 ### Usage
-In order to type a command/name made up of several words, focus only on
-typing a few initials of each of its words, without spaces in between.
+To type a command/argument made up of several words, type only a few
+initials of each of its words.
 
-For example, if you wanted to type `/gamerule doDaylightCycle true`, you could
+For example, if you want to type `/gamerule doDaylightCycle true`, you could
 type:
-- `gr`, followed by `Ctrl+Space` or `Tab` to expand as `gamerule`
+- `gr`, which expands as `[g]ame[r]ule`
+- `dc` or `ddc`, which expand as `[d]o(D)aylight[C]ycle`
+- `t`, which expands as `true`
 
-![gamerule](https://raw.githubusercontent.com/endorh/smart-completion/1.20%2B/images/%5Bg%5Dame%5Br%5Dule.png)
-- `dc` or `ddc`, followed by `Ctrl+Space` or `Tab` to expand as `doDaylightCycle`
+![gamerule doDaylightCycle true](https://endorh.github.io/smart-completion/images/gr-dc-t.gif)
 
-![doDaylightCycle](https://raw.githubusercontent.com/endorh/smart-completion/1.20%2B/images/%5Bd%5Do(D)aylight%5BC%5Dycle.png)
-- `t`, followed by `Tab` on `Enter` to expand as `true`
+#### Keyboard Shortcuts
 
----
+In addition of `<Tab>`, you may also use `<Ctrl>+<Space>` to accept a
+suggestion, which will automatically insert a space so you can start
+typing the next argument.
 
-Using `Ctrl+Space` instead of `Tab` also adds an additional space after
-the completed word.
-Pressing `Enter` only accepts a suggestion when the current command is
-known to be invalid (if your text is red), so pressing `Enter` to execute
-a valid command will always do so, even if there is a selected suggestion
-in the list.
+> [!NOTE]
+> This is definitely an intentional feature and not the fruit of me
+> being too lazy to suppress the `Space` key event from being handled
+> also by the input bar :)
 
-If you need to disambiguate between suggestions, you may type more than
-one letter per word.
+Additionally, if the current command is known to be invalid
+(the text is red), pressing `<Enter>` will accept the selected suggestion,
+if any, rather than attempting to execute an invalid command.
+
+#### Disambiguating Suggestions
+
+To disambiguate between suggestions, you may need to type more than one
+letter per word.
+
 For example, to type `fireDamage` instead of `fallDamage`, which appears
 first when typing `fd`, you may type `fid`.
 
-![fireDamage](https://raw.githubusercontent.com/endorh/smart-completion/1.20%2B/images/%5Bf%5Dire%5BD%5Damage.png)
+![fireDamage](https://endorh.github.io/smart-completion/images/fd-fid.gif)
 
-In general, you may type as much as you feel like of the start of each
-word you want type, until the suggestion you want becomes the first one
-in the list.
+In general, it's **way** faster to type a few more letters to get the suggestion
+you want in front of the list rather than using the arrows/cycling with
+`<Tab>` to select it, as typing can build muscle memory.
 
-For example, you could start typing two initials for each word, such as
-`garu` for `gamerule`.
-Over time, you end up learning what's the minimum you really need to
-type to get each command you frequently use.
+Over time you will become used to the minimum number of letters you need to
+type the commands you frequently use, and typing them will feel like a breeze.
 
+#### Browsing Suggestions
 Since the words you type don't need to be at the start of the name you're
-typing, this is also helpful to discover options containing a certain word.
+typing, you may discover way more useful suggestions compared to how
+Minecraft suggestions usually work.
 
-If your query doesn't match the initials of any option, it will also be
-looked in between words, which is helpful when you don't know exactly what
-you're looking for.
+For example, if you type `/give @p wood`, you'll see suggestions for all
+items that contain a word that starts with `wood`.
 
-### Implementation
-This mod is purely client-side. In order to provide better completions for
-a command argument it sends two requests for completions to the server,
-one with the partially typed argument (informed) and one without (blind).
+Additionally, if your query doesn't match any of the initials of a suggestion,
+it will also look anywhere within suggestions to provide weak matches.
+This is helpful when you don't know exactly what you're looking for.
 
-The mod relies on the server replying with all possible suggestions to
-the blind request.
+### Suggestion Style
+Suggestions are highlighted according to the styles defined in the
+[`style.json`](https://github.com/endorh/smart-completion/blob/1.20+/common/src/main/resources/assets/smartcompletion/smart-completion/style.json)
+file, which can be overridden by resource packs (see
+[wiki](https://github.com/endorh/smart-completion/wiki/Customizing-the-Style-of-Suggestions)).
 
-Once both lists of suggestions have been received, the mod
-then combines them, and uses its own algorithm to filter and sort the
-suggestions.
+By default, matches inside a suggestion are highlighted in blue.
+Alternative matches for a query part (`[d]o(D)aylight[C]ycle`),
+weak matches and unexpected server suggestions are all highlighted in dark aqua.
+
+In addition, if a suggestion starts with a prefix of words, followed by a colon,
+(i.e., a resource location namespace), it will be highlighted in dark gray unless
+matched.
+
+### Extra Features
+This mod also inverts by default the order of suggestions, so the most
+relevant suggestion is the closest one to the input bar.
+
+If you find this too confusing, you may disable it with the following
+command:
+```
+/smartcompletion invert_suggestion_order false
+```
+
+> [!TIP]
+> Since you're using this mod, you could just type
+> `/sc`, `<Ctrl>+<Space>`, `iso`, `<Ctrl>+<Space>`, `f` and `<Enter>` twice.
+
+### How does it work
+This mod is purely client-side.
+To provide better completions for a command node we send two/three requests
+asking for suggestions to the server:
+- The one Vanilla would usually send, `informed`
+- One without the last partially typed argument, `arg-blind`
+- Optionally, one without the last partially typed word if the last argument
+  node consists of several words (e.g., some World Edit commands), `word blind`
+
+We then rely on the server replying with all unfiltered relevant
+suggestions to the blind requests.
+
+Once the lists of suggestions arrive, in whichever order, they're combined,
+filtered and sorted them, according to the strategies described below,
+and, once sorted, we update the displayed suggestions.
+
+In addition, since, while typing a single command, it is unlikely that
+the results for the blind requests will change, we may cache
+these requests.
+
+![World Edit Commands with cache enabled](https://endorh.github.io/smart-completion/images/demo-cache-enabled.gif)
+![World Edit Commands with cache disabled](https://endorh.github.io/smart-completion/images/demo-cache-disabled.gif)
+
+> [!TIP]
+> The behavior of the query cache can be configured with the
+> `/smartcompletion` command.
+> The default configuration is volatile (resets whenever you
+> start typing a fresh command), and shouldn't cause any trouble.
 
 If the server replies with suggestions for the informed request that
-were not matched by the matching algorithm on the blind list, they will
-also be suggested after any other matched suggestion, highlighted with
+were not matched by our filtering on the blind lists, they will
+be suggested after any other matched suggestions, highlighted with
 a different color (dark aqua by default).
 
 This implementation should work well with any custom commands, added by
 either mods or datapacks.
 
-### Matching
+#### Matching
 Suggestions are matched to your partially typed arguments using two
 different approaches:
-- A (smart) match between *parts* of your query and the initials of the *parts*
-  of the suggestion (`[g]ame[r]ule`)
-- A (dumb) search of each *part* of your query in the suggestion, in order
-  (`ga(me)r(ul)e`)
+- A `smart` match between *segments* of your query and the initials of *parts*
+  of the suggestion (`gr` matches `[g]ame[r]ule`)
+- A `weak` search for each *part* of your query within the suggestion, in order
+  (`lock on` matches `b(lock)Explosi(on)DropDecay`)
 
 A suggestion will be shown if any of these approaches matches it, but
 smart matches will be shown first.
 
-#### Smart Matching
-The smart matching algorithm splits both your query and all suggestion in
-*parts* or *words*. Then, it tries to subsequently split each part of your
-query in a way that can match the initials of parts of the suggestion in
-order, skipping parts as necessary and disregarding case.
+Both approaches are case-insensitive.
 
-In general, you won't need to type different multiple words in your query,
-but it could be useful if you want to enforce a specific split.
+#### Word Splitting
+We split words at any non-alphabetic character, as well as at `camelCase`
+words.
 
-#### Dumb Matching
-The dumb matching algorithm will only split your query in *parts*, not the
-suggestion. Then, it will try to find each part of your query in the
-suggestion in order, disregarding case.
+In addition, if a command cannot be split in this way, we will assume it's
+written in `flatcase` (like most Minecraft commands),
+and attempt to split it using a list of known words.
 
-This lets you find text within suggestions that may not be at the start of
-a *part*/*word*.
+> [!TIP]
+> This list of words is defined by the
+> [`flatcase_splitting.json`](https://github.com/endorh/smart-completion/blob/v2/common/src/main/resources/assets/smartcompletion/smart-completion/flatcase_splitting.json)
+> file, and can be overridden by resource packs (see
+> [wiki](https://github.com/endorh/smart-completion/wiki/Changing-the-List-of-Known-Words-used-to-Split-Commands)).
+> By default, it contains words used by Minecraft, Forge, Fabric and WorldEdit
+> commands, as well as a few more.
 
-### Word Splitting
-Both matching algorithm described above are based in word splitting.
-This mod recognizes the following ways to split words:
-- `space characters`
-- `camelCase`
-- `snake_case`
-- `kebab-case`
-- `dot.case`
-- `colon:delimiter`
-- changes between letter characters and other non-letter characters,
-  such as numbers
+#### Suggestion Sorting
+Suggestions are sorted according to heuristics designed to fit a few use cases, which
+can be found in the
+[tests](https://github.com/endorh/smart-completion/blob/v2/common/src/test/java/endorh/smartcompletion/SmartCommandCompletionTest.java).
 
-These word delimiters may be mixed in any way.
-
-In addition, if a suggestion cannot be split by any of the above methods,
-the mod will assume it's written in `flatcase` (like most Minecraft commands,
-e.g., `gamerule`). In this case, the mod will use a list of known words
-to attempt to split the flat case into fragments.
-
-This list of words is defined by the
-[`command_splitting.json`](https://github.com/endorh/smart-completion/blob/main/common/src/main/resources/assets/smartcompletion/smart-completion/command_splitting.json)
-file, and can be overridden by resource packs (see
-[wiki](https://github.com/endorh/smart-completion/wiki/Changing-the-List-of-Known-Words-used-to-Split-Commands)).
-By default, it contains words used by Minecraft, Forge, Fabric and WorldEdit
-commands, as well as a few more.
-
-The algorithm to split `flatcase` can also swallow some suffix characters
-after words, if not part of another word. By default, it will
-swallow the `s` character after a word, assuming it's a plural form.
-This feature is quite pointless and may be dropped at any time.
-
-### Suggestion Sorting
-Suggestions are sorted by the following criteria, in descending order of priority:
-- Smart matches > dumb matches > unexpected server suggestions (`[d]o(D)aylight[C]ycle > sen(dC)ommandFeedback`)
+Summarized, we use the following criteria to sort suggestions, in order:
+- suggestions targeting a position closer to the cursor are shown first (`/give @p chest` suggests `[` before `minecart_chest`)
+- smart matches > weak matches > unexpected server suggestions (`[d]o(D)aylight[C]ycle > sen(dC)ommandFeedback`)
+- significant matches beyond some thresholds are shown first (`[app]le` > `[a]cacia_[p]ressure_[p]late`)
 - more part matches > less part matches (`[d]o[I]nsomnia > [di]sableRaids`)
 - matches where a single query part could've matched more than one suggestion part
   are sorted first (`[d]o(D)aylight[C]ycle > [d]oWeather[C]ycle`)
@@ -148,27 +188,3 @@ Suggestions are sorted by the following criteria, in descending order of priorit
 - earlier matched parts > later matched parts (`[g]ame[m]ode > default[g]ame[m]ode`)
 - shorter suggestions > longer suggestions (`[t]p > [t]ell`)
 - original order from the server (usually alphabetic) (`[f]all[D]amage > [f]ire[D]amage`)
-
-### Suggestion Style
-Suggestions are highlighted according to the styles defined in the
-[`completion_style.json`](https://github.com/endorh/smart-completion/blob/1.20+/common/src/main/resources/assets/smartcompletion/smart-completion/completion_style.json)
-file, which can be overridden by resource packs (see
-[wiki](https://github.com/endorh/smart-completion/wiki/Customizing-the-Style-of-Suggestions)).
-
-By default, matches inside a suggestion are highlighted in blue.
-Alternative matches for a query part (`[d]o(D)aylight[C]ycle`),
-dumb matches and unexpected server suggestions are all highlighted in dark aqua.
-
-In addition, if a suggestion starts with a prefix of words, followed by a colon,
-(i.e., a resource location namespace), it will be highlighted in dark gray unless
-matched.
-
-### Keyboard Shortcuts
-This mod also lets you use `Ctrl+Space` and `Enter` to accept command
-suggestions. The `Enter` key is only used to accept suggestions when
-the currently typed command is invalid.
-
-Using `Ctrl+Space` to accept a completion also inserts a space after it
-so you can start typing the next argument. (It's definitely an intentional
-feature and not the fruit of me being too lazy to suppress the `Space` key
-event from being handled also by the input bar :) ).

@@ -3,12 +3,12 @@ package endorh.smartcompletion;
 public class InstrumentedMultiMatcher extends MultiMatcher {
    private int backTrackCount;
    private int partBackTrackCount;
-   private boolean dumbCheckAbort;
+   private boolean weakCheckAbort;
 
    @Override public synchronized MultiMatch match(String target, String query) {
       backTrackCount = 0;
       partBackTrackCount = 0;
-      dumbCheckAbort = false;
+      weakCheckAbort = false;
       return super.match(target, query);
    }
 
@@ -22,9 +22,9 @@ public class InstrumentedMultiMatcher extends MultiMatcher {
       super.partBackTrack();
    }
 
-   @Override protected boolean dumbMatchCheck() {
-      boolean c = super.dumbMatchCheck();
-      dumbCheckAbort = !c;
+   @Override protected boolean weakMatchCheck() {
+      boolean c = super.weakMatchCheck();
+      weakCheckAbort = !c;
       return c;
    }
 
@@ -36,7 +36,7 @@ public class InstrumentedMultiMatcher extends MultiMatcher {
       return partBackTrackCount;
    }
 
-   public boolean didAbortWithDumbCheck() {
-      return dumbCheckAbort;
+   public boolean didAbortWithWeakCheck() {
+      return weakCheckAbort;
    }
 }

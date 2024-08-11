@@ -47,6 +47,8 @@ public class MixinClientSuggestionProvider {
     * {@code #pendingSuggestionsId} do not break the mixin.
     */
    @Unique private int smartcompletion$pendingSuggestionsId = -1;
+
+   // Shadow accessors
    @Final @Shadow private ClientPacketListener connection;
 
 

@@ -1,0 +1,37 @@
+{
+  "replace description": "Whether to replace these settings from lower-priority packs, or combine them.",
+  "replace": false,
+
+  "enable_query_cache description": "Enable cache features, according to the rest of the options. Useful to disable the cache altogether.",
+  "enable_query_cache": true,
+
+    "cache_blind_queries_on_type description": "Whether to cache blind queries while typing a single command",
+    "cache_blind_queries_on_type": true,
+
+    "cache_informed_queries_on_type description": "Whether to cache informed queries while typing a single command",
+    "cache_informed_queries_on_type tip": "The benefit of caching informed queries is significantly lower than that of caching blind queries",
+    "cache_informed_queries_on_type": true,
+
+    "cache_blind_queries description": "Whether to cache blind queries across multiple commands",
+    "cache_blind_queries warning": "This may cause nuisances if the commands you can execute change frequently",
+    "cache_blind_queries": false,
+
+    "cache_informed_queries description": "Whether to cache informed queries across multiple commands",
+    "cache_informed_queries warning": "This may cause nuisances if the commands you can execute change frequently",
+    "cache_informed_queries tip": "The benefit of caching informed queries is significantly lower than that of caching blind queries",
+    "cache_informed_queries": false,
+
+    "query_cache_max_entries description": "Maximum number of entries to store in the cache. Separate for each query type.",
+    "query_cache_max_entries warning": "Each entry can contain an arbitrary number of suggestions, so the memory usage can be high",
+    "query_cache_max_entries": 40,
+
+    "query_cache_expiration_seconds description": "Number of seconds after which a cache entry will expire",
+    "query_cache_expiration_seconds warning": "Setting this too high will aggravate the nuisances caused by changing commands",
+    "query_cache_expiration_seconds": 60,
+
+  "enable_split_cache description": "Enable caching of splits of flatcase commands",
+  "enable_split_cache": true,
+
+    "split_cache_max_entries description": "Maximum number of split commands to keep in the split cache",
+    "split_cache_max_entries": 2048
+}
