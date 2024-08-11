@@ -1,7 +1,15 @@
 {
+  "replace description": "Whether to replace these settings from lower-priority packs, or combine them.",
+  "replace": false,
+
+
+  "suffixes description": "Suffixes that are recognized after a known word if found remaining between known words",
   "suffixes": [
     "s"
   ],
+
+  "words description": "Known words used to split flatcase commands",
+  "words tip": "You may assign an object with 'include'/'exclude' or 'replace' keys to modify accordingly the list defined by lower-priority resource packs.",
   "words": [
     "mine",
     "craft",
@@ -241,6 +249,9 @@
     "before",
     "after",
 
-    "elytra"
+    "elytra",
+
+    "smart",
+    "completion"
   ]
 }

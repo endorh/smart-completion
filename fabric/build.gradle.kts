@@ -35,6 +35,7 @@ configurations {
 
 dependencies {
     modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
+    modRuntimeOnly("curse.maven:worldedit-225608:5507247")
     modApi("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
     // modApi("dev.architectury:architectury-fabric:${architecturyVersion}")
     

@@ -1,0 +1,39 @@
+{
+  "replace description": "Whether to replace these settings from lower-priority packs, or combine them.",
+  "replace": false,
+
+
+  "enabled description": "Enable the Smart Completion Mod",
+  "enabled": true,
+
+    "enable_completion_keys description": "Enable completion keys: `<Ctrl>+<Space>`",
+    "enable_completion_keys": true,
+
+      "enable_completion_with_enter description": "Enable completion with `<Enter>` if the current command is known to be incomplete",
+      "enable_completion_with_enter warning": "Only effective if `enable_completion_keys` is `true`",
+      "enable_completion_with_enter": true,
+
+      "enforce_show_suggestions_on_slash description": "Enforce showing suggestions after typing `/`",
+      "enforce_show_suggestions_on_slash warning": "It makes command history harder to use",
+      "enforce_show_suggestions_on_slash": false,
+
+    "enable_suggestion_highlighting description": "Enable suggestion highlighting",
+    "enable_suggestion_highlighting warning": "This requires replacing vanilla rendering of the suggestion list, and may conflict with other mods that do the same",
+    "enable_suggestion_highlighting": true,
+
+      "invert_suggestion_order description": "Invert the order of suggestions in the suggestion list, so that the most relevant suggestion is the closest to the input bar",
+      "invert_suggestion_order": true,
+
+    "include_smart_matches description": "Include smart matches, which match segments of the query with initials of parts of the suggestions.",
+    "include_smart_matches": true,
+
+    "include_weak_matches description": "Include weak matches, which search for each query part anywhere on the suggestions, in order",
+    "include_weak_matches": true,
+
+      "minimum_weak_match_length description": "Minimum length of a weak match to be considered",
+      "minimum_weak_match_length warning": "Setting this to 1 is not a good idea",
+      "minimum_weak_match_length": 2,
+
+    "include_unexpected_suggestions description": "Include vanilla matches not already matched by other means",
+    "include_unexpected_suggestions": true
+}

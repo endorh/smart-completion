@@ -7,30 +7,42 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.List;
 import java.util.Stack;
 
+import static endorh.smartcompletion.SmartCommandCompletion.split;
 import static java.lang.Math.min;
 
+/**
+ * Matches queries against targets by splitting each of them into parts
+ * ({@link SmartCommandCompletion#split}), and further dividing each query
+ * part into subparts that are each matched at the start of each target
+ * part.<br>
+ * <br>
+ * If a match could've occurred at multiple target parts, these are recorded.<br>
+ * <br>
+ * Once {@link #weakCheckDepth} is exceeded, a check is performed to discard
+ * the match if all query characters are not contained in order within the target.
+ */
 public class MultiMatcher {
    private String target;
    private String query;
-   private WordSplit t;
-   private WordSplit q;
+   private WordSplit targetSplit;
+   private WordSplit querySplit;
    private final List<String> matches = Lists.newArrayList();
    private final IntList indices = new IntArrayList();
-   private final IntList subIndices = new IntArrayList();
+   private final IntList partIndices = new IntArrayList();
    private final IntList qIndices = new IntArrayList();
    private final List<IntList> repeats = Lists.newArrayList();
    private IntList repeat;
-   private int qi;
-   private String qq;
-   private int r;
-   private int remIdx;
-   private String rem;
-   private String last;
+   private int queryPartIdx;
+   private String queryPartRem;
+   private int targetPartIdx;
+   private int targetPartTargetIdx;
+   private String targetPart;
+   private String lastMatch;
    private final Stack<MatchState> stack = new Stack<>();
    private boolean done;
    private int depth;
-   private int dumbCheckDepth = 10;
-   private int dumbMatchLengthThreshold = 2;
+   private int weakCheckDepth = 10;
+   private int weakMatchLengthThreshold = 2;
    private MultiMatch result;
 
    private void init(String target, String query) {
@@ -42,22 +54,22 @@ public class MultiMatcher {
          done = true;
          return;
       }
-      qi = -1;
-      q = SmartCommandCompletion.split(this.query, false);
-      t = SmartCommandCompletion.split(this.target, true);
-      if (q.size() > t.size()) {
-         result = dumbMatch();
+      queryPartIdx = -1;
+      querySplit = split(this.query, false);
+      targetSplit = split(this.target, true);
+      if (querySplit.size() > targetSplit.size()) {
+         result = weakMatch();
          done = true;
          return;
       }
       matches.clear();
       indices.clear();
-      subIndices.clear();
+      partIndices.clear();
       qIndices.clear();
       repeats.clear();
       repeat = null;
-      r = -1;
-      last = null;
+      targetPartIdx = -1;
+      lastMatch = null;
       stack.clear();
       depth = 1;
    }
@@ -73,19 +85,19 @@ public class MultiMatcher {
    }
 
    private void skipQueryPart() {
-      qi++;
-      if (qi < q.size()) {
-         qq = q.words()[qi].toLowerCase();
+      queryPartIdx++;
+      if (queryPartIdx < querySplit.size()) {
+         queryPartRem = querySplit.words()[queryPartIdx].toLowerCase();
       } else {
          done = true;
-         result = MultiMatch.of(t, matches, indices, subIndices, repeats, 0);
+         result = MultiMatch.of(targetSplit, matches, indices, partIndices, repeats, 0);
       }
    }
 
    private boolean skipTargetPart() {
-      if (t.size() - ++r >= q.size() - qi) {
-         remIdx = t.indices()[r];
-         rem = t.words()[r];
+      if (targetSplit.size() - ++targetPartIdx >= querySplit.size() - queryPartIdx) {
+         targetPartTargetIdx = targetSplit.indices()[targetPartIdx];
+         targetPart = targetSplit.words()[targetPartIdx];
          return false;
       } else {
          backTrack();
@@ -95,28 +107,29 @@ public class MultiMatcher {
 
    private void matchQueryPart() {
       if (skipTargetPart()) return;
-      while (!qq.isEmpty()) {
+      while (!queryPartRem.isEmpty()) {
          int j = 0;
-         int m = min(qq.length(), rem.length());
+         int m = min(queryPartRem.length(), targetPart.length());
          // swallow common parts
-         while (j < m && qq.charAt(j) == Character.toLowerCase(rem.charAt(j))) j++;
+         while (j < m && queryPartRem.charAt(j) == Character.toLowerCase(targetPart.charAt(j))) j++;
          if (j == 0) { // skip target part
-            if (last != null && rem.toLowerCase().startsWith(last))
-               repeat.add(remIdx);
+            if (lastMatch != null && targetPart.toLowerCase().startsWith(lastMatch))
+               repeat.add(targetPartTargetIdx);
             if (skipTargetPart()) return;
             continue;
          }
          if (j > 1) stack.push(new MatchState(
-            matches.size(), qi, qq.substring(1), rem.substring(1, j)));
+            matches.size(), queryPartIdx, queryPartRem.substring(1), targetPart.substring(1, j)));
          j = 1;
-         matches.add(last = rem.substring(0, j));
-         last = last.toLowerCase();
-         indices.add(remIdx);
-         subIndices.add(r);
-         qIndices.add(qi);
+         matches.add(lastMatch = targetPart.substring(0, j));
+         lastMatch = lastMatch.toLowerCase();
+         indices.add(targetPartTargetIdx);
+         partIndices.add(targetPartIdx);
+         qIndices.add(queryPartIdx);
          repeats.add(repeat = new IntArrayList());
-         qq = qq.substring(j);
-         if (qq.isEmpty()) break;
+
+         queryPartRem = queryPartRem.substring(j);
+         if (queryPartRem.isEmpty()) break;
          if (skipTargetPart()) return;
       }
       skipQueryPart();
@@ -127,29 +140,29 @@ public class MultiMatcher {
          partBackTrack();
          return;
       }
-      if (depth++ == dumbCheckDepth && !dumbMatchCheck()) {
+      if (depth++ == weakCheckDepth && !weakMatchCheck()) {
          done = true;
-         result = dumbMatch();
+         result = weakMatch();
          return;
       }
       MatchState s = stack.pop();
       int n = matches.size();
-      if (s.i + 1 < n) {
-         matches.subList(s.i + 1, n).clear();
-         indices.subList(s.i + 1, n).clear();
-         subIndices.subList(s.i + 1, n).clear();
-         repeats.subList(s.i + 1, n).clear();
+      if (s.matchCount() + 1 < n) {
+         matches.subList(s.matchCount() + 1, n).clear();
+         indices.subList(s.matchCount() + 1, n).clear();
+         partIndices.subList(s.matchCount() + 1, n).clear();
+         repeats.subList(s.matchCount() + 1, n).clear();
       }
-      repeat = repeats.get(s.i);
+      repeat = repeats.get(s.matchCount());
       repeat.clear();
-      matches.set(s.i, last = matches.get(s.i) + s.m.charAt(0));
-      last = last.toLowerCase();
-      qq = s.qq.substring(1);
-      qi = s.qi;
-      r = subIndices.getInt(s.i);
-      if (s.m.length() > 1) stack.push(new MatchState(
-         s.i, s.qi, qq, s.m.substring(1)));
-      if (qq.isEmpty())
+      matches.set(s.matchCount(), lastMatch = matches.get(s.matchCount()) + s.lastMatch().charAt(0));
+      lastMatch = lastMatch.toLowerCase();
+      queryPartRem = s.queryPart().substring(1);
+      queryPartIdx = s.queryPartIdx();
+      targetPartIdx = partIndices.getInt(s.matchCount());
+      if (s.lastMatch().length() > 1) stack.push(new MatchState(
+         s.matchCount(), s.queryPartIdx(), queryPartRem, s.lastMatch().substring(1)));
+      if (queryPartRem.isEmpty())
          skipQueryPart();
    }
 
@@ -157,30 +170,30 @@ public class MultiMatcher {
       int n = matches.size();
       if (n == 0) {
          done = true;
-         result = dumbMatch();
+         result = weakMatch();
          return;
       }
-      if (depth++ == dumbCheckDepth && !dumbMatchCheck()) {
+      if (depth++ == weakCheckDepth && !weakMatchCheck()) {
          done = true;
-         result = dumbMatch();
+         result = weakMatch();
          return;
       }
-      qi = qIndices.getInt(n - 1) - 1;
+      queryPartIdx = qIndices.getInt(n - 1) - 1;
       skipQueryPart();
       int nn = n - 1;
       for (int i = n - 2; i >= 0; i--)
-         if (qIndices.getInt(i) == qi)
+         if (qIndices.getInt(i) == queryPartIdx)
             nn = i;
-      r = subIndices.getInt(nn);
+      targetPartIdx = partIndices.getInt(nn);
       matches.subList(nn, n).clear();
       indices.subList(nn, n).clear();
-      subIndices.subList(nn, n).clear();
+      partIndices.subList(nn, n).clear();
       repeats.subList(nn, n).clear();
       if (nn > 0) {
-         last = matches.get(nn - 1);
+         lastMatch = matches.get(nn - 1);
          repeat = repeats.get(nn - 1);
       } else {
-         last = null;
+         lastMatch = null;
          repeat = null;
       }
    }
@@ -188,9 +201,9 @@ public class MultiMatcher {
    /**
     * Check if all the query characters are contained in order
     */
-   protected boolean dumbMatchCheck() {
+   protected boolean weakMatchCheck() {
       int i = 0;
-      String qs = String.join("", q.words());
+      String qs = String.join("", querySplit.words());
       int tl = target.length();
       int ql = qs.length();
       for (int qi = 0; qi < ql; qi++) {
@@ -204,10 +217,10 @@ public class MultiMatcher {
       return true;
    }
 
-   private void initDumb() {
+   private void initWeak() {
       matches.clear();
       indices.clear();
-      subIndices.clear();
+      partIndices.clear();
       repeats.clear();
       repeat = new IntArrayList();
    }
@@ -215,45 +228,33 @@ public class MultiMatcher {
    /**
     * Find each query part anywhere in the target, in order
     */
-   private MultiMatch dumbMatch() {
-      initDumb();
+   private MultiMatch weakMatch() {
+      initWeak();
       int start = 0;
       String target = this.target.toLowerCase();
       boolean significant = false;
-      for (String qq : q.words()) {
+      for (String qq : querySplit.words()) {
          int i = target.indexOf(qq.toLowerCase(), start);
          if (i == -1) return MultiMatch.empty();
          matches.add(qq);
          indices.add(i);
-         subIndices.add(subIndices.size());
+         partIndices.add(partIndices.size());
          repeats.add(repeat);
          start = i + qq.length();
-         significant |= qq.length() >= dumbMatchLengthThreshold;
+         significant |= qq.length() >= weakMatchLengthThreshold;
       }
       return significant ? MultiMatch.of(
-         t, matches, indices, subIndices, repeats, 1
+         targetSplit, matches, indices, partIndices, repeats, 1
       ) : MultiMatch.empty();
    }
 
-   public void setDumbCheckDepth(int depth) {
-      dumbCheckDepth = depth;
+   public void setWeakCheckDepth(int depth) {
+      weakCheckDepth = depth;
    }
 
-   public void setDumbMatchLengthThreshold(int threshold) {
-      dumbMatchLengthThreshold = threshold;
+   public void setWeakMatchLengthThreshold(int threshold) {
+      weakMatchLengthThreshold = threshold;
    }
 
-   private static class MatchState {
-      private final int i;
-      private final int qi;
-      private final String qq;
-      private final String m;
-
-      private MatchState(int i, int qi, String qq, String m) {
-         this.i = i;
-         this.qi = qi;
-         this.qq = qq;
-         this.m = m;
-      }
-   }
+   private record MatchState(int matchCount, int queryPartIdx, String queryPart, String lastMatch) {}
 }

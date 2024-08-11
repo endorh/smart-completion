@@ -223,7 +223,8 @@ subprojects {
         options.apply {
             encoding = "UTF-8"
             release.set(javaVersion.toInt())
-            compilerArgs.add("-Xplugin:Manifold")
+            // if (project.name != "common")
+                compilerArgs.add("-Xplugin:Manifold")
         }
     }
 

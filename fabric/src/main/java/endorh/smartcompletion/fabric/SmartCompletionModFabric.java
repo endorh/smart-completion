@@ -1,8 +1,10 @@
 package endorh.smartcompletion.fabric;
 
 import endorh.smartcompletion.SmartCompletionMod;
+import endorh.smartcompletion.customization.SmartCompletionCommand;
 import endorh.smartcompletion.customization.SmartCompletionResourceReloadListener;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +24,9 @@ public class SmartCompletionModFabric implements ClientModInitializer {
       ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(
          new FabricResourceReloadListener(
             location("smart-completion"),
-            new SmartCompletionResourceReloadListener()));
+            new SmartCompletionResourceReloadListener(
+               SmartCompletionMod.getSmartCompletionSettings())));
+      ClientCommandRegistrationCallback.EVENT.register(SmartCompletionCommand::registerCommands);
    }
 
    public static class FabricResourceReloadListener implements IdentifiableResourceReloadListener {

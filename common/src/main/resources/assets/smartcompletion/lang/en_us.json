@@ -1,0 +1,11 @@
+{
+  "smartcompletion.command.set": "§7Set §r%s§7: §r%s",
+  "smartcompletion.command.get": "  %s§7: §r%s",
+  "smartcompletion.command.set.added_by_user": " §a Value §ladded§r§a by user",
+  "smartcompletion.command.set.added_by_pack": " §2 Value §ladded§r§2 by resource pack",
+  "smartcompletion.command.set.removed_by_user": " §4 Value §lremoved§r§4 by user",
+  "smartcompletion.command.set.not_added": " §7 Value is §lnot present",
+  "smartcompletion.command.hover.option": "§7Click to configure this value",
+
+  "parsing.word.lowercase.expected": "Expected a lowercase word."
+}

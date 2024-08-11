@@ -3,70 +3,57 @@ package endorh.smartcompletion.customization;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import endorh.smartcompletion.SmartCommandCompletion;
-#if PRE_MC_1_20_3
-   import net.minecraft.network.chat.Style;
-#endif
+import endorh.smartcompletion.customization.option.OptionCategory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * Reloads pack options from resource packs.
+ * @see OptionCategory
+ */
 public class SmartCompletionResourceReloadListener extends SimpleJsonResourceReloadListener {
    private static final Logger LOGGER = LogManager.getLogger();
    public static final Gson GSON = new GsonBuilder()
-      .registerTypeAdapter(CommandSplittingSettings.class, CommandSplittingSettings.SERIALIZER)
-      .registerTypeAdapter(CommandCompletionStyle.class, CommandCompletionStyle.SERIALIZER)
-      #if PRE_MC_1_20_3
-      .registerTypeAdapter(Style.class, new Style.Serializer())
-      #endif
+      .setPrettyPrinting()
       .create();
 
-   public SmartCompletionResourceReloadListener() {
+   protected final List<OptionCategory<?>> categories = new ArrayList<>();
+
+   public SmartCompletionResourceReloadListener(OptionCategory<?>... options) {
       super(GSON, "smart-completion");
+      for (OptionCategory<?> cat : options) registerCategory(cat);
+   }
+   public final void registerCategory(OptionCategory<?> category) {
+      categories.add(category);
+      for (OptionCategory<?> sub : category.getCategories())
+         registerCategory(sub);
    }
 
    @Override protected void apply(
       @NotNull Map<ResourceLocation, JsonElement> map, @NotNull ResourceManager manager,
       @NotNull ProfilerFiller profiler
    ) {
-      List<JsonElement> commandSplittingJsonList = map.entrySet().stream()
-         .filter(e -> "command_splitting".equals(e.getKey().getPath()))
-         .map(Entry::getValue).toList();
-      List<JsonElement> completionStyleJSONList = map.entrySet().stream()
-         .filter(e -> "completion_style".equals(e.getKey().getPath()))
-         .map(Entry::getValue).toList();
-      try {
-         CommandSplittingSettings settings = new CommandSplittingSettings();
-         for (JsonElement obj : commandSplittingJsonList) {
-            CommandSplittingSettings next = GSON.fromJson(obj, CommandSplittingSettings.class);
-            if (GsonHelper.getAsBoolean(obj.getAsJsonObject(), "replace", false)) {
-               settings = next;
-            } else settings = settings.merge(next);
+      for (OptionCategory<?> category : categories) {
+         profiler.push(category.getName());
+         try {
+            category.reloadPackSettings(map.entrySet().stream()
+               .filter(e -> category.getName().equals(e.getKey().getPath()))
+               .map(Entry::getValue).toList());
+         } catch (RuntimeException e) {
+            // Any exceptions thrown from here are silently swallowed and freeze the game
+            LOGGER.error("Error loading Smart Completion settings from resources.", e);
          }
-         SmartCommandCompletion.setSplittingSettings(settings);
-      } catch (RuntimeException e) {
-         LOGGER.error("Failed to load command splitting settings", e);
-      }
-      try {
-         CommandCompletionStyle style = new CommandCompletionStyle();
-         for (JsonElement obj : completionStyleJSONList) {
-            CommandCompletionStyle next = GSON.fromJson(obj, CommandCompletionStyle.class);
-            if (GsonHelper.getAsBoolean(obj.getAsJsonObject(), "replace", false)) {
-               style = next;
-            } else style = next.applyTo(style);
-         }
-         SmartCommandCompletion.setCompletionStyle(style);
-      } catch (RuntimeException e) {
-         LOGGER.error("Failed to load completion style settings", e);
+         profiler.pop();
       }
    }
 }
