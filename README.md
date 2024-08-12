@@ -6,7 +6,7 @@
 [<img alt="Mod Loader: [Neo]Forge" src="https://img.shields.io/badge/Neo-Forged-d7742f?labelColor=757580&style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAFuSURBVDhPY8AB+qAYBtD5eEFfWrDvfxAGsbHwUQATlIYBkOJCdTlpKBcBQGIgOSATxRBmKA0CcM1RGdkMB/buZShUFbQMUpexfMjMzZBXXsnw/PYNBgVpScuz12/xA9XvBGlCcYHd71cMNx89ZXhw6hmYLS38F4xBbJAYSA7ERgboXmCI5HvO8GNfNYOx2g8GdW1mMAaxQWIgOXSAYgDINgnh32CMDmDiIDXIAGZA3/5Ek0KQAqWGowwCqUugwgwMH1/8ANMgMZAcSA1ILVAIHJgwA4oc55/pf/GWFcyxD0wA0zDNIAATA6kBqQUyi0B8uAuW+JmDXfDu6X2Gt68hfgUphhkKEgPJgdSA1AKFwC5gBBFQADYEFGD4wNlbHAwxm05iuAAOYLaC/Guz8DUYg9jIrsEHQK74D8I/v3z5//zmZTAGsWHiIDUQpRCA7AUYACsAeQfMgwKos0EA7HQYwGYADKDYBAQoGqkEGBgA772uLRHGneYAAAAASUVORK5CYII="/>](https://neoforged.net "Available for Forge/NeoForge (NeoForge has replaced Forge since Minecraft 1.20)")
 [<img alt="Mod Loader: Fabric" src="https://img.shields.io/static/v1?label=&message=Fabric&color=335BAB&labelColor=808085&style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAYUExURTg0KtvQtLyynMa8pYB6ba6mlJqSfgAAAIyBx68AAAAIdFJOU/////////8A3oO9WQAAAAlwSFlzAAAOwwAADsMBx2+oZAAAAFdJREFUKFNdzEsSwCAIA1CCBe9/40L4dKbZSJ6K3F8WZtgTPS1oyzhGmg9GSgGKRCMico7KU1D3UD4IEOM9NCvBU8yq80vK9Frq1u8jHMS5j6nh6w2be1+qpQUHD/8D5QAAAABJRU5ErkJggg=="/>](https://fabricmc.net "Available for Fabric")
 [<img alt="Side: Client" src="https://img.shields.io/badge/side-Client-369B4F?style=flat-square&labelColor=484848&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADiSURBVDhPpVHLEsIwCCR+ho+r/p5614O9t/6eXn38RswiG0majuO4MxQK7JKEIF8QY7RIJISJdt80heUlRpj9jpFEmsVE6kFEGWZCvZVLaFcFTvVk5jKobnEuspEkerSwpjg9thGGglkxgc1MwzM300zCYT7kJ06vHSqRAZ/VVTQHf1sLej4CXJHzWeS+CXtNJiGbrILs1Su8ozH8SXh/lxKVmBLAtTAFLA0SQM6TfwFELGyDm/BxzWmJ6COSiCMj5ka6564g4Bq1SN4CQEJN9KhFCoHj4hxolmrCROzvL4i8ABWe07oDmv2VAAAAAElFTkSuQmCC"/>](https://minecraft.wiki/w/Mods#Types_of_mods "(Not needed in servers)")
-[<img alt="License" src="https://img.shields.io/github/license/endorh/smart-completion?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0ZGRiIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0ibTMgNiAzIDFtMCAwLTMgOWE1IDUgMCAwIDAgNi4wMDEgME02IDdsMyA5TTYgN2w2LTJtNiAyIDMtMW0tMyAxLTMgOWE1IDUgMCAwIDAgNi4wMDEgME0xOCA3bDMgOW0tMy05LTYtMm0wLTJ2Mm0wIDE2VjVtMCAxNkg5bTMgMGgzIi8+PC9zdmc+"/>](https://github.com/endorh/smart-completion/blob/1.20%2B/LICENSE)
+[<img alt="License" src="https://img.shields.io/github/license/endorh/smart-completion?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0ZGRiIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS13aWR0aD0iMiIgZD0ibTMgNiAzIDFtMCAwLTMgOWE1IDUgMCAwIDAgNi4wMDEgME02IDdsMyA5TTYgN2w2LTJtNiAyIDMtMW0tMyAxLTMgOWE1IDUgMCAwIDAgNi4wMDEgME0xOCA3bDMgOW0tMy05LTYtMm0wLTJ2Mm0wIDE2VjVtMCAxNkg5bTMgMGgzIi8+PC9zdmc+"/>](https://github.com/endorh/smart-completion/blob/v2/LICENSE)
 [<img alt="Curse Forge" src="https://img.shields.io/curseforge/dt/782653?style=flat-square&labelColor=424242&logo=curseforge&color=e27450&logoColor=e27450"/>](https://www.curseforge.com/minecraft/mc-mods/smart-completion "Download from CurseForge")
 [<img alt="Join the Discord" src="https://img.shields.io/discord/1017484317636710520?color=%235865F2&label=&labelColor=4e4e4e&logo=discord&logoColor=white&style=flat-square"/>](https://discord.gg/gqYVjBq65U "Join the Discord")
 
@@ -17,7 +17,7 @@ Client-side mod that provides better autocompletion suggestions
 for Minecraft commands.
 
 > [!NOTE]
-> You're on the `v2+` branch of the mod, for Minecraft `1.20.3+`
+> You're on the `v2` branch of the mod, for Minecraft `1.20.3+`
 
 ### Download
 You can download the mod from [CurseForge](https://www.curseforge.com/minecraft/mc-mods/smart-completion).
@@ -32,7 +32,7 @@ type:
 - `dc` or `ddc`, which expand as `[d]o(D)aylight[C]ycle`
 - `t`, which expands as `true`
 
-![gamerule doDaylightCycle true](![World Edit Commands with cache enabled](https://endorh.github.io/smart-completion/images/gr-dc-t.gif))
+![gamerule doDaylightCycle true](https://endorh.github.io/smart-completion/images/gr-dc-t.gif)
 
 #### Keyboard Shortcuts
 
@@ -74,15 +74,17 @@ Minecraft suggestions usually work.
 For example, if you type `/give @p wood`, you'll see suggestions for all
 items that contain a word that starts with `wood`.
 
+![/give @p wood](https://endorh.github.io/smart-completion/images/wood.png)
+
 Additionally, if your query doesn't match any of the initials of a suggestion,
 it will also look anywhere within suggestions to provide weak matches.
 This is helpful when you don't know exactly what you're looking for.
 
 ### Suggestion Style
 Suggestions are highlighted according to the styles defined in the
-[`style.json`](https://github.com/endorh/smart-completion/blob/1.20+/common/src/main/resources/assets/smartcompletion/smart-completion/style.json)
+[`style.json`](https://github.com/endorh/smart-completion/blob/v2/common/src/main/resources/assets/smartcompletion/smart-completion/style.json)
 file, which can be overridden by resource packs (see
-[wiki](https://github.com/endorh/smart-completion/wiki/Customizing-the-Style-of-Suggestions)).
+[wiki](https://github.com/endorh/smart-completion/wiki/Suggestion-Style-Settings)).
 
 By default, matches inside a suggestion are highlighted in blue.
 Alternative matches for a query part (`[d]o(D)aylight[C]ycle`),
@@ -126,8 +128,7 @@ In addition, since, while typing a single command, it is unlikely that
 the results for the blind requests will change, we may cache
 these requests.
 
-![World Edit Commands with cache enabled](https://endorh.github.io/smart-completion/images/demo-cache-enabled.gif)
-![World Edit Commands with cache disabled](https://endorh.github.io/smart-completion/images/demo-cache-disabled.gif)
+<img alt="World Edit Commands with cache enabled" src="https://endorh.github.io/smart-completion/images/demo-cache-enabled.gif" width=240/> <img alt="World Edit Commands with cache disabled" src="https://endorh.github.io/smart-completion/images/demo-cache-disabled.gif" width=240/>
 
 > [!TIP]
 > The behavior of the query cache can be configured with the
@@ -168,7 +169,7 @@ and attempt to split it using a list of known words.
 > This list of words is defined by the
 > [`flatcase_splitting.json`](https://github.com/endorh/smart-completion/blob/v2/common/src/main/resources/assets/smartcompletion/smart-completion/flatcase_splitting.json)
 > file, and can be overridden by resource packs (see
-> [wiki](https://github.com/endorh/smart-completion/wiki/Changing-the-List-of-Known-Words-used-to-Split-Commands)).
+> [wiki](https://github.com/endorh/smart-completion/wiki/Flatcase-Splitting-Settings)).
 > By default, it contains words used by Minecraft, Forge, Fabric and WorldEdit
 > commands, as well as a few more.
 
