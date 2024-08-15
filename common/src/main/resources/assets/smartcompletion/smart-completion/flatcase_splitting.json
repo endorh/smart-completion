@@ -137,6 +137,8 @@
     "list",
     "border",
     "builder",
+    "merge",
+    "remove",
 
     "forge",
     "fabric",

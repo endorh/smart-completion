@@ -97,6 +97,7 @@ public final class SmartCompletionSettings extends OptionCategory<SmartCompletio
 
       public FlatcaseSplittingSettings(@Nullable Path configDirectory) {
          super(configDirectory, "flatcase_splitting");
+         defineAlias("command_splitting");
          initializeCategory();
       }
    }
@@ -120,9 +121,9 @@ public final class SmartCompletionSettings extends OptionCategory<SmartCompletio
       /** Style used for the selected suggestion text. */
       public final Option<Style> selected = option(Style.EMPTY);
       /** Background color of the suggestion list, in {@code AARRGGBB} format. */
-      public final Option<Integer> background_color = color(0xBD000000);
+      public final Option<Integer> background_color = alias(color(0xBD000000), "background");
       /** Background color of the row of the selected suggestion, in {@code AARRGGBB} format. */
-      public final Option<Integer> background_selected_color = color(0xBD242424);
+      public final Option<Integer> background_selected_color = alias(color(0xBD242424), "background_selected");
       /**
        * Color of the ellipsis dots above or below the suggestions list when scrolling is possible,
        * in {@code #AARRGGBB} format.
@@ -131,6 +132,7 @@ public final class SmartCompletionSettings extends OptionCategory<SmartCompletio
 
       public SuggestionStyleSettings(@Nullable Path configDirectory) {
          super(configDirectory, "style");
+         defineAlias("completion_style");
          initializeCategory();
       }
    }

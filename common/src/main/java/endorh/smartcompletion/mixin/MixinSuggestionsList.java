@@ -122,9 +122,9 @@ public abstract class MixinSuggestionsList {
          || !settings.enable_suggestion_highlighting.get()
          || !(commandSuggestions instanceof SmartCommandSuggestions scs)
       ) return;
+      if (!(list instanceof ListWithAttachment<?, ?>)) return;
       // Capture outer instance and injected parameter
       smartcompletion$CommandSuggestions$this = scs;
-      if (!(list instanceof ListWithAttachment<?, ?>)) return;
       ListWithAttachment<Suggestion, AggregatedSuggestions> lwa = (ListWithAttachment<Suggestion, AggregatedSuggestions>) list;
       AggregatedSuggestions matches = lwa.getAttachment();
 

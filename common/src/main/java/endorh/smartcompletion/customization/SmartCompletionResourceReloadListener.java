@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Reloads pack options from resource packs.
@@ -45,9 +46,10 @@ public class SmartCompletionResourceReloadListener extends SimpleJsonResourceRel
    ) {
       for (OptionCategory<?> category : categories) {
          profiler.push(category.getName());
+         Set<String> names = category.getAllNames();
          try {
             category.reloadPackSettings(map.entrySet().stream()
-               .filter(e -> category.getName().equals(e.getKey().getPath()))
+               .filter(e -> names.contains(e.getKey().getPath()))
                .map(Entry::getValue).toList());
          } catch (RuntimeException e) {
             // Any exceptions thrown from here are silently swallowed and freeze the game

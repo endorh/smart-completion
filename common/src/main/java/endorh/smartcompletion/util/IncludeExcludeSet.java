@@ -31,11 +31,7 @@ public class IncludeExcludeSet<T> implements Set<T> {
       }
       private <D> Optional<DataResult<D>> collectErrors(Stream<DataResult<D>> subResults) {
          List<DataResult<D>> errors = subResults
-            // #if POST_MC_1_20_6
-            // .filter(DataResult::isError)
-            // #else
-            .filter(dr -> dr.error().isPresent())
-            // #endif
+            .filter(PolyFill::isError)
             .toList();
          if (!errors.isEmpty()) return Optional.of(DataResult.error(() ->
             "Failed to encode elements: " + errors.stream()

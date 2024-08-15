@@ -11,6 +11,7 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.GsonHelper;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -20,10 +21,7 @@ import java.io.*;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -46,6 +44,7 @@ public abstract class OptionCategory<C extends OptionCategory<C>> {
    private final @Nullable Path configDirectory;
    private final @NotNull String name;
    private final @NotNull String file;
+   private String @Nullable[] aliases = null;
    private @Nullable OptionCategory<?> parent;
    private final List<Pair<Boolean, Consumer<C>>> changeListeners = new ArrayList<>();
    private boolean suppressUpdates = false;
@@ -66,6 +65,27 @@ public abstract class OptionCategory<C extends OptionCategory<C>> {
 
    private void setParent(@Nullable OptionCategory<?> parent) {
       this.parent = parent;
+   }
+
+   public @Nullable OptionCategory<?> getParent() {
+      return parent;
+   }
+
+   protected void defineAlias(String... aliases) {
+      if (this.aliases == null) this.aliases = aliases;
+      else this.aliases = ArrayUtils.addAll(this.aliases, aliases);
+   }
+
+   public String @Nullable[] getAliases() {
+      return aliases;
+   }
+
+   public Set<String> getAllNames() {
+      Set<String> set = new HashSet<>();
+      set.add(getName());
+      String[] a = getAliases();
+      if (a != null) Collections.addAll(set, a);
+      return set;
    }
 
    public String getPath() {
@@ -116,8 +136,9 @@ public abstract class OptionCategory<C extends OptionCategory<C>> {
       });
    }
    private <T> void overridePackValueIfFound(JsonObject json, Option<T> option, boolean replace) {
-      if (json.has(option.getName()))
-         option.overridePackValue(option.getType().deserialize(json.get(option.getName())), replace);
+      for (String name: option.getAllNames())
+         if (json.has(name)) option.overridePackValue(
+            option.getType().deserialize(json.get(name)), replace);
    }
 
    public void loadUserSettings() {
@@ -244,6 +265,11 @@ public abstract class OptionCategory<C extends OptionCategory<C>> {
       });
       options.add(instance);
       return instance;
+   }
+
+   protected <T> Option<T> alias(Option<T> option, String... aliases) {
+      option.defineAliases(aliases);
+      return option;
    }
 
    protected Option<Boolean> option(boolean defaultValue) {

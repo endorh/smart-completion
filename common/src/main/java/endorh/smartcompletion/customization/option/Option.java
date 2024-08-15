@@ -1,9 +1,13 @@
 package endorh.smartcompletion.customization.option;
 
+import com.ibm.icu.impl.locale.XCldrStub;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -20,6 +24,7 @@ import java.util.function.Consumer;
 public class Option<T> {
    private final @NotNull OptionType<T> type;
    private String name;
+   private String @Nullable[] aliases;
    private @Nullable OptionCategory<?> parent;
    private final @NotNull T defaultValue;
    private @Nullable T packValue;
@@ -44,12 +49,31 @@ public class Option<T> {
          throw new IllegalStateException("Option instance name has not yet been initialized!");
       return name;
    }
-
    protected void setName(String name) {
       this.name = name;
    }
+
+   protected void defineAliases(String... aliases) {
+      if (this.aliases == null) this.aliases = aliases;
+      else this.aliases = ArrayUtils.addAll(this.aliases, aliases);
+   }
+   public String @Nullable[] getAliases() {
+      return aliases;
+   }
+   public List<String> getAllNames() {
+      List<String> list = new ArrayList<>();
+      list.add(getName());
+      String[] a = getAliases();
+      if (a != null) Collections.addAll(list, a);
+      Collections.reverse(list);
+      return list;
+   }
+
    protected void setParent(@Nullable OptionCategory<?> parent) {
       this.parent = parent;
+   }
+   public @Nullable OptionCategory<?> getParent() {
+      return parent;
    }
 
    public String getPath() {
