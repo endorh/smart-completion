@@ -206,8 +206,8 @@ public abstract class MixinSuggestionsList {
       ci.cancel();
 
       SuggestionStyleSettings style = settings.style;
-      int maxSuggestionSize = 10;
-      int size = Math.min(suggestionList.size(), maxSuggestionSize);
+      int maxSuggestionSize = smartcompletion$CommandSuggestions$this.getSuggestionLineLimit();
+      int size = min(suggestionList.size(), maxSuggestionSize);
       int backgroundColor = style.background_color.get();
       int selectedBackgroundColor = style.background_selected_color.get();
       int ellipsisColor = style.ellipsis_color.get();
