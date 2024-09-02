@@ -102,7 +102,7 @@ public class SmartCommandCompletion {
       return WordSplit.of(string, parts, indices);
    }
 
-   public static AggregatedSuggestions sort(
+   public static AggregatedSuggestions filterAndSort(
       Suggestions blindSuggestions, Suggestions suggestions,
       StringRange range, String query
    ) {
@@ -149,7 +149,9 @@ public class SmartCommandCompletion {
          && wordBlindSuggestions != null
       ) for (Suggestion s : wordBlindSuggestions.getList()) {
          String sText = s.getText();
-         StringRange sRange = StringRange.between(s.getRange().getStart(), wordRange.getEnd());
+         StringRange sRange = s.getRange();
+         if (sRange.getStart() == sRange.getEnd() && sRange.getStart() == wordRange.getStart())
+            sRange = wordRange;
          // Discard if redundant
          if (wordQuery.startsWith(sText) && !wordQuery.equals(sText)) continue;
          MultiMatch mm = multiMatch(sText, wordQuery);
@@ -166,6 +168,10 @@ public class SmartCommandCompletion {
          && (includeSmartMatches || includeWeakMatches)
       ) for (Suggestion s : argBlindSuggestions.getList()) {
          String sText = s.getText();
+         StringRange sRange = s.getRange();
+         if (sRange.getStart() == sRange.getEnd() && sRange.getStart() == argRange.getStart())
+            sRange = argRange;
+
          // Discard if already matched
          if (smartWordSuggestions.containsKey(sText)) continue;
          // Discard if redundant
@@ -176,7 +182,7 @@ public class SmartCommandCompletion {
          // Discard if ignored
          if (!(mm.priority() == 0 ? includeSmartMatches : includeWeakMatches)) continue;
          smartSuggestions.putIfAbsent(sText, Pair.of(
-            new Suggestion(argRange, s.getText(), s.getTooltip()), mm));
+            new Suggestion(sRange, s.getText(), s.getTooltip()), mm));
       }
 
       // Perform matching on any unseen suggestions from the informed query
@@ -192,8 +198,8 @@ public class SmartCommandCompletion {
          // Trim non-word prefix
          if (!nonWordQuery.isEmpty() && sRange.getStart() == argRange.getStart() && sText.startsWith(nonWordQuery)) {
             sText = sText.substring(nonWordQuery.length());
-            sRange = new StringRange(sRange.getStart() + nonWordQuery.length(), sRange.getStart() + argQuery.length());
-         } else sRange = new StringRange(sRange.getStart(), argRange.getStart() + argQuery.length());
+            sRange = new StringRange(sRange.getStart() + nonWordQuery.length(), sRange.getEnd());
+         }
 
          Suggestion suggestion = new Suggestion(sRange, sText, s.getTooltip());
          MultiMatch mm = multiMatch(sText, argQuery);

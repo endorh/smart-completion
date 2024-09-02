@@ -52,7 +52,19 @@ public final class SmartCompletionSettings extends OptionCategory<SmartCompletio
    public final Option<Boolean> include_unexpected_suggestions = option(true);
    /** Minimum size of a weak match to be considered. */
    public final Option<Integer> minimum_weak_match_length = option(2);
-   
+   /** Delete input after cursor when accepting a suggestion with {@code <Ctrl>+<Space>}. */
+   public final Option<Boolean> erase_remainder_on_ctrl_space = option(true);
+   /** Delete input after cursor when accepting a suggestion with {@code <Enter>}. */
+   public final Option<Boolean> erase_remainder_on_enter = option(false);
+   /** Delete input after cursor when accepting a suggestion with {@code <Tab>}. */
+   public final Option<Boolean> erase_remainder_on_tab = option(false);
+   /** Delete input after cursor when accepting a suggestion by clicking on the suggestion list. */
+   public final Option<Boolean> erase_remainder_on_left_click = option(false);
+   /** Delete input after cursor when accepting a suggestion by right-clicking on the suggestion list. */
+   public final Option<Boolean> erase_remainder_on_right_click = option(false);
+   /** Delete input after cursor when accepting a suggestion by middle-clicking on the suggestion list. */
+   public final Option<Boolean> erase_remainder_on_middle_click = option(true);
+
    /**
     * Settings regarding the splitting of flatcase commands.
     */

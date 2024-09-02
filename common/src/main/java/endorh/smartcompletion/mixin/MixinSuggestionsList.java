@@ -56,7 +56,10 @@ import static org.apache.commons.lang3.StringUtils.repeat;
  * It also provides support for completion keys if {@link SmartCompletionSettings#enable_completion_keys}
  * is {@code true}, inverts the suggestion list if {@link SmartCompletionSettings#invert_suggestion_order}
  * is {@code true}, and prevents the mouse from selecting a suggestion when new suggestions are displayed
- * under it, without the mouse moving in the first place.
+ * under it, without the mouse moving in the first place.<br>
+ * <br>
+ * In addition, it also can delete the input after the cursor depending
+ * on the input method used to accept a suggestion.
  */
 @Mixin(CommandSuggestions.SuggestionsList.class)
 public abstract class MixinSuggestionsList {
@@ -70,6 +73,11 @@ public abstract class MixinSuggestionsList {
     * Controls whether the {@code <Enter>} key may be used to accept suggestions.
     */
    @Unique private boolean smartcompletion$hasUnparsedInput;
+   /**
+    * Used to detect from {@link #useSuggestion} which was the input that triggered the
+    * suggestion.
+    */
+   @Unique private int smartcompletion$lastInputCode = -1;
 
    // Shadow accessors
    /** Rect with the drawing coordinates for the list. */
@@ -309,6 +317,33 @@ public abstract class MixinSuggestionsList {
    }
 
    /**
+    * Erases the remainder of the input after the cursor depending on the input method
+    * used to accept the suggestion.
+    */
+   @Inject(
+      method="useSuggestion",
+      at=@At("RETURN")
+   ) public void afterUseSuggestion(CallbackInfo ci) {
+      SmartCompletionSettings settings = getSmartCompletionSettings();
+      if (!settings.enabled.get() || !settings.enable_completion_keys.get() || smartcompletion$CommandSuggestions$this == null) return;
+      boolean eraseRemainder = false;
+      switch (smartcompletion$lastInputCode) {
+         case GLFW.GLFW_KEY_SPACE: eraseRemainder = settings.erase_remainder_on_ctrl_space.get(); break;
+         case GLFW.GLFW_KEY_ENTER: eraseRemainder = settings.erase_remainder_on_enter.get(); break;
+         case GLFW.GLFW_KEY_TAB: eraseRemainder = settings.erase_remainder_on_tab.get(); break;
+         case   - 100: eraseRemainder = settings.erase_remainder_on_left_click.get(); break;
+         case 1 - 100: eraseRemainder = settings.erase_remainder_on_right_click.get(); break;
+         case 2 - 100: eraseRemainder = settings.erase_remainder_on_middle_click.get(); break;
+      }
+      if (eraseRemainder) {
+         EditBox input = smartcompletion$CommandSuggestions$this.getInput();
+         int pos = input.getCursorPosition();
+         String command = input.getValue();
+         if (command.length() > pos) input.setValue(command.substring(0, pos));
+      }
+   }
+
+   /**
     * Handle {@code <Ctrl>+<Space>} and {@code <Enter>} if {@link SmartCompletionSettings#enable_completion_keys}
     * and {@link SmartCompletionSettings#enable_completion_with_enter} are {@code true}.<br>
     * <br>
@@ -323,20 +358,13 @@ public abstract class MixinSuggestionsList {
       if (!settings.enable_completion_keys.get() || !(smartcompletion$CommandSuggestions$this instanceof CommandSuggestions)) return;
       CommandSuggestions cs = (CommandSuggestions) smartcompletion$CommandSuggestions$this;
       if (current < 0 || current >= suggestionList.size()) return;
+      smartcompletion$lastInputCode = keyCode;
 
       // Handle completion keys
       if (keyCode == GLFW.GLFW_KEY_SPACE && Screen.hasControlDown()
          || settings.enable_completion_with_enter.get() && smartcompletion$hasUnparsedInput && keyCode == GLFW.GLFW_KEY_ENTER) {
          // Accept suggestion
          useSuggestion();
-
-         if (keyCode == GLFW.GLFW_KEY_SPACE) {
-            // Delete anything beyond the cursor
-            EditBox input = smartcompletion$CommandSuggestions$this.getInput();
-            int pos = input.getCursorPosition();
-            String command = input.getValue();
-            if (command.length() > pos) input.setValue(command.substring(0, pos));
-         }
 
          if (keyCode == GLFW.GLFW_KEY_ENTER) {
             // Hide suggestions (replicate what happens in onUpdateCommandInfo if keepSuggestions is false)
@@ -392,6 +420,9 @@ public abstract class MixinSuggestionsList {
     */
    @Inject(method="mouseClicked", at=@At("HEAD"), cancellable = true)
    public void onMouseClick(int mouseX, int mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+      SmartCompletionSettings settings = getSmartCompletionSettings();
+      if (!settings.enable_completion_keys.get() || !(smartcompletion$CommandSuggestions$this instanceof CommandSuggestions)) return;
+      smartcompletion$lastInputCode = button - 100;
       if (!smartcompletion$shouldInvertSuggestionList()) return;
 
       if (!rect.contains(mouseX, mouseY)) return;

@@ -204,10 +204,11 @@ public class CommandCompletionQueryHandler {
    private void updateSuggestions() {
       SplitCommandQuery query = lastQuery;
       boolean hasWordQuery = query.wordStartPos() != -1;
-      AggregatedSuggestions sorted = SmartCommandCompletion.filterAndSort(argBlindSuggestions, wordBlindSuggestions, informedSuggestions,
-         StringRange.between(query.argStartPos(), query.command().length()),
+      AggregatedSuggestions sorted = SmartCommandCompletion.filterAndSort(
+         argBlindSuggestions, wordBlindSuggestions, informedSuggestions,
+         StringRange.between(query.argStartPos(), query.cursor()),
          query.argQuery(),
-         hasWordQuery ? StringRange.between(query.wordStartPos(), query.command().length()) : null,
+         hasWordQuery ? StringRange.between(query.wordStartPos(), query.cursor()) : null,
          hasWordQuery ? query.wordQuery() : null);
       AggregatedSuggestions last = lastAggregatedSuggestions;
       lastAggregatedSuggestions = sorted;
