@@ -1,12 +1,10 @@
 package endorh.smartcompletion.customization.option;
 
-import com.ibm.icu.impl.locale.XCldrStub;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;

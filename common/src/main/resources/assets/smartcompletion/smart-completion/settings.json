@@ -35,5 +35,18 @@
       "minimum_weak_match_length": 2,
 
     "include_unexpected_suggestions description": "Include vanilla matches not already matched by other means",
-    "include_unexpected_suggestions": true
+    "include_unexpected_suggestions": true,
+
+    "erase_remainder_on_ctrl_space description": "Whether to delete input after cursor when accepting a suggestion with <Ctrl> + <Space>",
+    "erase_remainder_on_ctrl_space": true,
+    "erase_remainder_on_enter description": "Whether to delete input after cursor when accepting a suggestion with <Enter>",
+    "erase_remainder_on_enter": false,
+    "erase_remainder_on_tab description": "Whether to delete input after cursor when accepting a suggestion with <Tab>",
+    "erase_remainder_on_tab": false,
+    "erase_remainder_on_left_click description": "Whether to delete input after cursor when accepting a suggestion by left-clicking a suggestion",
+    "erase_remainder_on_left_click": false,
+    "erase_remainder_on_right_click description": "Whether to delete input after cursor when accepting a suggestion by right-clicking a suggestion",
+    "erase_remainder_on_right_click": false,
+    "erase_remainder_on_middle_click description": "Whether to delete input after cursor when accepting a suggestion by middle-clicking a suggestion",
+    "erase_remainder_on_middle_click": true
 }
