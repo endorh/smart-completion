@@ -49,6 +49,11 @@ Additionally, if the current command is known to be invalid
 (the text is red), pressing `<Enter>` will accept the selected suggestion,
 if any, rather than attempting to execute an invalid command.
 
+By default, accepting a suggestion with `<Ctrl>+<Space>` or by using the
+middle button to click it will also erase the remaining text after the cursor,
+if you decide to edit an earlier argument at some point.
+This behavior can be configured per key/mouse button.
+
 #### Disambiguating Suggestions
 
 To disambiguate between suggestions, you may need to type more than one
