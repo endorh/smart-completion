@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Smart Completion Wiki
+    url: https://github.com/endorh/smart-completion/wiki
+    about: You may consult the wiki for information about the mod and its configuration options.
+  - name: Support Discord Server
+    url: https://discord.gg/gqYVjBq65U
+    about: "Feel free to ask any questions in our Discord Server, if you're more comfortable there."
