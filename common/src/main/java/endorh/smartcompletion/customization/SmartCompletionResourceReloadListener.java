@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import endorh.smartcompletion.customization.option.OptionCategory;
+#if POST_MC_1_21_3
+import endorh.smartcompletion.util.JsonElementCodec;
+#endif
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -22,7 +25,13 @@ import java.util.Set;
  * Reloads pack options from resource packs.
  * @see OptionCategory
  */
-public class SmartCompletionResourceReloadListener extends SimpleJsonResourceReloadListener {
+public class SmartCompletionResourceReloadListener extends
+#if POST_MC_1_21_3
+   SimpleJsonResourceReloadListener<JsonElement>
+#else
+   SimpleJsonResourceReloadListener
+#endif
+{
    private static final Logger LOGGER = LogManager.getLogger();
    public static final Gson GSON = new GsonBuilder()
       .setPrettyPrinting()
@@ -31,7 +40,13 @@ public class SmartCompletionResourceReloadListener extends SimpleJsonResourceRel
    protected final List<OptionCategory<?>> categories = new ArrayList<>();
 
    public SmartCompletionResourceReloadListener(OptionCategory<?>... options) {
-      super(GSON, "smart-completion");
+      super(
+         #if PRE_MC_1_21_3
+         GSON,
+         #else
+         JsonElementCodec.INSTANCE,
+         #endif
+         "smart-completion");
       for (OptionCategory<?> cat : options) registerCategory(cat);
    }
    public final void registerCategory(OptionCategory<?> category) {

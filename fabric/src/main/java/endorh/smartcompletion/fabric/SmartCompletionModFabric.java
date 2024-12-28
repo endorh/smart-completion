@@ -11,7 +11,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
+#if PRE_MC_1_21_3
 import net.minecraft.util.profiling.ProfilerFiller;
+#endif
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,11 +46,16 @@ public class SmartCompletionModFabric implements ClientModInitializer {
 
       @Override public @NotNull CompletableFuture<Void> reload(
          @NotNull PreparationBarrier preparationBarrier, @NotNull ResourceManager resourceManager,
+         #if PRE_MC_1_21_3
          @NotNull ProfilerFiller preparationProfiler, @NotNull ProfilerFiller applicationProfiler,
+         #endif
          @NotNull Executor preparationExecutor, @NotNull Executor applicationExecutor
       ) {
          return listener.reload(
-            preparationBarrier, resourceManager, preparationProfiler, applicationProfiler,
+            preparationBarrier, resourceManager,
+            #if PRE_MC_1_21_3
+            preparationProfiler, applicationProfiler,
+            #endif
             preparationExecutor, applicationExecutor);
       }
 
