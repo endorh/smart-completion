@@ -7,6 +7,7 @@ import endorh.smartcompletion.customization.option.OptionCategory;
 #if POST_MC_1_21_3
 import endorh.smartcompletion.util.JsonElementCodec;
 #endif
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -46,7 +47,12 @@ public class SmartCompletionResourceReloadListener extends
          #else
          JsonElementCodec.INSTANCE,
          #endif
-         "smart-completion");
+         #if POST_MC_1_21_4
+         FileToIdConverter.json("smart-completion")
+         #else
+         "smart-completion"
+         #endif
+      );
       for (OptionCategory<?> cat : options) registerCategory(cat);
    }
    public final void registerCategory(OptionCategory<?> category) {
