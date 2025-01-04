@@ -86,6 +86,15 @@
     "2.0.2": "- Fix crash in command block screen\n- Fix suggestion list size in command block screen",
     "2.1.0": "- Add option to erase input after cursor\n- Do not erase input after cursor by default, unless accepted with `<Ctrl>+<Space>` or a middle-click in the suggestion list"
   },
+  "1.21.2": {
+    "2.1.0": "- Add option to erase input after cursor\n- Do not erase input after cursor by default, unless accepted with `<Ctrl>+<Space>` or a middle-click in the suggestion list"
+  },
+  "1.21.3": {
+    "2.1.0": "- Add option to erase input after cursor\n- Do not erase input after cursor by default, unless accepted with `<Ctrl>+<Space>` or a middle-click in the suggestion list"
+  },
+  "1.21.4": {
+    "2.1.0": "- Add option to erase input after cursor\n- Do not erase input after cursor by default, unless accepted with `<Ctrl>+<Space>` or a middle-click in the suggestion list"
+  },
   "promos": {
     "1.16.3-latest": "2.1.0",
     "1.16.3-recommended": "2.1.0",
@@ -130,6 +139,12 @@
     "1.21-latest": "2.1.0",
     "1.21-recommended": "2.1.0",
     "1.21.1-latest": "2.1.0",
-    "1.21.1-recommended": "2.1.0"
+    "1.21.1-recommended": "2.1.0",
+    "1.21.2-latest": "2.1.0",
+    "1.21.2-recommended": "2.1.0",
+    "1.21.3-latest": "2.1.0",
+    "1.21.3-recommended": "2.1.0",
+    "1.21.4-latest": "2.1.0",
+    "1.21.4-recommended": "2.1.0"
   }
 }
