@@ -55,6 +55,7 @@ public class SmartCompletionResourceReloadListener extends
       );
       for (OptionCategory<?> cat : options) registerCategory(cat);
    }
+
    public final void registerCategory(OptionCategory<?> category) {
       categories.add(category);
       for (OptionCategory<?> sub : category.getCategories())

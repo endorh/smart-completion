@@ -22,7 +22,9 @@ import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,8 +32,7 @@ import java.util.Comparator;
 import java.util.function.Function;
 
 import static endorh.smartcompletion.customization.SmartCompletionResourceReloadListener.GSON;
-import static endorh.smartcompletion.util.PolyFill.getOrThrow;
-import static endorh.smartcompletion.util.PolyFill.isSuccess;
+import static endorh.smartcompletion.util.PolyFill.*;
 
 /**
  * Represents a type of option that can be configured in the game.<br>
@@ -78,8 +79,8 @@ public abstract class OptionType<T> {
       ChatFormatting... formats
    ) {
       return Component.literal(text).withStyle(formats).withStyle(s ->
-         s.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command))
-            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, tooltip)));
+         s.withClickEvent(suggestCommandClickEvent(command))
+            .withHoverEvent(showTextHoverEvent(tooltip)));
    }
    protected static MutableComponent literal(String text, ChatFormatting... formats) {
       return Component.literal(text).withStyle(formats);
