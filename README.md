@@ -126,7 +126,7 @@ We then rely on the server replying with all unfiltered relevant
 suggestions to the blind requests.
 
 Once the lists of suggestions arrive, in whichever order, they're combined,
-filtered and sorted them, according to the strategies described below,
+filtered and sorted, according to the strategies described below,
 and, once sorted, we update the displayed suggestions.
 
 In addition, since, while typing a single command, it is unlikely that
