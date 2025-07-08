@@ -17,7 +17,6 @@ import com.mojang.serialization.JsonOps;
 import endorh.smartcompletion.util.IncludeExcludeSet;
 import endorh.smartcompletion.util.PolyFill;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -89,9 +88,7 @@ public abstract class OptionType<T> {
       if (c.getSource() instanceof CommandSourceStack cs) {
          cs.sendSuccess(() -> message, false);
       } else if (c.getSource() instanceof ClientSuggestionProvider) {
-         Minecraft client = Minecraft.getInstance();
-         client.gui.getChat().addMessage(message);
-         client.getNarrator().sayNow(message);
+         sendChatCommandFeedback(message);
       }
    }
    protected static <S extends SharedSuggestionProvider> void sendFailure(CommandContext<S> c, Component message) {

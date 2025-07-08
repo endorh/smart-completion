@@ -121,3 +121,12 @@ publishing {
         }
     }
 }
+
+
+afterEvaluate {
+    tasks.withType<JavaExec> {
+        // Hide dev warning for `@OnlyIn` annotations derived by Architectury from `@Environment`
+        // annotations, until Architectury is updated in response to the change in NeoForge.
+        systemProperty("neoforge.warnings.onlyin.hide", "true")
+    }
+}

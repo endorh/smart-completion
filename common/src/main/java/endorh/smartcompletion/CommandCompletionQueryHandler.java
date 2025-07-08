@@ -1,10 +1,8 @@
 package endorh.smartcompletion;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.StringRange;
-import com.mojang.brigadier.context.SuggestionContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import endorh.smartcompletion.customization.SmartCompletionSettings;
 import endorh.smartcompletion.duck.SmartCommandSuggestions;
@@ -13,7 +11,6 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.commands.SharedSuggestionProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,6 +23,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
+
+#if PRE_MC_1_21_6
+   import net.minecraft.commands.SharedSuggestionProvider;
+#else
+   import net.minecraft.client.multiplayer.ClientSuggestionProvider;
+#endif
 
 import static endorh.smartcompletion.SmartCommandCompletion.ARG_WORD_SPLITTER;
 import static endorh.smartcompletion.SmartCompletionMod.getSmartCompletionSettings;
@@ -119,8 +122,8 @@ public class CommandCompletionQueryHandler {
             cached.thenAccept(s -> receiveSuggestions(s, type, command, contextPos, query, updateExecutor));
          } // else we don't add a second listener
       } else {
-         CommandDispatcher<SharedSuggestionProvider> dispatcher = connection.getCommands();
-         ParseResults<SharedSuggestionProvider> parse = dispatcher.parse(reader(command), connection.getSuggestionsProvider());
+         var dispatcher = connection.getCommands();
+         var parse = dispatcher.parse(reader(command), connection.getSuggestionsProvider());
          CompletableFuture<Suggestions> suggestions = dispatcher.getCompletionSuggestions(parse, contextPos);
          suggestions.thenAccept(s -> receiveSuggestions(s, type, command, contextPos, query, updateExecutor));
          cacheSuggestions(type, command, suggestions);
@@ -135,10 +138,11 @@ public class CommandCompletionQueryHandler {
    }
 
    public void updateQuery(
-      @NotNull String command, int cursor, ParseResults<SharedSuggestionProvider> parseResults
+      @NotNull String command, int cursor,
+      ParseResults<#if PRE_MC_1_21_6 SharedSuggestionProvider #else ClientSuggestionProvider #endif> parseResults
    ) {
       if (command.length() <= 1) resetVolatileCache();
-      SuggestionContext<SharedSuggestionProvider> suggestionContext = parseResults.getContext().findSuggestionContext(cursor);
+      var suggestionContext = parseResults.getContext().findSuggestionContext(cursor);
 
       // Blind Query
       int startPos = suggestionContext.startPos;

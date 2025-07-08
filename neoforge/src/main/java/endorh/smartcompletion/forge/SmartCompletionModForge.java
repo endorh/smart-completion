@@ -13,7 +13,9 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
    import net.neoforged.fml.common.Mod.EventBusSubscriber.Bus;
 #else
    import net.neoforged.fml.common.EventBusSubscriber;
-   import net.neoforged.fml.common.EventBusSubscriber.Bus;
+   #if PRE_MC_1_21_7
+      import net.neoforged.fml.common.EventBusSubscriber.Bus;
+   #endif
 #endif
 
 #if PRE_MC_1_21_5
@@ -27,7 +29,7 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 #endif
 
 @Mod(SmartCompletionMod.MOD_ID)
-@EventBusSubscriber(value = Dist.CLIENT, bus = Bus.MOD, modid = SmartCompletionMod.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, #if PRE_MC_1_21_7 bus = Bus.MOD, #endif modid = SmartCompletionMod.MOD_ID)
 public class SmartCompletionModForge {
    public SmartCompletionModForge() {
       #if PRE_MC_1_21_5
@@ -57,7 +59,7 @@ public class SmartCompletionModForge {
    #if PRE_MC_1_20_6
       @EventBusSubscriber(value = Dist.CLIENT, bus = Bus.FORGE, modid = SmartCompletionMod.MOD_ID)
    #else
-      @EventBusSubscriber(value = Dist.CLIENT, bus = Bus.GAME, modid = SmartCompletionMod.MOD_ID)
+      @EventBusSubscriber(value = Dist.CLIENT, #if PRE_MC_1_21_7 bus = Bus.GAME, #endif modid = SmartCompletionMod.MOD_ID)
    #endif
    public static class Registrar {
       @SubscribeEvent

@@ -1,6 +1,11 @@
 package endorh.smartcompletion.util;
 
 import com.mojang.serialization.DataResult;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.arguments.StyleArgument;
 import net.minecraft.network.chat.ClickEvent;
@@ -30,5 +35,31 @@ public abstract class PolyFill {
    #else
       public static ClickEvent suggestCommandClickEvent(String command) { return new ClickEvent.SuggestCommand(command); }
       public static HoverEvent showTextHoverEvent(Component tooltip) { return new HoverEvent.ShowText(tooltip); }
+   #endif
+
+   #if PRE_MC_1_21_6
+      @Environment(EnvType.CLIENT)
+      public static void sendChatCommandFeedback(Component message) {
+         Minecraft client = Minecraft.getInstance();
+         client.gui.getChat().addMessage(message);
+         client.getNarrator().sayNow(message);
+      }
+
+      @Environment(EnvType.CLIENT)
+      public static void setTooltipForNextFrame(GuiGraphics gg, Font font, Component message, int mouseX, int mouseY) {
+         gg.renderTooltip(font, message, mouseX, mouseY);
+      }
+   #else
+      @Environment(EnvType.CLIENT)
+      public static void sendChatCommandFeedback(Component message) {
+         Minecraft client = Minecraft.getInstance();
+         client.gui.getChat().addMessage(message);
+         client.getNarrator().saySystemChatQueued(message);
+      }
+
+      @Environment(EnvType.CLIENT)
+      public static void setTooltipForNextFrame(GuiGraphics gg, Font font, Component message, int mouseX, int mouseY) {
+         gg.setTooltipForNextFrame(font, message, mouseX, mouseY);
+      }
    #endif
 }

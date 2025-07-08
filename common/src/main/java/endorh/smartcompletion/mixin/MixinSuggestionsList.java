@@ -10,6 +10,7 @@ import endorh.smartcompletion.customization.SmartCompletionSettings;
 import endorh.smartcompletion.customization.SmartCompletionSettings.SuggestionStyleSettings;
 import endorh.smartcompletion.duck.SmartCommandSuggestions;
 import endorh.smartcompletion.util.ListWithAttachment;
+import endorh.smartcompletion.util.PolyFill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.Font;
@@ -276,7 +277,7 @@ public abstract class MixinSuggestionsList {
       if (hovered) {
          Message message = suggestionList.get(current).getTooltip();
          if (message != null)
-            gg.renderTooltip(font, ComponentUtils.fromMessage(message), mouseX, mouseY);
+            PolyFill.setTooltipForNextFrame(gg, font, ComponentUtils.fromMessage(message), mouseX, mouseY);
       }
    }
 

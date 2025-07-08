@@ -1,6 +1,5 @@
 package endorh.smartcompletion.mixin;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.suggestion.Suggestion;
@@ -18,7 +17,6 @@ import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.gui.components.CommandSuggestions.SuggestionsList;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +34,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
+#if PRE_MC_1_21_6
+   import net.minecraft.commands.SharedSuggestionProvider;
+#else
+   import net.minecraft.client.multiplayer.ClientSuggestionProvider;
+#endif
 
 import static endorh.smartcompletion.SmartCompletionMod.getSmartCompletionSettings;
 
@@ -82,7 +86,9 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
    /** Command input bar */
    @Shadow @Final EditBox input;
    @Shadow @Final Font font;
-   @Shadow private @Nullable ParseResults<SharedSuggestionProvider> currentParse;
+   @Shadow private @Nullable ParseResults<
+         #if PRE_MC_1_21_6 SharedSuggestionProvider #else ClientSuggestionProvider #endif
+      > currentParse;
    /** Displayed suggestion list. */
    @Shadow private @Nullable CommandSuggestions.SuggestionsList suggestions;
    @Shadow @Final int suggestionLineLimit;
@@ -161,9 +167,9 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
       assert minecraft.player != null;
 
       // Mimic logic from the overridden segment of #updateCommandInfo
-      CommandDispatcher<SharedSuggestionProvider> commandDispatcher = minecraft.player.connection.getCommands();
+      var commandDispatcher = minecraft.player.connection.getCommands();
       String command = input.getValue();
-      ParseResults<SharedSuggestionProvider> parse = currentParse;
+      var parse = currentParse;
       if (currentParse == null) {
          StringReader reader = new StringReader(command);
          if (reader.canRead() && reader.peek() == '/') reader.skip();
