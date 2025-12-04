@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import endorh.smartcompletion.customization.option.OptionCategory;
-#if POST_MC_1_21_3
+#if POS_MC_1_21_3
 import endorh.smartcompletion.util.JsonElementCodec;
 #endif
 import net.minecraft.resources.FileToIdConverter;
@@ -27,7 +27,7 @@ import java.util.Set;
  * @see OptionCategory
  */
 public class SmartCompletionResourceReloadListener extends
-#if POST_MC_1_21_3
+#if POS_MC_1_21_3
    SimpleJsonResourceReloadListener<JsonElement>
 #else
    SimpleJsonResourceReloadListener
@@ -47,7 +47,7 @@ public class SmartCompletionResourceReloadListener extends
          #else
          JsonElementCodec.INSTANCE,
          #endif
-         #if POST_MC_1_21_4
+         #if POS_MC_1_21_4
          FileToIdConverter.json("smart-completion")
          #else
          "smart-completion"

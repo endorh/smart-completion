@@ -8,6 +8,7 @@ import endorh.smartcompletion.AggregatedSuggestions;
 import endorh.smartcompletion.CommandCompletionQueryHandler;
 import endorh.smartcompletion.customization.SmartCompletionSettings;
 import endorh.smartcompletion.duck.SmartCommandSuggestions;
+import endorh.smartcompletion.duck.SmartSuggestionsList;
 import endorh.smartcompletion.util.ListWithAttachment;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
@@ -39,6 +40,11 @@ import java.util.concurrent.CompletableFuture;
    import net.minecraft.commands.SharedSuggestionProvider;
 #else
    import net.minecraft.client.multiplayer.ClientSuggestionProvider;
+#endif
+
+#if POS_MC_1_21_9
+   import net.minecraft.client.input.KeyEvent;
+   import net.minecraft.client.input.MouseButtonEvent;
 #endif
 
 import static endorh.smartcompletion.SmartCompletionMod.getSmartCompletionSettings;
@@ -173,7 +179,8 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
       if (currentParse == null) {
          StringReader reader = new StringReader(command);
          if (reader.canRead() && reader.peek() == '/') reader.skip();
-         currentParse = parse = commandDispatcher.parse(reader, minecraft.player.connection.getSuggestionsProvider());
+         parse = commandDispatcher.parse(reader, minecraft.player.connection.getSuggestionsProvider());
+         currentParse = parse;
       }
       if (!keepSuggestions) smartcompletion$lastAggregatedSuggestions = null;
       int i = input.getCursorPosition();
@@ -266,7 +273,12 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
     */
    @Inject(method="keyPressed", at=@At("RETURN"), cancellable=true)
    public void smartcompletion$onKeyPressed(
-      int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir
+      #if PRE_MC_1_21_9
+         int keyCode, int scanCode, int modifiers
+      #else
+         KeyEvent keyEvent
+      #endif,
+      CallbackInfoReturnable<Boolean>cir
    ) {
       // Only handle if input event hasn't been handled (and handling is enabled)
       if (cir.getReturnValueZ()
@@ -274,12 +286,30 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
       ) return;
 
       boolean handled = false;
-      if (keyCode == GLFW.GLFW_KEY_SPACE && Screen.hasControlDown()) {
+      if (#if PRE_MC_1_21_9 keyCode #else keyEvent.key() #endif == GLFW.GLFW_KEY_SPACE
+         && #if PRE_MC_1_21_9 Screen.hasControlDown() #else keyEvent.hasControlDown() #endif) {
          handled = true;
          showSuggestions(true);
       }
       if (handled) cir.setReturnValue(true);
    }
+
+   #if POS_MC_1_21_9
+   /**
+    * Pass the mouse button to the {@link MixinSuggestionsList}, as its new
+    * {@link SuggestionsList#mouseClicked(int, int)} method does not have
+    * access to it.
+    */
+   @Inject(method="mouseClicked", at=@At("HEAD"))
+   public void smartcompletion$onMouseClicked(
+      MouseButtonEvent event, CallbackInfoReturnable<Boolean> cir
+   ) {
+      SmartCompletionSettings settings = getSmartCompletionSettings();
+      if (!settings.enable_completion_keys.get()) return;
+      if (suggestions instanceof SmartSuggestionsList ssl)
+         ssl.setLastInputCode(event.button() - 100);
+   }
+   #endif
 
    // Duck implementations
    @Override public boolean smartcompletion$isKeepSuggestions() {
