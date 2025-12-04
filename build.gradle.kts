@@ -3,7 +3,7 @@ import java.util.*
 
 plugins {
     id("architectury-plugin") version "3.4-SNAPSHOT"
-    id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
+    id("dev.architectury.loom") version "1.11-SNAPSHOT" apply false
     id("com.github.johnrengelman.shadow") version "8.1.1" apply false
 }
 
@@ -47,13 +47,13 @@ fun writeBuildProperties(maxVersions: List<String>, version: String) {
     val maxLists = maxVersions.map { it.toVersion() }
     
     val redefineList = mutableListOf<String>()
-    /** We add `PRE_MC_<v>` or `POST_MC_<v>` symbols for all versions,
+    /** We add `PRE_MC_<v>` or `POS_MC_<v>` symbols for all versions,
      *  and `MC_<v>` for the current version. */
     fun addVersion(v: List<Int>) {
         val str = v.joinToString("_")
         if (ver < v) redefineList.add("PRE_MC_$str")
         if (ver == v) redefineList.add("MC_$str")
-        if (ver >= v) redefineList.add("POST_MC_$str")
+        if (ver >= v) redefineList.add("POS_MC_$str")
     }
     maxLists.forEach { maxVer ->
         if (maxVer.size >= 3) {

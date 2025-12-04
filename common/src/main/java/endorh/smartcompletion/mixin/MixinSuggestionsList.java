@@ -9,6 +9,7 @@ import endorh.smartcompletion.MultiMatch;
 import endorh.smartcompletion.customization.SmartCompletionSettings;
 import endorh.smartcompletion.customization.SmartCompletionSettings.SuggestionStyleSettings;
 import endorh.smartcompletion.duck.SmartCommandSuggestions;
+import endorh.smartcompletion.duck.SmartSuggestionsList;
 import endorh.smartcompletion.util.ListWithAttachment;
 import endorh.smartcompletion.util.PolyFill;
 import net.minecraft.client.Minecraft;
@@ -26,6 +27,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,6 +39,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.List;
+
+#if POS_MC_1_21_9
+   import net.minecraft.client.input.KeyEvent;
+#endif
 
 import static endorh.smartcompletion.SmartCommandCompletion.SUGGESTION_STARTS_SUB_NODE;
 import static endorh.smartcompletion.SmartCommandCompletion.highlightSuggestion;
@@ -60,7 +66,7 @@ import static java.lang.Math.min;
  * on the input method used to accept a suggestion.
  */
 @Mixin(CommandSuggestions.SuggestionsList.class)
-public abstract class MixinSuggestionsList {
+public abstract class MixinSuggestionsList implements SmartSuggestionsList {
    // Injected fields
    /** Outer class {@code this} instance, stored for convenience. */
    @Unique private @Nullable SmartCommandSuggestions smartcompletion$CommandSuggestions$this = null;
@@ -293,6 +299,7 @@ public abstract class MixinSuggestionsList {
       method="useSuggestion",
       at=@At(
          value="FIELD",
+         opcode=Opcodes.GETFIELD,
          target="Lnet/minecraft/client/gui/components/CommandSuggestions;input:Lnet/minecraft/client/gui/components/EditBox;",
          ordinal=0)
    ) public void onUseSuggestion(CallbackInfo ci) {
@@ -346,16 +353,26 @@ public abstract class MixinSuggestionsList {
     */
    @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
    public void onKeyPressed(
-      int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> ci
+      #if PRE_MC_1_21_9
+      int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir
+      #else
+      KeyEvent keyEvent, CallbackInfoReturnable<Boolean> cir
+      #endif
    ) {
       SmartCompletionSettings settings = getSmartCompletionSettings();
       if (!settings.enable_completion_keys.get() || !(smartcompletion$CommandSuggestions$this instanceof CommandSuggestions cs)) return;
       if (current < 0 || current >= suggestionList.size()) return;
+      #if POS_MC_1_21_9 int keyCode = keyEvent.key(); #endif
       smartcompletion$lastInputCode = keyCode;
 
       // Handle completion keys
-      if (keyCode == GLFW.GLFW_KEY_SPACE && Screen.hasControlDown()
-         || settings.enable_completion_with_enter.get() && smartcompletion$hasUnparsedInput && keyCode == GLFW.GLFW_KEY_ENTER) {
+      if (
+            keyCode == GLFW.GLFW_KEY_SPACE
+            && #if PRE_MC_1_21_9 Screen.hasControlDown() #else keyEvent.hasControlDown() #endif
+         || settings.enable_completion_with_enter.get()
+            && smartcompletion$hasUnparsedInput
+            && keyCode == GLFW.GLFW_KEY_ENTER
+      ) {
          // Accept suggestion
          useSuggestion();
 
@@ -365,7 +382,7 @@ public abstract class MixinSuggestionsList {
             cs.hide();
          }
          // Mark the input event as handled
-         ci.setReturnValue(true);
+         cir.setReturnValue(true);
       }
 
       // Invert up-down keys when inverting suggestion order
@@ -374,12 +391,12 @@ public abstract class MixinSuggestionsList {
             cycle(-1); // Cycle up
             tabCycles = false;
             // Mark the input event as handled
-            ci.setReturnValue(true);
+            cir.setReturnValue(true);
          } else if (keyCode == GLFW.GLFW_KEY_UP) {
             cycle(1); // Cycle down
             tabCycles = false;
             // Mark the input event as handled
-            ci.setReturnValue(true);
+            cir.setReturnValue(true);
          }
       }
    }
@@ -408,10 +425,21 @@ public abstract class MixinSuggestionsList {
     * Correct selected entry under the mouse when inverting the suggestion order.
     */
    @Inject(method="mouseClicked", at=@At("HEAD"), cancellable = true)
-   public void onMouseClick(int mouseX, int mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+   public void onMouseClick(
+      #if PRE_MC_1_21_9
+      int mouseX, int mouseY, int button
+      #else
+      int mouseX, int mouseY
+      #endif,
+      CallbackInfoReturnable<Boolean> cir
+   ) {
       SmartCompletionSettings settings = getSmartCompletionSettings();
       if (!settings.enable_completion_keys.get() || !(smartcompletion$CommandSuggestions$this instanceof CommandSuggestions)) return;
+      #if PRE_MC_1_21_9
       smartcompletion$lastInputCode = button - 100;
+      #else
+      // The lastInputCode is set from MixinCommandSuggestions#onMouseClicked
+      #endif
       if (!smartcompletion$shouldInvertSuggestionList()) return;
 
       if (!rect.contains(mouseX, mouseY)) return;
@@ -430,5 +458,12 @@ public abstract class MixinSuggestionsList {
          && settings.invert_suggestion_order.get()
          && settings.enable_suggestion_highlighting.get()
          && smartcompletion$CommandSuggestions$this.isAnchorToBottom();
+   }
+
+   @Override public int smartcompletion$getLastInputCode() {
+      return smartcompletion$lastInputCode;
+   }
+   @Override public void smartcompletion$setLastInputCode(int keyCode) {
+      smartcompletion$lastInputCode = keyCode;
    }
 }
