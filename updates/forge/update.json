@@ -1,6 +1,8 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/smart-completion",
   "promos": {
+    "1.21.11-recommended": "2.1.0",
+    "1.21.11-latest": "2.1.0",
     "1.21.10-recommended": "2.1.0",
     "1.21.10-latest": "2.1.0",
     "1.21.9-recommended": "2.1.0",
@@ -63,6 +65,9 @@
     "1.16.4-latest": "2.1.0",
     "1.16.3-recommended": "2.1.0",
     "1.16.3-latest": "2.1.0"
+  },
+  "1.21.11": {
+    "2.1.0": "- Add option to erase input after cursor\n- Do not erase input after cursor by default, unless accepted with `<Ctrl>+<Space>` or a middle-click in the suggestion list"
   },
   "1.21.10": {
     "2.1.0": "- Add option to erase input after cursor\n- Do not erase input after cursor by default, unless accepted with `<Ctrl>+<Space>` or a middle-click in the suggestion list"
