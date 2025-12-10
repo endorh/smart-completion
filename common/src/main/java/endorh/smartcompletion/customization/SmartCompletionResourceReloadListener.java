@@ -8,7 +8,11 @@ import endorh.smartcompletion.customization.option.OptionCategory;
 import endorh.smartcompletion.util.JsonElementCodec;
 #endif
 import net.minecraft.resources.FileToIdConverter;
+#if PRE_MC_1_21_11
 import net.minecraft.resources.ResourceLocation;
+#else
+import net.minecraft.resources.Identifier;
+#endif
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -63,7 +67,7 @@ public class SmartCompletionResourceReloadListener extends
    }
 
    @Override protected void apply(
-      @NotNull Map<ResourceLocation, JsonElement> map, @NotNull ResourceManager manager,
+      @NotNull Map<#if PRE_MC_1_21_11 ResourceLocation #else Identifier #endif, JsonElement> map, @NotNull ResourceManager manager,
       @NotNull ProfilerFiller profiler
    ) {
       for (OptionCategory<?> category : categories) {

@@ -5,7 +5,6 @@ import endorh.smartcompletion.customization.SmartCompletionCommand;
 import endorh.smartcompletion.customization.SmartCompletionResourceReloadListener;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +23,12 @@ import org.jetbrains.annotations.NotNull;
    import java.util.concurrent.Executor;
 #else
    import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+#endif
+
+#if PRE_MC_1_21_11
+   import net.minecraft.resources.ResourceLocation;
+#else
+   import net.minecraft.resources.Identifier;
 #endif
 
 public class SmartCompletionModFabric implements ClientModInitializer {
@@ -81,9 +86,10 @@ public class SmartCompletionModFabric implements ClientModInitializer {
       }
    #endif
 
-   private static ResourceLocation location(@NotNull @NonNls String path) {
+   private static #if PRE_MC_1_21_11 ResourceLocation #else Identifier #endif location(@NotNull @NonNls String path) {
       #if POS_MC_1_21
-         return ResourceLocation.fromNamespaceAndPath(SmartCompletionMod.MOD_ID, path);
+         return #if PRE_MC_1_21_11 ResourceLocation #else Identifier #endif
+            .fromNamespaceAndPath(SmartCompletionMod.MOD_ID, path);
       #else
          return new ResourceLocation(SmartCompletionMod.MOD_ID, path);
       #endif

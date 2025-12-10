@@ -24,7 +24,11 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
    import net.neoforged.fml.loading.FMLEnvironment;
    import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 #else
-   import net.minecraft.resources.ResourceLocation;
+   #if PRE_MC_1_21_11
+      import net.minecraft.resources.ResourceLocation;
+   #else
+      import net.minecraft.resources.Identifier;
+   #endif
    import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 #endif
 
@@ -51,7 +55,8 @@ public class SmartCompletionModForge {
       public static void registerClientReloadListener(AddClientReloadListenersEvent event) {
          SmartCompletionMod.init();
          event.addListener(
-            ResourceLocation.fromNamespaceAndPath(SmartCompletionMod.MOD_ID, "settings"),
+            #if PRE_MC_1_21_11 ResourceLocation #else Identifier #endif
+               .fromNamespaceAndPath(SmartCompletionMod.MOD_ID, "settings"),
             new SmartCompletionResourceReloadListener(SmartCompletionMod.getSmartCompletionSettings()));
       }
    #endif

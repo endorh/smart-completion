@@ -3,7 +3,6 @@ package endorh.smartcompletion.util;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
-import net.minecraft.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,6 +12,12 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+#if PRE_MC_1_21_11
+   import net.minecraft.Util;
+#else
+   import net.minecraft.util.Util;
+#endif
 
 import static endorh.smartcompletion.util.PolyFill.*;
 

@@ -7,7 +7,6 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import endorh.smartcompletion.customization.SmartCompletionSettings;
 import endorh.smartcompletion.duck.SmartCommandSuggestions;
 import endorh.smartcompletion.util.EvictingLinkedHashMap;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
@@ -28,6 +27,12 @@ import java.util.regex.Matcher;
    import net.minecraft.commands.SharedSuggestionProvider;
 #else
    import net.minecraft.client.multiplayer.ClientSuggestionProvider;
+#endif
+
+#if PRE_MC_1_21_11
+   import net.minecraft.Util;
+#else
+   import net.minecraft.util.Util;
 #endif
 
 import static endorh.smartcompletion.SmartCommandCompletion.ARG_WORD_SPLITTER;
