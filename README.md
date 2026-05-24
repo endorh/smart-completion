@@ -1,9 +1,9 @@
-<p aria-label="header-image" style="text-align: center;">
+<p align="center" aria-label="header-image">
   <img alt="Smart Completion Mod"
        src="https://endorh.github.io/smart-completion/images/%5Bg%5Dolden_%5Bap%5Dple.png?raw=true">
 </p>
 
-<p aria-label="badges" style="text-align: center;">
+<p align="center" aria-label="badges">
   <a title="Available for Minecraft 1.16 - 26.1.2"
      href="https://endorh.github.io/smart-completion/updates/forge/update.json">
     <img alt="Available for Minecraft 1.16 - 26.1.2"
