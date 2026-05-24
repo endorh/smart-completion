@@ -1,21 +1,32 @@
+### Java ###
+hs_err_*.log
+replay_*.log
+*.hprof
+*.jfr
+.profileconfig.json
+
+### Gradle ###
+.gradle
 build/
-*.ipr
-run/
-*.iws
-out/
-*.iml
-.gradle/
-output/
-bin/
-libs/
-
-.classpath
-.project
-.idea/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/**/build/
 classes/
-.metadata
-.vscode
-.settings
-*.launch
 
+### Manifold ###
 build.properties
+
+### IntelliJ IDEA ###
+.idea/
+.run/
+
+### VS Code ###
+.vscode/
+
+### Minecraft Modding ###
+run/
+!**/src/**/run/
+**/src/generated/**/.cache/
+
+### Local Maven ###
+repo/
+!**/src/**/repo

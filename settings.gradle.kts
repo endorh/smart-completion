@@ -1,14 +1,22 @@
 pluginManagement {
     repositories {
-        maven("https://maven.fabricmc.net/")
-        maven("https://maven.architectury.dev/")
-        maven("https://maven.neoforged.net/releases/")
+        maven {
+            name = "Fabric"
+            url = uri("https://maven.fabricmc.net/")
+        }
+        mavenCentral()
         gradlePluginPortal()
     }
 }
 
-include("common")
-include("fabric")
-include("neoforge")
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
+include(
+    "common",
+    "fabric",
+    "neoforge",
+)
 
 rootProject.name = "smartcompletion"

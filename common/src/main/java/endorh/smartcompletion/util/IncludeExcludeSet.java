@@ -3,6 +3,7 @@ package endorh.smartcompletion.util;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,14 +13,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-#if PRE_MC_1_21_11
-   import net.minecraft.Util;
-#else
-   import net.minecraft.util.Util;
-#endif
-
-import static endorh.smartcompletion.util.PolyFill.*;
 
 /**
  * A set that allows including and excluding elements.
@@ -36,7 +29,7 @@ public class IncludeExcludeSet<T> implements Set<T> {
       }
       private <D> Optional<DataResult<D>> collectErrors(Stream<DataResult<D>> subResults) {
          List<DataResult<D>> errors = subResults
-            .filter(PolyFill::isError)
+            .filter(DataResult::isError)
             .toList();
          if (!errors.isEmpty()) return Optional.of(DataResult.error(() ->
             "Failed to encode elements: " + errors.stream()
@@ -50,7 +43,7 @@ public class IncludeExcludeSet<T> implements Set<T> {
             Optional<DataResult<D>> error = collectErrors(encoded.stream());
             return error.orElseGet(() -> DataResult.success(ops.createMap(Map.of(
                ops.createString("replace"),
-               ops.createList(encoded.stream().map(PolyFill::getOrThrow))
+               ops.createList(encoded.stream().map(DataResult::getOrThrow))
             ))));
          }
          List<DataResult<D>> included = input.getIncludeSet().stream().map(e -> elemCodec.encode(e, ops, ops.empty())).toList();
@@ -58,11 +51,11 @@ public class IncludeExcludeSet<T> implements Set<T> {
          Optional<DataResult<D>> error = collectErrors(Stream.concat(included.stream(), excluded.stream()));
          if (error.isPresent()) return error.get();
          if (excluded.isEmpty()) return DataResult.success(
-            ops.createList(included.stream().map(PolyFill::getOrThrow)));
+            ops.createList(included.stream().map(DataResult::getOrThrow)));
          return DataResult.success(ops.createMap(Util.make(new HashMap<>(), m -> {
             if (!included.isEmpty()) m.put(
-               ops.createString("include"), ops.createList(included.stream().map(PolyFill::getOrThrow)));
-            m.put(ops.createString("exclude"), ops.createList(excluded.stream().map(PolyFill::getOrThrow)));
+               ops.createString("include"), ops.createList(included.stream().map(DataResult::getOrThrow)));
+            m.put(ops.createString("exclude"), ops.createList(excluded.stream().map(DataResult::getOrThrow)));
          })));
       }
    }
@@ -80,11 +73,11 @@ public class IncludeExcludeSet<T> implements Set<T> {
       private <D> DataResult<List<T>> readList(DynamicOps<D> ops, DataResult<Consumer<Consumer<D>>> list) {
          List<T> r = new ArrayList<>();
          List<DataResult<T>> errors = new ArrayList<>();
-         if (isError(list)) return DataResult.error(list.error().get()::message);
-         getOrThrow(list).accept(e -> {
+         if (list.isError()) return DataResult.error(list.error().get()::message);
+         list.getOrThrow().accept(e -> {
             DataResult<T> edr = elemCodec.decode(ops, e).map(Pair::getFirst);
-            if (isSuccess(edr))
-               r.add(getOrThrow(edr));
+            if (edr.isSuccess())
+               r.add(edr.getOrThrow());
             else errors.add(edr);
          });
          if (!errors.isEmpty()) return DataResult.error(() ->
@@ -96,21 +89,21 @@ public class IncludeExcludeSet<T> implements Set<T> {
       @Override public <D> DataResult<Pair<IncludeExcludeSet<T>, D>> decode(DynamicOps<D> ops, D input) {
          IncludeExcludeSet<T> set = new IncludeExcludeSet<>(comparator);
          DataResult<Consumer<Consumer<D>>> list = ops.getList(input);
-         if (isSuccess(list)) {
+         if (list.isSuccess()) {
             DataResult<List<T>> include = readList(ops, list);
-            if (isError(include)) return DataResult.error(include.error().get()::message);
-            set.setIncludeSet(getOrThrow(include));
+            if (include.isError()) return DataResult.error(include.error().get()::message);
+            set.setIncludeSet(include.getOrThrow());
             return DataResult.success(Pair.of(set, input));
          }
          DataResult<Consumer<BiConsumer<D, D>>> map = ops.getMapEntries(input);
-         if (isError(map)) return DataResult.error(
+         if (map.isError()) return DataResult.error(
             () -> "Expected a map with optional keys [replace, include, exclude]");
          AtomicReference<D> replaceRef = new AtomicReference<>();
          AtomicReference<D> includeRef = new AtomicReference<>();
          AtomicReference<D> excludeRef = new AtomicReference<>();
-         getOrThrow(map).accept((k, v) -> {
+         map.getOrThrow().accept((k, v) -> {
             DataResult<String> key = ops.getStringValue(k);
-            if (!isError(key)) switch (getOrThrow(key)) {
+            if (!key.isError()) switch (key.getOrThrow()) {
                case "replace" -> replaceRef.set(v);
                case "include" -> includeRef.set(v);
                case "exclude" -> excludeRef.set(v);
@@ -118,20 +111,20 @@ public class IncludeExcludeSet<T> implements Set<T> {
          });
          if (replaceRef.get() != null) {
             DataResult<List<T>> replace = readList(ops, replaceRef.get());
-            if (isError(replace)) return DataResult.error(() -> replace.error().get().message());
-            set.setIncludeSet(getOrThrow(replace));
+            if (replace.isError()) return DataResult.error(() -> replace.error().get().message());
+            set.setIncludeSet(replace.getOrThrow());
             set.setReplace(true);
             return DataResult.success(Pair.of(set, input));
          }
          if (includeRef.get() != null) {
             DataResult<List<T>> include = readList(ops, includeRef.get());
-            if (isError(include)) return DataResult.error(() -> include.error().get().message());
-            set.setIncludeSet(getOrThrow(include));
+            if (include.isError()) return DataResult.error(() -> include.error().get().message());
+            set.setIncludeSet(include.getOrThrow());
          }
          if (excludeRef.get() != null) {
             DataResult<List<T>> exclude = readList(ops, excludeRef.get());
-            if (isError(exclude)) return DataResult.error(() -> exclude.error().get().message());
-            set.setExcludeSet(getOrThrow(exclude));
+            if (exclude.isError()) return DataResult.error(() -> exclude.error().get().message());
+            set.setExcludeSet(exclude.getOrThrow());
          }
          return DataResult.success(Pair.of(set, input));
       }

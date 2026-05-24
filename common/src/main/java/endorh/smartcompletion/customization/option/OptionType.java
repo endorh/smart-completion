@@ -15,15 +15,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import endorh.smartcompletion.util.IncludeExcludeSet;
-import endorh.smartcompletion.util.PolyFill;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
+import net.minecraft.commands.arguments.StyleArgument;
+import net.minecraft.network.chat.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +30,6 @@ import java.util.Comparator;
 import java.util.function.Function;
 
 import static endorh.smartcompletion.customization.SmartCompletionResourceReloadListener.GSON;
-import static endorh.smartcompletion.util.PolyFill.*;
 
 /**
  * Represents a type of option that can be configured in the game.<br>
@@ -64,12 +62,12 @@ public abstract class OptionType<T> {
    }
 
    public JsonElement serialize(@NotNull T value) {
-      return getOrThrow(codec.encode(value, JsonOps.INSTANCE, JsonOps.INSTANCE.empty()));
+      return codec.encode(value, JsonOps.INSTANCE, JsonOps.INSTANCE.empty()).getOrThrow();
    }
    public @Nullable T deserialize(JsonElement element) {
       if (element.isJsonNull()) return null;
       DataResult<T> result = codec.parse(JsonOps.INSTANCE, element);
-      if (isSuccess(result)) return getOrThrow(result);
+      if (result.isSuccess()) return result.getOrThrow();
       return null;
    }
 
@@ -78,8 +76,8 @@ public abstract class OptionType<T> {
       ChatFormatting... formats
    ) {
       return Component.literal(text).withStyle(formats).withStyle(s ->
-         s.withClickEvent(suggestCommandClickEvent(command))
-            .withHoverEvent(showTextHoverEvent(tooltip)));
+         s.withClickEvent(new ClickEvent.SuggestCommand(command))
+            .withHoverEvent(new HoverEvent.ShowText(tooltip)));
    }
    protected static MutableComponent literal(String text, ChatFormatting... formats) {
       return Component.literal(text).withStyle(formats);
@@ -88,7 +86,9 @@ public abstract class OptionType<T> {
       if (c.getSource() instanceof CommandSourceStack cs) {
          cs.sendSuccess(() -> message, false);
       } else if (c.getSource() instanceof ClientSuggestionProvider) {
-         sendChatCommandFeedback(message);
+         Minecraft client = Minecraft.getInstance();
+         client.gui.getChat().addClientSystemMessage(message);
+         client.getNarrator().saySystemChatQueued(message);
       }
    }
    protected static <S extends SharedSuggestionProvider> void sendFailure(CommandContext<S> c, Component message) {
@@ -181,7 +181,7 @@ public abstract class OptionType<T> {
          IntegerArgumentType.integer());
    }
    public static SimpleOptionType<Style> style() {
-      return new SimpleOptionType<>(Style.Serializer.CODEC, PolyFill::styleArgument) {
+      return new SimpleOptionType<>(Style.Serializer.CODEC, StyleArgument::style) {
          @Override public @Nullable Style override(@Nullable Style base, @Nullable Style override, boolean replace) {
             if (!replace && base != null && override != null)
                return override.applyTo(base);

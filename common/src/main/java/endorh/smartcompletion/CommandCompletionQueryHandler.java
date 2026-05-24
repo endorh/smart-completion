@@ -9,7 +9,9 @@ import endorh.smartcompletion.duck.SmartCommandSuggestions;
 import endorh.smartcompletion.util.EvictingLinkedHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,18 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
-
-#if PRE_MC_1_21_6
-   import net.minecraft.commands.SharedSuggestionProvider;
-#else
-   import net.minecraft.client.multiplayer.ClientSuggestionProvider;
-#endif
-
-#if PRE_MC_1_21_11
-   import net.minecraft.Util;
-#else
-   import net.minecraft.util.Util;
-#endif
 
 import static endorh.smartcompletion.SmartCommandCompletion.ARG_WORD_SPLITTER;
 import static endorh.smartcompletion.SmartCompletionMod.getSmartCompletionSettings;
@@ -144,7 +134,7 @@ public class CommandCompletionQueryHandler {
 
    public void updateQuery(
       @NotNull String command, int cursor,
-      ParseResults<#if PRE_MC_1_21_6 SharedSuggestionProvider #else ClientSuggestionProvider #endif> parseResults
+      ParseResults<ClientSuggestionProvider> parseResults
    ) {
       if (command.length() <= 1) resetVolatileCache();
       var suggestionContext = parseResults.getContext().findSuggestionContext(cursor);

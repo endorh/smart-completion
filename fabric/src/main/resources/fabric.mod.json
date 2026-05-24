@@ -26,7 +26,7 @@
     "smartcompletion.mixins.json"
   ],
   "depends": {
-    "fabric": "*",
-    "minecraft": "${fabricMinecraftVersion}"
+    "fabric-api": "*",
+    "minecraft": "${fabricCompatibleMinecraftVersion}"
   }
 }

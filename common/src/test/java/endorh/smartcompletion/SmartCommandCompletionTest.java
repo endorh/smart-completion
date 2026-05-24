@@ -2,18 +2,13 @@ package endorh.smartcompletion;
 
 import com.google.common.collect.Lists;
 import endorh.smartcompletion.util.IncludeExcludeSet;
+import net.minecraft.util.Util;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-#if PRE_MC_1_21_11
-   import net.minecraft.Util;
-#else
-   import net.minecraft.util.Util;
-#endif
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;

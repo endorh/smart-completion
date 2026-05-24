@@ -1,5 +1,6 @@
 plugins {
-    id("com.github.johnrengelman.shadow")
+    id("net.fabricmc.fabric-loom")
+    // id("maven-publish")
 }
 
 val prop = rootProject.extra
@@ -9,96 +10,115 @@ val modVersion: String by rootProject
 val minecraftVersion: String by prop
 val fabricLoaderVersion: String by prop
 val fabricApiVersion: String by prop
-val architecturyVersion: String by prop
 
 val modProperties: Map<String, String> by prop
 
-architectury {
-    platformSetupLoomIde()
-    fabric()
-}
-
 loom {
-    accessWidenerPath.set(project(":common").loom.accessWidenerPath)
+    mods {
+        register(modId) {
+            sourceSet(sourceSets.main.get())
+        }
+    }
 }
 
-val common by configurations.creating
-// Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-val shadowCommon by configurations.creating
-val developmentFabric by configurations
-
+val commonImplementation by configurations.creating {
+    isCanBeResolved = true
+    isCanBeConsumed = false
+    isTransitive = false
+}
 configurations {
-    compileClasspath.get().extendsFrom(common)
-    runtimeClasspath.get().extendsFrom(common)
-    developmentFabric.extendsFrom(common)
+    api.get().extendsFrom(commonImplementation)
 }
 
 dependencies {
-    modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
-    // modRuntimeOnly("curse.maven:worldedit-225608:5507247")
-    modApi("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
-    // modApi("dev.architectury:architectury-fabric:${architecturyVersion}")
-    
-    common(project(":common", configuration = "namedElements")) {
-        isTransitive = false
-    }
-    shadowCommon(project(":common", configuration = "transformProductionFabric")) {
-        isTransitive = false
-    }
+    commonImplementation(project(":common"))
+
+    // To change the versions see the gradle.properties file
+    minecraft("com.mojang:minecraft:${minecraftVersion}")
+
+    // Fabric loader
+    implementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
+
+    // Fabric API
+    implementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
 }
 
-tasks.processResources {
+val copyCommonClasses by tasks.registering(Copy::class) {
+    mustRunAfter(":common:compileJava")
+    mustRunAfter(":common:compileTestJava")
+    mustRunAfter(tasks.compileJava.get())
+
+    from(project(":common").layout.buildDirectory.get().dir("classes"))
+    into(project.layout.buildDirectory.dir("classes"))
+}
+
+val copyCommonResources by tasks.registering(Copy::class) {
+    mustRunAfter(":common:processResources")
+    mustRunAfter(":common:processTestResources")
+    mustRunAfter(":common:compileTestJava")
+    mustRunAfter(tasks.processResources.get())
+    mustRunAfter(tasks.processTestResources.get())
+
+    from(project(":common").layout.buildDirectory.dir("resources"))
+    into(project.layout.buildDirectory.dir("resources"))
+}
+
+tasks.classes.configure {
+    dependsOn(copyCommonClasses)
+    dependsOn(copyCommonResources)
+}
+
+tasks.named<ProcessResources>("processResources") {
+    val modProperties = modProperties.toMap()
     inputs.properties(modProperties)
-    
+
     // Exclude .dev folders from the mod resources
     exclude("**/.dev/**")
-    
+
     filesMatching("fabric.mod.json") {
         expand(modProperties)
     }
 }
 
-tasks.shadowJar {
-    archiveClassifier.set("dev-shadow")
-    
-    exclude("architectury.common.json")
-    
-    configurations = listOf(shadowCommon)
+tasks.withType<JavaCompile>().configureEach {
+    options.release = 25
 }
 
-tasks.remapJar {
-    archiveVersion.set(modVersion)
-    archiveClassifier.set("")
-    
-    injectAccessWidener.set(true)
-    inputFile.set(tasks.shadowJar.get().archiveFile)
-    
-    dependsOn(tasks.shadowJar)
+java {
+    withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
-tasks.jar {
-    archiveClassifier.set("dev")
-}
 
-tasks.sourcesJar {
-    val commonSources = project(":common").tasks.getByName<Jar>("sourcesJar")
-    dependsOn(commonSources)
-    from(commonSources.archiveFile.map { zipTree(it) })
-}
+tasks.named<Jar>("jar") {
+    val modId = modId
+    inputs.property("projectName", modId)
 
-components.getByName<AdhocComponentWithVariants>("java") {
-    withVariantsFromConfiguration(configurations.shadowRuntimeElements.get()) {
-        skip()
+    from(rootProject.projectDir.resolve("LICENSE")) {
+        rename {
+            "${it}_${modId}"
+        }
     }
 }
 
+// configure the maven publication
 publishing {
     publications {
-        register<MavenPublication>("fabric") {
+        create<MavenPublication>("fabric") {
             artifactId = "$modId-$minecraftVersion-${project.name}"
             version = modVersion
-        
+
             from(components["java"])
         }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+        // Notice: This block does NOT have the same function as the block in the top level.
+        // The repositories here will be used for publishing your artifact, not for
+        // retrieving dependencies.
     }
 }

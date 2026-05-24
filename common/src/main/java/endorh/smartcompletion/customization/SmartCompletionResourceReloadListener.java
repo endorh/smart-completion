@@ -4,15 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import endorh.smartcompletion.customization.option.OptionCategory;
-#if POS_MC_1_21_3
 import endorh.smartcompletion.util.JsonElementCodec;
-#endif
 import net.minecraft.resources.FileToIdConverter;
-#if PRE_MC_1_21_11
-import net.minecraft.resources.ResourceLocation;
-#else
 import net.minecraft.resources.Identifier;
-#endif
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -30,13 +24,9 @@ import java.util.Set;
  * Reloads pack options from resource packs.
  * @see OptionCategory
  */
-public class SmartCompletionResourceReloadListener extends
-#if POS_MC_1_21_3
-   SimpleJsonResourceReloadListener<JsonElement>
-#else
-   SimpleJsonResourceReloadListener
-#endif
-{
+public class SmartCompletionResourceReloadListener
+   extends SimpleJsonResourceReloadListener<JsonElement> {
+
    private static final Logger LOGGER = LogManager.getLogger();
    public static final Gson GSON = new GsonBuilder()
       .setPrettyPrinting()
@@ -45,18 +35,7 @@ public class SmartCompletionResourceReloadListener extends
    protected final List<OptionCategory<?>> categories = new ArrayList<>();
 
    public SmartCompletionResourceReloadListener(OptionCategory<?>... options) {
-      super(
-         #if PRE_MC_1_21_3
-         GSON,
-         #else
-         JsonElementCodec.INSTANCE,
-         #endif
-         #if POS_MC_1_21_4
-         FileToIdConverter.json("smart-completion")
-         #else
-         "smart-completion"
-         #endif
-      );
+      super(JsonElementCodec.INSTANCE, FileToIdConverter.json("smart-completion"));
       for (OptionCategory<?> cat : options) registerCategory(cat);
    }
 
@@ -67,7 +46,7 @@ public class SmartCompletionResourceReloadListener extends
    }
 
    @Override protected void apply(
-      @NotNull Map<#if PRE_MC_1_21_11 ResourceLocation #else Identifier #endif, JsonElement> map, @NotNull ResourceManager manager,
+      @NotNull Map<Identifier, JsonElement> map, @NotNull ResourceManager manager,
       @NotNull ProfilerFiller profiler
    ) {
       for (OptionCategory<?> category : categories) {

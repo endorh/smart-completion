@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "${neoForgeLoaderVersion}"
+loaderVersion = "${neoForgeCompatibleLoaderVersion}"
 issueTrackerURL = "${modIssueTracker}"
 license = "${modLicense}"
 
@@ -10,20 +10,20 @@ license = "${modLicense}"
     authors = "${modAuthor}"
     description = "${modDescription}"
     displayURL = "${modPage}"
-    displayTest = "${modDisplayTest}"
     updateJSONURL = "${modUpdatesJSON}"
     logoFile = "icon.png"
+    logoBlur = false
 
 [[dependencies.smartcompletion]]
     modId = "neoforge"
-    mandatory = true
-    versionRange = "${neoForgeVersionRange}"
+    type = "required"
+    versionRange = "${neoForgeCompatibleMinecraftVersion}"
     ordering = "NONE"
     side = "BOTH"
 [[dependencies.smartcompletion]]
     modId = "minecraft"
-    mandatory = true
-    versionRange = "${neoForgeMinecraftVersion}"
+    type = "required"
+    versionRange = "${neoForgeCompatibleMinecraftVersion}"
     ordering = "NONE"
     side = "BOTH"
 

@@ -1,10 +1,7 @@
-import net.fabricmc.loom.api.LoomGradleExtensionAPI
-import java.util.*
-
 plugins {
-    id("architectury-plugin") version "3.4-SNAPSHOT"
-    id("dev.architectury.loom") version "1.13-SNAPSHOT" apply false
-    id("com.github.johnrengelman.shadow") version "8.1.1" apply false
+    id("net.neoforged.moddev") version "2.0.141" apply false
+    id("net.fabricmc.fabric-loom") version "1.16-SNAPSHOT" apply false
+    id("idea")
 }
 
 val maxMcVersions: String by project
@@ -25,7 +22,6 @@ val modSource: String by project
 val modIssueTracker: String by project
 val modUpdatesJSON: String by project
 val githubRepo: String by project
-val modDisplayTest: String by project
 
 /**
  * Create the `build.properties` file with Manifold preprocessor symbols
@@ -108,7 +104,7 @@ fun loadProperties() {
     }
     
     println("Loading properties from `versionProperties/$mcVersion.properties`")
-    Properties().apply {
+    java.util.Properties().apply {
         load(file("versionProperties/$mcVersion.properties").inputStream())
     }.forEach {
         rootProject.extra.set(it.key as String, it.value)
@@ -122,7 +118,9 @@ loadProperties()
 
 val javaVersion: String by extra
 val minecraftVersion: String by extra
-val parchmentVersion: String by extra
+
+val neoForgeCompatibleMinecraftVersion: String by extra
+val fabricCompatibleMinecraftVersion: String by extra
 
 // Alias within loom extension, as it also defines a `minecraftVersion` property
 val buildMinecraftVersion get() = minecraftVersion
@@ -140,7 +138,8 @@ val modProperties by extra {
         "modIssueTracker" to modIssueTracker,
         "modUpdatesJSON" to modUpdatesJSON,
         "githubRepo" to githubRepo,
-        "modDisplayTest" to modDisplayTest,
+        "neoForgeCompatibleMinecraftVersion" to neoForgeCompatibleMinecraftVersion,
+        "fabricCompatibleMinecraftVersion" to fabricCompatibleMinecraftVersion,
     )
     map += versionProperties
     map.toMap()
@@ -158,18 +157,14 @@ println("Mod properties:\n${modProperties.entries.joinToString("\n") {
     "  ${it.key} = ${it.value}"
 }}")
 
-architectury {
-    minecraft = minecraftVersion
-}
-
 allprojects {
     version = modVersion
 }
 
 subprojects {
-    apply(plugin = "dev.architectury.loom")
-    apply(plugin = "architectury-plugin")
+    apply(plugin = "java-library")
     apply(plugin = "maven-publish")
+    apply(plugin = "idea")
 
     group = mavenGroup
 
@@ -177,9 +172,12 @@ subprojects {
         archivesName.set("$modId-${buildMinecraftVersion}-${project.name}")
     }
 
+    extensions.configure<JavaPluginExtension> {
+        toolchain.languageVersion = JavaLanguageVersion.of(25)
+    }
+
     repositories {
         maven("https://maven.fabricmc.net/")
-        maven("https://maven.architectury.dev/")
         maven("https://maven.neoforged.net/releases/")
 
         maven("https://maven.parchmentmc.org") {
@@ -205,18 +203,7 @@ subprojects {
 
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.9.1")
         "testImplementation"("org.junit.jupiter:junit-jupiter-engine:5.9.1")
-    }
-
-    extensions.configure<LoomGradleExtensionAPI> {
-        dependencies {
-            "minecraft"("net.minecraft:minecraft:$buildMinecraftVersion")
-
-            "mappings"(layered {
-                officialMojangMappings()
-                if (parchmentVersion.isNotBlank())
-                    parchment("org.parchmentmc.data:parchment-$minecraftVersion:$parchmentVersion@zip")
-            })
-        }
+        "testRuntimeOnly"("org.junit.platform:junit-platform-launcher:1.9.1")
     }
 
     tasks.withType<JavaCompile> {
@@ -249,6 +236,14 @@ subprojects {
             maven(rootProject.projectDir.parentFile.resolve("maven")) {
                 name = "LocalMods"
             }
+        }
+    }
+
+    // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+    idea {
+        module {
+            isDownloadSources = true
+            isDownloadJavadoc = true
         }
     }
 }

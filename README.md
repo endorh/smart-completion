@@ -1,13 +1,13 @@
-<p align="center" aria-label="header-image">
+<p aria-label="header-image" style="text-align: center;">
   <img alt="Smart Completion Mod"
        src="https://endorh.github.io/smart-completion/images/%5Bg%5Dolden_%5Bap%5Dple.png?raw=true">
 </p>
 
-<p align="center" aria-label="badges">
-  <a title="Available for Minecraft 1.16 - 1.21.11"
+<p aria-label="badges" style="text-align: center;">
+  <a title="Available for Minecraft 1.16 - 26.1.2"
      href="https://endorh.github.io/smart-completion/updates/forge/update.json">
-    <img alt="Available for Minecraft 1.16 - 1.21.11"
-         src="https://img.shields.io/static/v1?label=&message=1.16%20-%201.21.11&color=2d2d2d&labelColor=4e4e4e&style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAALOSURBVDhPdZNLaNRQGIXPTTKZPOaRmU4fKnSlSzeKG3HVgopu7MqCW7tQceXKRRUtghsXghZxpQsV1IVSK7VIW3xUKggFcdVqsZQ+pvNMM3ne5Hon1hmleEhCkvufL/9/OSH4j4Zu9x0udBkjge/Dtvzh0QuTs9tL/2gH4Nzo0YOyJF4nhJyQEiKiiMH3AlAavdYV+cqtofEv26WxWoCb42f2VyvWtZBGp1RNJo7jw3MDaHoSQRDG91lDYw3TfeEEwdX7F99+bfqE5uXSw5OPzS17vlq2BjiSNCw3JjfNlIYQCOGdRGCMEZ/SAW6aP3un71ELIOTY6bpnCrlOHYFPQQQCx/XjL/NR4PIR9JSChuVBlAWIRiQ0/PpgC+BMBMjpOqprJSQLIohEkM5oiMIILh+F82A1bCTyBIXeFOqLJswps2n9DchWfbDpGuhygNr3CtQOCVWvBogMqayCSKVgoYfNHyUsTK0i/Oij4KhtgKFKSNky9hQVsAUPdMUHMSkasolQCyDyMnPOxMabMmrvKpAYgSpLbYDAe+zMGxDkJIxSAuWJEsTZCHTGxtLTCorP10E2IhQiBft6DMgigcX3qAUQRQFLK2sgIW8tq2OvkUJBEtFVVaCsNZAX0tykIKur2HI8GLoCWcu2AWvlLfR2G5AEATXLiTsS+bm7M4MkD5MqMb4dFJs1C2k1ifKWjUyCtgFZTlwtmejKpyDrGfDExe/KdRtqUkKJG3kGkDJysHnrzVzwI1YM4A/POjJatLxeg8B3u2zavBMXWq4rXjRSKnryaTCvAYdnwqdhtLhamWkBLj+YHkQicUDKdL/0AsoCnj6XB0p06zA5qMKBP4s1MID5YfSBgfWPzS30N707fqa7548f2ihbI6IkHNtVyGD223I8UtEhnzs0afje2KfJ7dJYOwB/xEFHVjbrI8W6Y/R0pIdvPHn/anvpLwG/ACJ4RmGZSp8VAAAAAElFTkSuQmCC"></a>
+    <img alt="Available for Minecraft 1.16 - 26.1.2"
+         src="https://img.shields.io/static/v1?label=&message=1.16%20-%2026.1.2&color=2d2d2d&labelColor=4e4e4e&style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAALOSURBVDhPdZNLaNRQGIXPTTKZPOaRmU4fKnSlSzeKG3HVgopu7MqCW7tQceXKRRUtghsXghZxpQsV1IVSK7VIW3xUKggFcdVqsZQ+pvNMM3ne5Hon1hmleEhCkvufL/9/OSH4j4Zu9x0udBkjge/Dtvzh0QuTs9tL/2gH4Nzo0YOyJF4nhJyQEiKiiMH3AlAavdYV+cqtofEv26WxWoCb42f2VyvWtZBGp1RNJo7jw3MDaHoSQRDG91lDYw3TfeEEwdX7F99+bfqE5uXSw5OPzS17vlq2BjiSNCw3JjfNlIYQCOGdRGCMEZ/SAW6aP3un71ELIOTY6bpnCrlOHYFPQQQCx/XjL/NR4PIR9JSChuVBlAWIRiQ0/PpgC+BMBMjpOqprJSQLIohEkM5oiMIILh+F82A1bCTyBIXeFOqLJswps2n9DchWfbDpGuhygNr3CtQOCVWvBogMqayCSKVgoYfNHyUsTK0i/Oij4KhtgKFKSNky9hQVsAUPdMUHMSkasolQCyDyMnPOxMabMmrvKpAYgSpLbYDAe+zMGxDkJIxSAuWJEsTZCHTGxtLTCorP10E2IhQiBft6DMgigcX3qAUQRQFLK2sgIW8tq2OvkUJBEtFVVaCsNZAX0tykIKur2HI8GLoCWcu2AWvlLfR2G5AEATXLiTsS+bm7M4MkD5MqMb4dFJs1C2k1ifKWjUyCtgFZTlwtmejKpyDrGfDExe/KdRtqUkKJG3kGkDJysHnrzVzwI1YM4A/POjJatLxeg8B3u2zavBMXWq4rXjRSKnryaTCvAYdnwqdhtLhamWkBLj+YHkQicUDKdL/0AsoCnj6XB0p06zA5qMKBP4s1MID5YfSBgfWPzS30N707fqa7548f2ihbI6IkHNtVyGD223I8UtEhnzs0afje2KfJ7dJYOwB/xEFHVjbrI8W6Y/R0pIdvPHn/anvpLwG/ACJ4RmGZSp8VAAAAAElFTkSuQmCC"></a>
   <a title="Available for [Neo]Forge"
      href="https://neoforged.net">
     <img alt="Available for [Neo]Forge"
@@ -43,7 +43,7 @@ Client-side mod that provides better autocompletion suggestions
 for Minecraft commands.
 
 > [!NOTE]
-> You're on the `v2` branch of the mod, for Minecraft `1.20.3+`
+> You're on the `v3` branch of the mod, for Minecraft `26.1+`
 
 ### Download
 You can download the mod from [CurseForge](https://www.curseforge.com/minecraft/mc-mods/smart-completion) and [Modrinth](https://modrinth.com/mod/smart-completion).
@@ -220,3 +220,6 @@ Summarized, we use the following criteria to sort suggestions, in order:
 - earlier matched parts > later matched parts (`[g]ame[m]ode > default[g]ame[m]ode`)
 - shorter suggestions > longer suggestions (`[t]p > [t]ell`)
 - original order from the server (usually alphabetic) (`[f]all[D]amage > [f]ire[D]amage`)
+
+#### Development
+For help building this project, see [CONTRIBUTING.md](CONTRIBUTING.md).

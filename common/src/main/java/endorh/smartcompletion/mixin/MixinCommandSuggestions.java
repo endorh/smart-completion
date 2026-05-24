@@ -18,6 +18,9 @@ import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.gui.components.CommandSuggestions.SuggestionsList;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
@@ -35,17 +38,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
-#if PRE_MC_1_21_6
-   import net.minecraft.commands.SharedSuggestionProvider;
-#else
-   import net.minecraft.client.multiplayer.ClientSuggestionProvider;
-#endif
-
-#if POS_MC_1_21_9
-   import net.minecraft.client.input.KeyEvent;
-   import net.minecraft.client.input.MouseButtonEvent;
-#endif
 
 import static endorh.smartcompletion.SmartCompletionMod.getSmartCompletionSettings;
 
@@ -92,9 +84,7 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
    /** Command input bar */
    @Shadow @Final EditBox input;
    @Shadow @Final Font font;
-   @Shadow private @Nullable ParseResults<
-         #if PRE_MC_1_21_6 SharedSuggestionProvider #else ClientSuggestionProvider #endif
-      > currentParse;
+   @Shadow private @Nullable ParseResults<ClientSuggestionProvider> currentParse;
    /** Displayed suggestion list. */
    @Shadow private @Nullable CommandSuggestions.SuggestionsList suggestions;
    @Shadow @Final int suggestionLineLimit;
@@ -122,7 +112,7 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
     * Responsible for updating {@link #commandUsage} and calling {@link #showSuggestions} after
     * the suggestions are received.
     */
-   @Shadow protected abstract void updateUsageInfo();
+   @Shadow protected abstract void updateUsageInfo(ParseResults<ClientSuggestionProvider> currentParse, Suggestions suggestions);
    /**
     * Responsible for creating the {@link SuggestionsList}.
     */
@@ -157,7 +147,7 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
    /**
     * Defer suggestion query requests to the {@link #smartcompletion$queryHandler}.<br>
     * <br>
-    * By doing this, we become responsible for calling {@link #updateUsageInfo()} once
+    * By doing this, we become responsible for calling {@link #updateUsageInfo} once
     * the suggestions have been received, which we do in
     * {@link #smartcompletion$updateAggregatedSuggestions}.
     */
@@ -230,10 +220,10 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
     * Updates the last aggregated suggestions displayed.<br>
     * <br>
     * Updates the {@link #smartcompletion$lastAggregatedSuggestions} field, and calls
-    * {@link #updateUsageInfo()}, as would've been called after completing
+    * {@link #updateUsageInfo)}, as would've been called after completing
     * {@link #pendingSuggestions} if we hadn't overridden {@link CommandSuggestions#updateCommandInfo()}.<br>
     * <br>
-    * In turn, {@link #updateUsageInfo()} calls {@link #showSuggestions}, which we override
+    * In turn, {@link #updateUsageInfo)} calls {@link #showSuggestions}, which we override
     * on {@link #smartcompletion$onShowSuggestions} to display a patched {@link SuggestionsList}
     * that can display the suggestions properly highlighted.
     * @param suggestions Aggregated suggestions for the last command.
@@ -250,7 +240,11 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
 
       if (commandUsage.isEmpty()) {
          // Call updateUsageInfo, which in turn will call showSuggestions
-         updateUsageInfo();
+         pendingSuggestions.thenAccept(s -> {
+            if (pendingSuggestions.isDone()) {
+               updateUsageInfo(currentParse, s);
+            }
+         });
       } else {
          // If commandUsage is empty, unfortunately, calling updateUsageInfo a second time will
          // result in an alignment error in the GUI, so we instead call showSuggestions directly
@@ -259,7 +253,7 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
    }
 
    /**
-    * Forces the suggestions list to show again, by triggering {@link #updateUsageInfo()} from
+    * Forces the suggestions list to show again, by triggering {@link #updateUsageInfo} from
     * {@link #smartcompletion$updateAggregatedSuggestions(AggregatedSuggestions, boolean)}.
     */
    @Override public void smartcompletion$enforceShowSuggestions() {
@@ -273,12 +267,8 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
     */
    @Inject(method="keyPressed", at=@At("RETURN"), cancellable=true)
    public void smartcompletion$onKeyPressed(
-      #if PRE_MC_1_21_9
-         int keyCode, int scanCode, int modifiers
-      #else
-         KeyEvent keyEvent
-      #endif,
-      CallbackInfoReturnable<Boolean>cir
+      KeyEvent keyEvent,
+      CallbackInfoReturnable<Boolean> cir
    ) {
       // Only handle if input event hasn't been handled (and handling is enabled)
       if (cir.getReturnValueZ()
@@ -286,15 +276,13 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
       ) return;
 
       boolean handled = false;
-      if (#if PRE_MC_1_21_9 keyCode #else keyEvent.key() #endif == GLFW.GLFW_KEY_SPACE
-         && #if PRE_MC_1_21_9 Screen.hasControlDown() #else keyEvent.hasControlDown() #endif) {
+      if (keyEvent.key() == GLFW.GLFW_KEY_SPACE && keyEvent.hasControlDown()) {
          handled = true;
          showSuggestions(true);
       }
       if (handled) cir.setReturnValue(true);
    }
 
-   #if POS_MC_1_21_9
    /**
     * Pass the mouse button to the {@link MixinSuggestionsList}, as its new
     * {@link SuggestionsList#mouseClicked(int, int)} method does not have
@@ -309,7 +297,6 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
       if (suggestions instanceof SmartSuggestionsList ssl)
          ssl.setLastInputCode(event.button() - 100);
    }
-   #endif
 
    // Duck implementations
    @Override public boolean smartcompletion$isKeepSuggestions() {

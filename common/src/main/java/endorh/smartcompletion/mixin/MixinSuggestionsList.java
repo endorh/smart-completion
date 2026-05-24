@@ -11,15 +11,15 @@ import endorh.smartcompletion.customization.SmartCompletionSettings.SuggestionSt
 import endorh.smartcompletion.duck.SmartCommandSuggestions;
 import endorh.smartcompletion.duck.SmartSuggestionsList;
 import endorh.smartcompletion.util.ListWithAttachment;
-import endorh.smartcompletion.util.PolyFill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.gui.components.CommandSuggestions.SuggestionsList;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
@@ -39,10 +39,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.List;
-
-#if POS_MC_1_21_9
-   import net.minecraft.client.input.KeyEvent;
-#endif
 
 import static endorh.smartcompletion.SmartCommandCompletion.SUGGESTION_STARTS_SUB_NODE;
 import static endorh.smartcompletion.SmartCommandCompletion.highlightSuggestion;
@@ -194,7 +190,7 @@ public abstract class MixinSuggestionsList implements SmartSuggestionsList {
    }
 
    /**
-    * Override {@link SuggestionsList#render(GuiGraphics, int, int)} if
+    * Override {@link SuggestionsList#extractRenderState(GuiGraphicsExtractor, int, int)} if
     * {@link SmartCompletionSettings#enabled} and
     * {@link SmartCompletionSettings#enable_suggestion_highlighting} are {@code true}.<br>
     * <br>
@@ -203,9 +199,9 @@ public abstract class MixinSuggestionsList implements SmartSuggestionsList {
     * from selecting a suggestion from a suggestion list that has been just created,
     * without the mouse moving at all.
     */
-   @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+   @Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
    public void onRender(
-      GuiGraphics gg, int mouseX, int mouseY, CallbackInfo ci
+      GuiGraphicsExtractor gg, int mouseX, int mouseY, CallbackInfo ci
    ) {
       SmartCompletionSettings settings = getSmartCompletionSettings();
       if (smartcompletion$CommandSuggestions$this == null
@@ -277,13 +273,13 @@ public abstract class MixinSuggestionsList implements SmartSuggestionsList {
          MeasuredHighlightedSuggestion suggestion = smartcompletion$highlightedSuggestions.get(i + offset);
          Component text = suggestion.component();
          if (selected) text = text.copy().withStyle(style.selected.get());
-         gg.drawString(font, text, left + 1 + suggestion.horizontalOffset(), y + 2, 0xFFAAAAAA);
+         gg.text(font, text, left + 1 + suggestion.horizontalOffset(), y + 2, 0xFFAAAAAA);
       }
 
       if (hovered) {
          Message message = suggestionList.get(current).getTooltip();
          if (message != null)
-            PolyFill.setTooltipForNextFrame(gg, font, ComponentUtils.fromMessage(message), mouseX, mouseY);
+            gg.setTooltipForNextFrame(font, ComponentUtils.fromMessage(message), mouseX, mouseY);
       }
    }
 
@@ -353,22 +349,18 @@ public abstract class MixinSuggestionsList implements SmartSuggestionsList {
     */
    @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
    public void onKeyPressed(
-      #if PRE_MC_1_21_9
-      int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir
-      #else
       KeyEvent keyEvent, CallbackInfoReturnable<Boolean> cir
-      #endif
    ) {
       SmartCompletionSettings settings = getSmartCompletionSettings();
       if (!settings.enable_completion_keys.get() || !(smartcompletion$CommandSuggestions$this instanceof CommandSuggestions cs)) return;
       if (current < 0 || current >= suggestionList.size()) return;
-      #if POS_MC_1_21_9 int keyCode = keyEvent.key(); #endif
+      int keyCode = keyEvent.key();
       smartcompletion$lastInputCode = keyCode;
 
       // Handle completion keys
       if (
             keyCode == GLFW.GLFW_KEY_SPACE
-            && #if PRE_MC_1_21_9 Screen.hasControlDown() #else keyEvent.hasControlDown() #endif
+            && keyEvent.hasControlDown()
          || settings.enable_completion_with_enter.get()
             && smartcompletion$hasUnparsedInput
             && keyCode == GLFW.GLFW_KEY_ENTER
@@ -426,20 +418,13 @@ public abstract class MixinSuggestionsList implements SmartSuggestionsList {
     */
    @Inject(method="mouseClicked", at=@At("HEAD"), cancellable = true)
    public void onMouseClick(
-      #if PRE_MC_1_21_9
-      int mouseX, int mouseY, int button
-      #else
-      int mouseX, int mouseY
-      #endif,
+      int mouseX, int mouseY,
       CallbackInfoReturnable<Boolean> cir
    ) {
       SmartCompletionSettings settings = getSmartCompletionSettings();
       if (!settings.enable_completion_keys.get() || !(smartcompletion$CommandSuggestions$this instanceof CommandSuggestions)) return;
-      #if PRE_MC_1_21_9
-      smartcompletion$lastInputCode = button - 100;
-      #else
       // The lastInputCode is set from MixinCommandSuggestions#onMouseClicked
-      #endif
+
       if (!smartcompletion$shouldInvertSuggestionList()) return;
 
       if (!rect.contains(mouseX, mouseY)) return;

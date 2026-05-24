@@ -20,17 +20,51 @@ first to let players choose which to use.
 
 ### Development
 
-This mod uses [Architectury](https://www.curseforge.com/minecraft/mc-mods/architectury-api)
-to support Forge and Fabric.
-
 The structure of the project is inspired by
 [Distant Horizons](https://gitlab.com/jeseibel/minecraft-lod-mod/)
 and uses [Manifold](http://manifold.systems) to support multiple Minecraft
 versions with the same codebase.
 
-Refer to the [Architectury Wiki](https://docs.architectury.dev/plugin:get_started)
-or the [Distant Horizons Readme.md](https://gitlab.com/jeseibel/minecraft-lod-mod/-/tree/main#source-code-installation)
+Refer to the [Distant Horizons Readme.md](https://gitlab.com/jeseibel/minecraft-lod-mod/-/tree/main#source-code-installation)
 for more information on the structure of this project.
+
+Prior to Minecraft 26.1 this mod used [Architectury](https://www.curseforge.com/minecraft/mc-mods/architectury-api)
+to support NeoForge and Fabric.
+This is still the case in the `v2` branch.
+
+In the latest `v3` branch, the Architectury setup has been replaced with
+a simpler basic setup that simply relies on Loom and ModDevGradle separately
+on two subprojects (`fabric` and `neoforge`), copying code and resources from
+a `common` subproject.
+
+The `common` subproject is compiled against the Minecraft sources provided by Loom
+for Fabric.
+Unlike the new NeoForge setup, this still requires you to run the `genSources` task
+to benefit from development sources for Minecraft in the `common` project.
+
+There are still some limitations which I may address if they bother me enough in
+the future:
+- No support for loader-specific mixins
+- No support for multiple source sets
+- No support for split sides on fabric
+- No proper support for access wideners in loader-specific code
+- No support for interface injection (you can use mixins for that)
+- No support for IDE run configurations (just use Gradle tasks, it's always been more consistent for me)
+- Common sources are not copied to the per-loader JARs
+- Common classes are not properly synced and may become stale after
+  removals/renames. A clean build solves this, but a proper solution that
+  plays nice with the configuration cache is needed.
+- Some packages from the Fabric loader are still accessible to the `common` subproject.
+  If used, they will break the NeoForge build. Ideally, Gradle could hide these from the classpath to
+  prevent accidents.
+
+In general, the current setup is very ad-hoc, so you may need to be cautious if you
+want to use it as inspiration.
+I didn't have the motivation for polishing it just yet.
+
+While the current approach of copying compiled classes from the `common` project is rather inelegant,
+any attempt to reference them as a proper dependency resulted in headaches to get NeoForge to load
+the common classes with the right classloader in dev runs.
 
 ***
 
@@ -45,13 +79,7 @@ Properties for each Minecraft version can be found within the
 This project is basically my experiment to find a project setup that I can use
 to develop multi-loader and multi-version mods more efficiently.
 
-Currently, running the Forge version from the IDE fails for some Minecraft versions.
-Running with the Gradle task `runClient` sometimes is more reliable, but it can
-still fail. This issue was introduced when the build logic was migrated to
-Gradle's Kotlin DSL
-([73d229e](https://github.com/endorh/smart-completion/commit/73d229e25b63a858595c4e198a7b229ab459634b)).
-
-In addition, switching Minecraft versions sometimes fails due to a file
+Switching Minecraft versions sometimes fails due to a file
 being locked by the IDE.
 
 If you have any suggestions to improve the project structure, by all means,
