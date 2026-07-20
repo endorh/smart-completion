@@ -30,6 +30,7 @@ import java.util.Comparator;
 import java.util.function.Function;
 
 import static endorh.smartcompletion.customization.SmartCompletionResourceReloadListener.GSON;
+import static endorh.smartcompletion.util.PolyFill.getChat;
 
 /**
  * Represents a type of option that can be configured in the game.<br>
@@ -87,7 +88,7 @@ public abstract class OptionType<T> {
          cs.sendSuccess(() -> message, false);
       } else if (c.getSource() instanceof ClientSuggestionProvider) {
          Minecraft client = Minecraft.getInstance();
-         client.gui.getChat().addClientSystemMessage(message);
+         getChat(client).addClientSystemMessage(message);
          client.getNarrator().saySystemChatQueued(message);
       }
    }

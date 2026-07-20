@@ -43,6 +43,7 @@ import java.util.List;
 import static endorh.smartcompletion.SmartCommandCompletion.SUGGESTION_STARTS_SUB_NODE;
 import static endorh.smartcompletion.SmartCommandCompletion.highlightSuggestion;
 import static endorh.smartcompletion.SmartCompletionMod.getSmartCompletionSettings;
+import static endorh.smartcompletion.util.PolyFill.getScreen;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -208,7 +209,7 @@ public abstract class MixinSuggestionsList implements SmartSuggestionsList {
          || !settings.enabled.get()
          || !settings.enable_suggestion_highlighting.get()) return;
       Font font = Minecraft.getInstance().font;
-      Screen screen = Minecraft.getInstance().screen;
+      Screen screen = getScreen(Minecraft.getInstance());
       if (screen == null) return;
       ci.cancel();
 
