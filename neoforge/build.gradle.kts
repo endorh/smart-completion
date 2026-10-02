@@ -8,6 +8,7 @@ val modId: String by rootProject
 val modVersion: String by rootProject
 val minecraftVersion: String by prop
 val neoForgeVersion: String by project
+val neoForgeModsTomlTemplate: String by project
 
 val modProperties: Map<String, String> by prop
 
@@ -192,7 +193,12 @@ var generateModMetadata = tasks.register<ProcessResources>("generateModMetadata"
     exclude("**/.dev/**")
 
     expand(modProperties)
-    from("src/main/templates")
+    from("src/main/templates") {
+        exclude("META-INF/neoforge.mods.*.toml")
+    }
+    from("src/main/templates/META-INF/neoforge.mods.${neoForgeModsTomlTemplate}.toml") {
+        rename { "META-INF/neoforge.mods.toml" }
+    }
     into("build/generated/sources/modMetadata")
 }
 

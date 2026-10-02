@@ -11,6 +11,7 @@ import endorh.smartcompletion.customization.SmartCompletionSettings.SuggestionSt
 import endorh.smartcompletion.duck.SmartCommandSuggestions;
 import endorh.smartcompletion.duck.SmartSuggestionsList;
 import endorh.smartcompletion.util.ListWithAttachment;
+import endorh.smartcompletion.util.PolyFill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.gui.Font;
@@ -26,7 +27,6 @@ import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -326,12 +326,12 @@ public abstract class MixinSuggestionsList implements SmartSuggestionsList {
       SmartCompletionSettings settings = getSmartCompletionSettings();
       if (!settings.enabled.get() || !settings.enable_completion_keys.get() || smartcompletion$CommandSuggestions$this == null) return;
       if (switch (smartcompletion$lastInputCode) {
-         case GLFW.GLFW_KEY_SPACE -> settings.erase_remainder_on_ctrl_space.get();
-         case GLFW.GLFW_KEY_ENTER -> settings.erase_remainder_on_enter.get();
-         case GLFW.GLFW_KEY_TAB -> settings.erase_remainder_on_tab.get();
-         case   - 100 -> settings.erase_remainder_on_left_click.get();
-         case 1 - 100 -> settings.erase_remainder_on_right_click.get();
-         case 2 - 100 -> settings.erase_remainder_on_middle_click.get();
+         case PolyFill.Keys.SPACE  -> settings.erase_remainder_on_ctrl_space.get();
+         case PolyFill.Keys.RETURN -> settings.erase_remainder_on_enter.get();
+         case PolyFill.Keys.TAB    -> settings.erase_remainder_on_tab.get();
+         case PolyFill.Keys.MOUSE_LEFT   -> settings.erase_remainder_on_left_click.get();
+         case PolyFill.Keys.MOUSE_RIGHT  -> settings.erase_remainder_on_right_click.get();
+         case PolyFill.Keys.MOUSE_MIDDLE -> settings.erase_remainder_on_middle_click.get();
          default -> false;
       }) {
          EditBox input = smartcompletion$CommandSuggestions$this.getInput();
@@ -360,16 +360,16 @@ public abstract class MixinSuggestionsList implements SmartSuggestionsList {
 
       // Handle completion keys
       if (
-            keyCode == GLFW.GLFW_KEY_SPACE
+            keyCode == PolyFill.Keys.SPACE
             && keyEvent.hasControlDown()
          || settings.enable_completion_with_enter.get()
             && smartcompletion$hasUnparsedInput
-            && keyCode == GLFW.GLFW_KEY_ENTER
+            && keyCode == PolyFill.Keys.RETURN
       ) {
          // Accept suggestion
          useSuggestion();
 
-         if (keyCode == GLFW.GLFW_KEY_ENTER) {
+         if (keyCode == PolyFill.Keys.RETURN) {
             // Hide suggestions (replicate what happens in onUpdateCommandInfo if keepSuggestions is false)
             smartcompletion$CommandSuggestions$this.getInput().setSuggestion(null);
             cs.hide();
@@ -380,12 +380,12 @@ public abstract class MixinSuggestionsList implements SmartSuggestionsList {
 
       // Invert up-down keys when inverting suggestion order
       if (smartcompletion$shouldInvertSuggestionList()) {
-         if (keyCode == GLFW.GLFW_KEY_DOWN) {
+         if (keyCode == PolyFill.Keys.DOWN) {
             cycle(-1); // Cycle up
             tabCycles = false;
             // Mark the input event as handled
             cir.setReturnValue(true);
-         } else if (keyCode == GLFW.GLFW_KEY_UP) {
+         } else if (keyCode == PolyFill.Keys.UP) {
             cycle(1); // Cycle down
             tabCycles = false;
             // Mark the input event as handled

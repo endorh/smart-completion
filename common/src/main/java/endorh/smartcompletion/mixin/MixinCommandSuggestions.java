@@ -10,6 +10,7 @@ import endorh.smartcompletion.customization.SmartCompletionSettings;
 import endorh.smartcompletion.duck.SmartCommandSuggestions;
 import endorh.smartcompletion.duck.SmartSuggestionsList;
 import endorh.smartcompletion.util.ListWithAttachment;
+import endorh.smartcompletion.util.PolyFill;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
@@ -24,7 +25,6 @@ import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -276,7 +276,7 @@ public abstract class MixinCommandSuggestions implements SmartCommandSuggestions
       ) return;
 
       boolean handled = false;
-      if (keyEvent.key() == GLFW.GLFW_KEY_SPACE && keyEvent.hasControlDown()) {
+      if (keyEvent.key() == PolyFill.Keys.SPACE && keyEvent.hasControlDown()) {
          handled = true;
          showSuggestions(true);
       }
